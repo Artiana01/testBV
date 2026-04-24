@@ -27,7 +27,7 @@ import { AdminDashboardPage } from '../pages/AdminDashboardPage';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'webmaster@bluevaloris.com';
-const BASE        = process.env.BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
+const BASE        = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
 
 // ── Tests UI du formulaire Magic Link (sans session) ──
 test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {

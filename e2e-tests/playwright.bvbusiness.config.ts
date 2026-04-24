@@ -48,7 +48,7 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: process.env.BASE_URL ?? 'https://staging.bluevalorisbusiness.com',
+    baseURL: process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',

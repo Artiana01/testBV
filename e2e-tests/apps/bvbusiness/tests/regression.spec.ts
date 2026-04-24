@@ -24,7 +24,7 @@ import { AdminContentPage } from '../pages/AdminContentPage';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const BASE = process.env.BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
+const BASE = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
 
 // ═══════════════════════════════════════════════════════
 // RÉGRESSION — Authentification

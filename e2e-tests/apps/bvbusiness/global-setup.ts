@@ -24,7 +24,7 @@ import * as fs from 'fs';
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const BASE_URL  = process.env.BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
+const BASE_URL  = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
 const AUTH_DIR  = path.resolve(__dirname, 'auth');
 const ADMIN_SESSION = path.join(AUTH_DIR, 'admin.json');
 

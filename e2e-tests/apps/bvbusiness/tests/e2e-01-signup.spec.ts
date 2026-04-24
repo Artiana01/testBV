@@ -25,7 +25,7 @@ import { generateRandomEmail } from '../../../shared/utils/helpers';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-const BASE = process.env.BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
+const BASE = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
 
 test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
 
