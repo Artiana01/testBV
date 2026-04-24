@@ -1,1 +1,15 @@
-{"cookies":[],"origins":[]}
+{
+  "cookies": [
+    {
+      "name": "NEXT_LOCALE",
+      "value": "fr",
+      "domain": "dev.bluevalorisinvest.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}
