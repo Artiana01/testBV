@@ -12,20 +12,20 @@
     },
     {
       "name": "session_user",
-      "value": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUmVncmVzc2lvbiByZWctNTkxMzI1IHJlZy01NTEzNjUgcmVnLTA4ODIzMiBBZG1pbiIsImVtYWlsIjoid2VibWFzdGVyQGJsdWV2YWxvcmlzLmNvbSIsImVtYWlsX3ZlcmlmaWVkX2F0IjoiMjAyNi0wNC0xN1QwNzo1MDoxMC4wMDAwMDBaIiwiY3JlYXRlZF9hdCI6IjIwMjYtMDQtMTdUMDc6NTA6MTAuMDAwMDAwWiIsInVwZGF0ZWRfYXQiOiIyMDI2LTA0LTIyVDE4OjQ2OjU3LjAwMDAwMFoiLCJ0d29fZmFjdG9yX3NlY3JldCI6bnVsbCwidHdvX2ZhY3Rvcl9yZWNvdmVyeV9jb2RlcyI6bnVsbCwidHdvX2ZhY3Rvcl9jb25maXJtZWRfYXQiOm51bGwsInJvbGUiOiJST0xFX1NVUEVSQURNSU4iLCJudW1iZXJQaG9uZSI6bnVsbCwiYWRkcmVzcyI6bnVsbCwiY29tcGFueSI6bnVsbCwiZ29vZ2xlX2lkIjpudWxsLCJhdmF0YXIiOm51bGwsImxvZ2luX2F0dGVtcHRzIjowLCJibG9ja2VkX2F0IjpudWxsLCJkZWxldGVkX2F0IjpudWxsLCJpc19hbm9ueW1pemVkIjpmYWxzZSwiYW5vbnltaXplZF9uYW1lIjpudWxsLCJhbm9ueW1pemVkX2VtYWlsIjpudWxsLCJpc19lbXBsb3llZSI6ZmFsc2UsImF2YXRhcl91cmwiOm51bGx9LCJleHBpcmVzIjoiMjAyNi0wNC0yMlQxOTo1MDo0NS4yNDVaIiwiaWF0IjoxNzc2ODgzODQ1LCJleHAiOjE3NzY4ODc0NDV9.aCeLYbxML7Ev9rYf55xVuOuDNT1zCs6fOSivxrPMrRg",
+      "value": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImlkIjoxLCJuYW1lIjoiUmVncmVzc2lvbiByZWctNTAzMjY2IHJlZy0zMDY2OTYgcmVnLTU5MTMyNSByZWctNTUxMzY1IHJlZy0wODgyMzIgQWRtaW4iLCJlbWFpbCI6IndlYm1hc3RlckBibHVldmFsb3Jpcy5jb20iLCJlbWFpbF92ZXJpZmllZF9hdCI6IjIwMjYtMDQtMTdUMDc6NTA6MTAuMDAwMDAwWiIsImNyZWF0ZWRfYXQiOiIyMDI2LTA0LTE3VDA3OjUwOjEwLjAwMDAwMFoiLCJ1cGRhdGVkX2F0IjoiMjAyNi0wNC0yM1QxMTowODozMS4wMDAwMDBaIiwidHdvX2ZhY3Rvcl9zZWNyZXQiOm51bGwsInR3b19mYWN0b3JfcmVjb3ZlcnlfY29kZXMiOm51bGwsInR3b19mYWN0b3JfY29uZmlybWVkX2F0IjpudWxsLCJyb2xlIjoiUk9MRV9TVVBFUkFETUlOIiwibnVtYmVyUGhvbmUiOm51bGwsImFkZHJlc3MiOm51bGwsImNvbXBhbnkiOm51bGwsImdvb2dsZV9pZCI6bnVsbCwiYXZhdGFyIjpudWxsLCJsb2dpbl9hdHRlbXB0cyI6MCwiYmxvY2tlZF9hdCI6bnVsbCwiZGVsZXRlZF9hdCI6bnVsbCwiaXNfYW5vbnltaXplZCI6ZmFsc2UsImFub255bWl6ZWRfbmFtZSI6bnVsbCwiYW5vbnltaXplZF9lbWFpbCI6bnVsbCwiaXNfZW1wbG95ZWUiOmZhbHNlLCJhdmF0YXJfdXJsIjpudWxsfSwiZXhwaXJlcyI6IjIwMjYtMDQtMjNUMTI6MTA6NDUuNzU4WiIsImlhdCI6MTc3Njk0MjY0NSwiZXhwIjoxNzc2OTQ2MjQ1fQ.G9kK51KQ-S5ZjTinuHA5_gOiea2zCXAJcOouDnySwpM",
       "domain": "dev.bluevaloristech.com",
       "path": "/",
-      "expires": 1776887429.781576,
+      "expires": 1776946227.638907,
       "httpOnly": true,
       "secure": false,
       "sameSite": "Lax"
     },
     {
       "name": "token",
-      "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpLWRldi5ibHVldmFsb3Jpc3RlY2guY29tL2FwaS9sb2dpbiIsImlhdCI6MTc3Njg4Mzg0NSwiZXhwIjoxNzc2ODg3NDQ1LCJuYmYiOjE3NzY4ODM4NDUsImp0aSI6IndXWkZPWVlKdGo5RTZWVG0iLCJzdWIiOiIxIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyIsInJvbGUiOiJST0xFX1NVUEVSQURNSU4ifQ.4OBM4Ui3fXIdaMBybKUsZ5XXTbM41YmAokcYzQzJUc4",
+      "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpLWRldi5ibHVldmFsb3Jpc3RlY2guY29tL2FwaS9sb2dpbiIsImlhdCI6MTc3Njk0MjY0NSwiZXhwIjoxNzc2OTQ2MjQ1LCJuYmYiOjE3NzY5NDI2NDUsImp0aSI6IjI2T1Z4TzdxZ3g3WWFiNUUiLCJzdWIiOiIxIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyIsInJvbGUiOiJST0xFX1NVUEVSQURNSU4ifQ.-G0-ptzpH5N6W98xQCWulOlhO49Hq_6NrILO8YsdJ1s",
       "domain": "dev.bluevaloristech.com",
       "path": "/",
-      "expires": 1776887429.781796,
+      "expires": 1776946227.639086,
       "httpOnly": true,
       "secure": false,
       "sameSite": "Lax"

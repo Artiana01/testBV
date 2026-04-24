@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BV Tech — Interface de tests E2E</title>
+  <title>Tests E2E — Bluevaloris</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -22,6 +22,8 @@
       --text:      #e2e8f0;
       --text-dim:  #64748b;
       --radius:    10px;
+      --bvtech:    #6366f1;
+      --bvbiz:     #0ea5e9;
     }
 
     body {
@@ -36,23 +38,48 @@
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 18px 32px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 16px;
     }
 
     header .logo {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), var(--accent-h));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--text);
+      white-space: nowrap;
     }
 
-    header .subtitle {
+    /* ── Sélecteur d'app ── */
+    .app-switcher {
+      display: flex;
+      gap: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .app-btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: none;
       font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: transparent;
       color: var(--text-dim);
+    }
+    .app-btn:hover { color: var(--text); }
+    .app-btn.active.bvtech  { background: rgba(99,102,241,0.2); color: #818cf8; }
+    .app-btn.active.bvbiz   { background: rgba(14,165,233,0.2); color: #38bdf8; }
+
+    header .subtitle {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-left: 4px;
     }
 
     header .status-dot {
@@ -62,36 +89,37 @@
       border-radius: 50%;
       background: var(--text-dim);
       transition: background 0.3s;
+      flex-shrink: 0;
     }
-    header .status-dot.running { background: var(--warn); animation: pulse 1s infinite; }
+    header .status-dot.running   { background: var(--warn); animation: pulse 1s infinite; }
     header .status-dot.connected { background: var(--pass); }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      50%       { opacity: 0.4; }
     }
 
     main {
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 300px 1fr;
       gap: 0;
       flex: 1;
       min-height: 0;
     }
 
-    /* ── Panneau gauche ── */
+    /* ── Sidebar ── */
     .sidebar {
       background: var(--surface);
       border-right: 1px solid var(--border);
-      padding: 24px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
       overflow-y: auto;
     }
 
     .sidebar h2 {
-      font-size: 13px;
+      font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--text-dim);
@@ -100,49 +128,48 @@
     .test-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .test-item {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
+      padding: 9px 11px;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
+      transition: border-color 0.15s;
       user-select: none;
     }
     .test-item:hover { border-color: var(--accent); }
     .test-item input[type="checkbox"] {
       accent-color: var(--accent);
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       cursor: pointer;
       flex-shrink: 0;
     }
     .test-item label {
-      font-size: 13px;
+      font-size: 12.5px;
       cursor: pointer;
       flex: 1;
       line-height: 1.4;
     }
-
     .test-item .result-badge {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      padding: 2px 6px;
+      padding: 2px 5px;
       border-radius: 4px;
       display: none;
     }
-    .test-item .result-badge.pass { background: rgba(34,197,94,0.15); color: var(--pass); display: inline-block; }
-    .test-item .result-badge.fail { background: rgba(239,68,68,0.15); color: var(--fail); display: inline-block; }
+    .test-item .result-badge.pass { background: rgba(34,197,94,0.15);  color: var(--pass); display: inline-block; }
+    .test-item .result-badge.fail { background: rgba(239,68,68,0.15);  color: var(--fail); display: inline-block; }
 
     .select-all-row {
       display: flex;
-      gap: 8px;
+      gap: 6px;
     }
 
     .btn {
@@ -150,7 +177,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 10px 18px;
+      padding: 10px 16px;
       border: none;
       border-radius: var(--radius);
       font-size: 13px;
@@ -158,8 +185,8 @@
       cursor: pointer;
       transition: opacity 0.15s, transform 0.1s;
     }
-    .btn:active { transform: scale(0.98); }
-    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn:active  { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .btn-primary {
       background: var(--accent);
@@ -167,13 +194,15 @@
       flex: 1;
     }
     .btn-primary:hover:not(:disabled) { background: var(--accent-h); }
+    .btn-primary.bvbiz { background: #0284c7; }
+    .btn-primary.bvbiz:hover:not(:disabled) { background: #0ea5e9; }
 
     .btn-ghost {
       background: var(--surface2);
       color: var(--text-dim);
       border: 1px solid var(--border);
-      font-size: 12px;
-      padding: 7px 12px;
+      font-size: 11px;
+      padding: 6px 10px;
     }
     .btn-ghost:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
 
@@ -193,132 +222,35 @@
     .stats-row {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
+      gap: 6px;
     }
-
     .stat-card {
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 10px;
+      padding: 9px;
       text-align: center;
     }
-    .stat-card .num {
-      font-size: 22px;
-      font-weight: 700;
-    }
-    .stat-card .lbl {
-      font-size: 11px;
-      color: var(--text-dim);
-      margin-top: 2px;
-    }
-    .stat-card.pass .num { color: var(--pass); }
-    .stat-card.fail .num { color: var(--fail); }
+    .stat-card .num { font-size: 20px; font-weight: 700; }
+    .stat-card .lbl { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+    .stat-card.pass  .num { color: var(--pass); }
+    .stat-card.fail  .num { color: var(--fail); }
     .stat-card.total .num { color: var(--accent-h); }
 
-    /* ── Panneau droite (output) ── */
+    /* ── Output panel ── */
     .output-panel {
       display: flex;
       flex-direction: column;
       min-height: 0;
     }
 
-    .output-toolbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .output-toolbar h2 {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .output-toolbar .spacer { flex: 1; }
-
-    .filter-pills {
-      display: flex;
-      gap: 6px;
-    }
-
-    .pill {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-dim);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .pill.active { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.1); }
-    .pill.pass-pill.active { border-color: var(--pass); color: var(--pass); background: rgba(34,197,94,0.1); }
-    .pill.fail-pill.active { border-color: var(--fail); color: var(--fail); background: rgba(239,68,68,0.1); }
-
-    #output {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px;
-      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-      font-size: 12.5px;
-      line-height: 1.7;
-      background: var(--bg);
-    }
-
-    .log-line {
-      display: flex;
-      gap: 10px;
-      align-items: baseline;
-      padding: 1px 0;
-      border-radius: 4px;
-    }
-    .log-line:hover { background: rgba(255,255,255,0.03); }
-
-    .log-line .time {
-      color: var(--text-dim);
-      font-size: 10px;
-      min-width: 52px;
-      flex-shrink: 0;
-    }
-
-    .log-line .msg { flex: 1; word-break: break-all; }
-
-    .log-line.pass .msg { color: var(--pass); }
-    .log-line.fail .msg { color: var(--fail); }
-    .log-line.warn .msg { color: var(--warn); }
-    .log-line.info .msg { color: var(--info); }
-    .log-line.summary .msg { color: var(--summary); font-weight: 600; }
-    .log-line.cmd .msg { color: var(--accent-h); font-style: italic; }
-    .log-line.done.success .msg { color: var(--pass); font-weight: 700; font-size: 13px; }
-    .log-line.done.fail .msg { color: var(--fail); font-weight: 700; font-size: 13px; }
-
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      color: var(--text-dim);
-      gap: 12px;
-    }
-    .empty-state .icon { font-size: 48px; opacity: 0.4; }
-    .empty-state p { font-size: 14px; }
-
-    /* ── Onglets output / échecs ── */
     .tab-bar {
       display: flex;
-      gap: 0;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
     }
     .tab {
-      padding: 10px 20px;
+      padding: 10px 18px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -339,12 +271,77 @@
       border-radius: 10px;
     }
 
-    /* ── Panneau Échecs ── */
+    .output-toolbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-pills { display: flex; gap: 6px; }
+    .pill {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .pill.active           { border-color: var(--accent); color: var(--accent);  background: rgba(99,102,241,0.1); }
+    .pill.pass-pill.active { border-color: var(--pass);   color: var(--pass);   background: rgba(34,197,94,0.1); }
+    .pill.fail-pill.active { border-color: var(--fail);   color: var(--fail);   background: rgba(239,68,68,0.1); }
+
+    #output {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 18px;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      background: var(--bg);
+    }
+
+    .log-line {
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      padding: 1px 0;
+      border-radius: 4px;
+    }
+    .log-line:hover { background: rgba(255,255,255,0.03); }
+    .log-line .time { color: var(--text-dim); font-size: 10px; min-width: 52px; flex-shrink: 0; }
+    .log-line .msg  { flex: 1; word-break: break-all; }
+
+    .log-line.pass    .msg { color: var(--pass); }
+    .log-line.fail    .msg { color: var(--fail); }
+    .log-line.warn    .msg { color: var(--warn); }
+    .log-line.info    .msg { color: var(--info); }
+    .log-line.summary .msg { color: var(--summary); font-weight: 600; }
+    .log-line.cmd     .msg { color: var(--accent-h); font-style: italic; }
+    .log-line.done.success .msg { color: var(--pass); font-weight: 700; font-size: 13px; }
+    .log-line.done.fail    .msg { color: var(--fail); font-weight: 700; font-size: 13px; }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-dim);
+      gap: 12px;
+    }
+    .empty-state .icon { font-size: 46px; opacity: 0.35; }
+    .empty-state p { font-size: 14px; }
+
     #failuresPanel {
       display: none;
       flex: 1;
       overflow-y: auto;
-      padding: 16px 20px;
+      padding: 16px 18px;
       background: var(--bg);
     }
     #failuresPanel.active { display: block; }
@@ -355,42 +352,26 @@
       border: 1px solid var(--border);
       border-left: 3px solid var(--fail);
       border-radius: var(--radius);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       overflow: hidden;
     }
     .failure-header {
-      padding: 10px 14px;
+      padding: 9px 12px;
       display: flex;
       align-items: center;
       gap: 10px;
       cursor: pointer;
     }
     .failure-header:hover { background: rgba(255,255,255,0.03); }
-    .failure-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
-      flex: 1;
-      word-break: break-all;
-    }
-    .failure-body {
-      display: none;
-      padding: 14px;
-      border-top: 1px solid var(--border);
-      gap: 10px;
-      flex-direction: column;
-    }
+    .failure-title { font-size: 12px; font-weight: 600; color: var(--text); flex: 1; word-break: break-all; }
+    .failure-body { display: none; padding: 12px; border-top: 1px solid var(--border); gap: 10px; flex-direction: column; }
     .failure-body.open { display: flex; }
-    .failure-files {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .failure-files { display: flex; gap: 8px; flex-wrap: wrap; }
     .file-btn {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 6px 12px;
+      padding: 5px 10px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 600;
@@ -400,29 +381,24 @@
     }
     .file-btn:hover { opacity: 0.8; }
     .file-btn.screenshot { background: rgba(99,102,241,0.15); color: var(--accent-h); }
-    .file-btn.video { background: rgba(239,68,68,0.12); color: var(--fail); }
-    .failure-preview {
-      margin-top: 8px;
-    }
-    .failure-preview img {
-      max-width: 100%;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-    }
-    .failure-preview video {
-      max-width: 100%;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-    }
+    .file-btn.video      { background: rgba(239,68,68,0.12);  color: var(--fail); }
+    .failure-preview { margin-top: 8px; }
+    .failure-preview img   { max-width: 100%; border-radius: 6px; border: 1px solid var(--border); }
+    .failure-preview video { max-width: 100%; border-radius: 6px; border: 1px solid var(--border); }
   </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <div class="logo">🎭 BV Tech — Tests E2E</div>
-    <div class="subtitle">Interface Playwright · https://dev.bluevaloristech.com</div>
+  <div class="logo">🎭 Tests E2E</div>
+
+  <!-- Sélecteur d'application -->
+  <div class="app-switcher">
+    <button class="app-btn bvtech active" id="btnBvtech" onclick="switchApp('bvtech')">BV Tech</button>
+    <button class="app-btn bvbiz"         id="btnBvbiz"  onclick="switchApp('bvbusiness')">BV Business</button>
   </div>
+
+  <span id="headerSubtitle" class="subtitle">https://dev.bluevaloristech.com</span>
   <span id="statusDot" class="status-dot" title="Déconnecté"></span>
 </header>
 
@@ -442,8 +418,8 @@
 
     <div class="stats-row">
       <div class="stat-card total"><div class="num" id="statTotal">0</div><div class="lbl">Total</div></div>
-      <div class="stat-card pass"><div class="num" id="statPass">0</div><div class="lbl">Réussis</div></div>
-      <div class="stat-card fail"><div class="num" id="statFail">0</div><div class="lbl">Échoués</div></div>
+      <div class="stat-card pass"><div class="num"  id="statPass">0</div><div class="lbl">Réussis</div></div>
+      <div class="stat-card fail"><div class="num"  id="statFail">0</div><div class="lbl">Échoués</div></div>
     </div>
 
     <div class="action-row">
@@ -461,22 +437,20 @@
 
   <!-- ── Output panel ── -->
   <section class="output-panel">
-    <!-- Onglets -->
     <div class="tab-bar">
-      <div class="tab active" id="tabOutput" onclick="switchTab('output')">📋 Sortie en temps réel</div>
-      <div class="tab" id="tabFailures" onclick="switchTab('failures')">
+      <div class="tab active" id="tabOutput"   onclick="switchTab('output')">📋 Sortie en temps réel</div>
+      <div class="tab"        id="tabFailures" onclick="switchTab('failures')">
         📸 Screenshots &amp; Vidéos
         <span class="badge" id="failuresBadge" style="display:none">0</span>
       </div>
     </div>
 
-    <!-- Barre d'outils (output seulement) -->
     <div class="output-toolbar" id="outputToolbar">
       <div class="filter-pills">
-        <button class="pill active" data-filter="all" onclick="setFilter('all')">Tout</button>
-        <button class="pill pass-pill" data-filter="pass" onclick="setFilter('pass')">✓ Réussis</button>
-        <button class="pill fail-pill" data-filter="fail" onclick="setFilter('fail')">✗ Échoués</button>
-        <button class="pill" data-filter="summary" onclick="setFilter('summary')">Résumé</button>
+        <button class="pill active"   data-filter="all"     onclick="setFilter('all')">Tout</button>
+        <button class="pill pass-pill" data-filter="pass"   onclick="setFilter('pass')">✓ Réussis</button>
+        <button class="pill fail-pill" data-filter="fail"   onclick="setFilter('fail')">✗ Échoués</button>
+        <button class="pill"          data-filter="summary" onclick="setFilter('summary')">Résumé</button>
       </div>
     </div>
 
@@ -487,7 +461,6 @@
       </div>
     </div>
 
-    <!-- Panneau Échecs -->
     <div id="failuresPanel">
       <div class="empty-state" id="failuresEmpty">
         <div class="icon">📸</div>
@@ -499,7 +472,7 @@
 
 <script>
   // ── Données tests ──
-  const TESTS = {
+  const TESTS_BVTECH = {
     'e2e-01-signup':         'E2E-01 — Inscription (Signup)',
     'e2e-02-login':          'E2E-02 — Connexion & Navigation',
     'e2e-03-profile':        'E2E-03 — Profil Client',
@@ -512,18 +485,60 @@
     'regression':            '🔄 Régression Complète',
   };
 
-  // ── État ──
-  let currentFilter = 'all';
-  let logLines = [];
-  let stats = { total: 0, pass: 0, fail: 0 };
-  let autoScroll = true;
-  let es = null;
+  const TESTS_BVBUSINESS = {
+    'e2e-01-signup':     'SC-01 — Inscription (Signup)',
+    'e2e-02-login':      'SC-02 — Login & Dashboard',
+    'e2e-03-packages':   'SC-03 — Packages & Pricing',
+    'e2e-04-navigation': 'SC-04 — Navigation Admin',
+    'e2e-05-content':    'SC-05 — Content Management',
+    'e2e-06-media':      'SC-06 — Media Library',
+    'e2e-07-regional':   'SC-07 — Contenu Régional',
+    'e2e-08-users':      'SC-08 — Gestion Utilisateurs',
+    'e2e-09-payments':   'SC-09 — Paiements Admin',
+    'regression':        '🔄 Régression Complète',
+  };
 
-  // ── Initialisation ──
+  const APP_META = {
+    bvtech:     { label: 'BV Tech',     url: 'https://dev.bluevaloristech.com',       tests: TESTS_BVTECH },
+    bvbusiness: { label: 'BV Business', url: 'https://staging.bluevalorisbusiness.com', tests: TESTS_BVBUSINESS },
+  };
+
+  // ── État ──
+  let currentApp    = 'bvtech';
+  let currentFilter = 'all';
+  let logLines      = [];
+  let stats         = { total: 0, pass: 0, fail: 0 };
+  let autoScroll    = true;
+  let es            = null;
+
+  // ── Changement d'app ──
+  function switchApp(app) {
+    if (currentApp === app) return;
+    currentApp = app;
+
+    // Boutons header
+    document.getElementById('btnBvtech').classList.toggle('active', app === 'bvtech');
+    document.getElementById('btnBvtech').classList.toggle('bvtech', app === 'bvtech');
+    document.getElementById('btnBvbiz').classList.toggle('active', app === 'bvbusiness');
+    document.getElementById('btnBvbiz').classList.toggle('bvbiz', app === 'bvbusiness');
+
+    // Sous-titre URL
+    document.getElementById('headerSubtitle').textContent = APP_META[app].url;
+
+    // Couleur du bouton Lancer
+    const btnRun = document.getElementById('btnRun');
+    btnRun.classList.toggle('bvbiz', app === 'bvbusiness');
+
+    buildTestList();
+    clearOutput();
+  }
+
+  // ── Liste des tests ──
   function buildTestList() {
+    const tests = APP_META[currentApp].tests;
     const list = document.getElementById('testList');
     list.innerHTML = '';
-    Object.entries(TESTS).forEach(([key, label]) => {
+    Object.entries(tests).forEach(([key, label]) => {
       const item = document.createElement('div');
       item.className = 'test-item';
       item.dataset.key = key;
@@ -545,20 +560,9 @@
   // ── SSE ──
   function connectSSE() {
     es = new EventSource('/events');
-
-    es.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      handleEvent(data);
-    };
-
-    es.onopen = () => {
-      setDot('connected');
-    };
-
-    es.onerror = () => {
-      setDot('disconnected');
-      setTimeout(connectSSE, 3000);
-    };
+    es.onmessage = (e) => handleEvent(JSON.parse(e.data));
+    es.onopen    = ()  => setDot('connected');
+    es.onerror   = ()  => { setDot('disconnected'); setTimeout(connectSSE, 3000); };
   }
 
   function handleEvent(data) {
@@ -576,19 +580,11 @@
         appendLine('cmd', '$ ' + data.message);
         break;
       case 'pass':
-        if (/^ok\s+\d+\s/.test(data.message)) {
-          stats.pass++;
-          stats.total++;
-          updateStats();
-        }
+        if (/^ok\s+\d+\s/.test(data.message)) { stats.pass++; stats.total++; updateStats(); }
         appendLine('pass', data.message);
         break;
       case 'fail':
-        if (/^x\s+\d+\s/.test(data.message)) {
-          stats.fail++;
-          stats.total++;
-          updateStats();
-        }
+        if (/^x\s+\d+\s/.test(data.message)) { stats.fail++; stats.total++; updateStats(); }
         appendLine('fail', data.message);
         break;
       case 'warn':
@@ -596,7 +592,6 @@
         break;
       case 'summary': {
         appendLine('summary', data.message);
-        // Extraire les totaux depuis la ligne de résumé Playwright
         const mPass = data.message.match(/(\d+)\s+passed/);
         const mFail = data.message.match(/(\d+)\s+failed/);
         if (mPass || mFail) {
@@ -628,20 +623,20 @@
   // ── Output ──
   function appendLine(type, message) {
     if (!message || !message.trim()) return;
-
     document.getElementById('emptyState').style.display = 'none';
 
-    const entry = { type, message, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) };
+    const entry = {
+      type,
+      message,
+      time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    };
     logLines.push(entry);
 
     const el = createLineEl(entry);
     document.getElementById('output').appendChild(el);
-
     applyFilter();
 
-    if (autoScroll) {
-      el.scrollIntoView({ block: 'end', behavior: 'smooth' });
-    }
+    if (autoScroll) el.scrollIntoView({ block: 'end', behavior: 'smooth' });
   }
 
   function createLineEl(entry) {
@@ -664,30 +659,20 @@
     resetStats();
     const output = document.getElementById('output');
     output.innerHTML = '<div class="empty-state" id="emptyState"><div class="icon">🎭</div><p>Sélectionnez des tests et cliquez sur <strong>Lancer</strong>.</p></div>';
-    // Reset badges
-    document.querySelectorAll('.result-badge').forEach(b => {
-      b.className = 'result-badge';
-      b.textContent = '';
-    });
+    document.querySelectorAll('.result-badge').forEach(b => { b.className = 'result-badge'; b.textContent = ''; });
   }
 
   // ── Filtres ──
   function setFilter(filter) {
     currentFilter = filter;
-    document.querySelectorAll('.pill').forEach(p => {
-      p.classList.toggle('active', p.dataset.filter === filter);
-    });
+    document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.filter === filter));
     applyFilter();
   }
 
   function applyFilter() {
     document.querySelectorAll('#output .log-line').forEach(el => {
       const type = el.dataset.type || '';
-      if (currentFilter === 'all') {
-        el.style.display = '';
-      } else {
-        el.style.display = type === currentFilter ? '' : 'none';
-      }
+      el.style.display = currentFilter === 'all' ? '' : (type === currentFilter ? '' : 'none');
     });
   }
 
@@ -695,22 +680,18 @@
   function resetStats() {
     stats = { total: 0, pass: 0, fail: 0 };
     updateStats();
-    // Reset badges
-    document.querySelectorAll('.result-badge').forEach(b => {
-      b.className = 'result-badge';
-      b.textContent = '';
-    });
+    document.querySelectorAll('.result-badge').forEach(b => { b.className = 'result-badge'; b.textContent = ''; });
   }
 
   function updateStats() {
     document.getElementById('statTotal').textContent = stats.total;
-    document.getElementById('statPass').textContent = stats.pass;
-    document.getElementById('statFail').textContent = stats.fail;
+    document.getElementById('statPass').textContent  = stats.pass;
+    document.getElementById('statFail').textContent  = stats.fail;
   }
 
-  // ── État running ──
+  // ── Running state ──
   function setRunningState(running) {
-    document.getElementById('btnRun').disabled = running;
+    document.getElementById('btnRun').disabled  = running;
     document.getElementById('btnStop').disabled = !running;
     setDot(running ? 'running' : 'connected');
   }
@@ -721,7 +702,7 @@
     dot.title = { running: 'Tests en cours...', connected: 'Connecté', disconnected: 'Déconnecté' }[state] || state;
   }
 
-  // ── Actions ──
+  // ── Lancer / Arrêter ──
   async function startTests() {
     const selected = Array.from(document.querySelectorAll('.test-item input:checked'))
       .map(cb => cb.id.replace('cb_', ''));
@@ -734,7 +715,7 @@
     await fetch('/run', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tests: selected }),
+      body: JSON.stringify({ tests: selected, app: currentApp }),
     });
   }
 
@@ -744,18 +725,17 @@
 
   // ── Auto-scroll ──
   document.addEventListener('DOMContentLoaded', () => {
-    const output = document.getElementById('output');
-    output.addEventListener('scroll', () => {
-      const atBottom = output.scrollHeight - output.scrollTop - output.clientHeight < 50;
-      autoScroll = atBottom;
+    document.getElementById('output').addEventListener('scroll', (e) => {
+      const el = e.target;
+      autoScroll = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
     });
   });
 
-  // ── Onglets ──
+  // ── Onglets output / échecs ──
   function switchTab(tab) {
-    document.getElementById('tabOutput').classList.toggle('active', tab === 'output');
+    document.getElementById('tabOutput').classList.toggle('active',   tab === 'output');
     document.getElementById('tabFailures').classList.toggle('active', tab === 'failures');
-    document.getElementById('output').classList.toggle('hidden', tab !== 'output');
+    document.getElementById('output').classList.toggle('hidden',      tab !== 'output');
     document.getElementById('outputToolbar').style.display = tab === 'output' ? '' : 'none';
     document.getElementById('failuresPanel').classList.toggle('active', tab === 'failures');
     if (tab === 'failures') loadFailures();
@@ -766,25 +746,21 @@
     const panel = document.getElementById('failuresPanel');
     const empty = document.getElementById('failuresEmpty');
 
-    const res = await fetch('/failures');
+    const res  = await fetch('/failures');
     const folders = await res.json();
 
-    // Vider sauf l'empty state
     Array.from(panel.children).forEach(c => { if (c.id !== 'failuresEmpty') c.remove(); });
 
-    if (folders.length === 0) {
-      empty.style.display = '';
-      return;
-    }
+    if (folders.length === 0) { empty.style.display = ''; return; }
     empty.style.display = 'none';
 
     folders.forEach(f => {
       const card = document.createElement('div');
       card.className = 'failure-card';
 
-      // Nom court : extraire le nom du test depuis le dossier
       const shortName = f.name
-        .replace(/-bvtech-(admin|client|public|login-flow)$/, '')
+        .replace(/-bvtech-(admin|client|public|login-flow|regression)$/,    '')
+        .replace(/-bvbusiness-(admin|public|login-flow|regression|packages-public)$/, '')
         .replace(/^e2e-\d+-[^-]+-/, '')
         .replace(/-/g, ' ')
         .replace(/[a-f0-9]{5,}/g, '')
@@ -799,9 +775,9 @@
         </div>
         <div class="failure-body">
           <div class="failure-files">
-            ${f.hasPng ? `<button class="file-btn screenshot" onclick="showFile('${f.name}','test-failed-1.png','img')">📸 Screenshot</button>` : ''}
-            ${f.hasVideo ? `<button class="file-btn video" onclick="showFile('${f.name}','video.webm','video')">🎬 Vidéo</button>` : ''}
-            ${f.hasMd ? `<button class="file-btn screenshot" style="background:rgba(100,116,139,0.2);color:var(--info)" onclick="showFile('${f.name}','error-context.md','text')">📄 Contexte</button>` : ''}
+            ${f.hasPng   ? `<button class="file-btn screenshot" onclick="showFile('${f.name}','test-failed-1.png','img')">📸 Screenshot</button>` : ''}
+            ${f.hasVideo ? `<button class="file-btn video"      onclick="showFile('${f.name}','video.webm','video')">🎬 Vidéo</button>` : ''}
+            ${f.hasMd    ? `<button class="file-btn screenshot" style="background:rgba(100,116,139,0.2);color:var(--info)" onclick="showFile('${f.name}','error-context.md','text')">📄 Contexte</button>` : ''}
           </div>
           <div class="failure-preview" id="preview_${CSS.escape(f.name)}"></div>
         </div>
@@ -809,20 +785,17 @@
       panel.appendChild(card);
     });
 
-    // Badge
     const badge = document.getElementById('failuresBadge');
-    badge.textContent = folders.length;
+    badge.textContent  = folders.length;
     badge.style.display = folders.length > 0 ? '' : 'none';
   }
 
   function toggleCard(header) {
-    const body = header.nextElementSibling;
-    body.classList.toggle('open');
+    header.nextElementSibling.classList.toggle('open');
   }
 
   function showFile(dir, file, type) {
-    const previewId = 'preview_' + CSS.escape(dir);
-    const preview = document.getElementById(previewId);
+    const preview = document.getElementById('preview_' + CSS.escape(dir));
     if (!preview) return;
 
     const src = `/failure-file?dir=${encodeURIComponent(dir)}&file=${encodeURIComponent(file)}`;
@@ -838,12 +811,11 @@
     }
   }
 
-  // Charger les échecs au démarrage et après chaque fin de tests
   async function refreshFailureBadge() {
     const res = await fetch('/failures');
     const folders = await res.json();
     const badge = document.getElementById('failuresBadge');
-    badge.textContent = folders.length;
+    badge.textContent  = folders.length;
     badge.style.display = folders.length > 0 ? '' : 'none';
   }
 

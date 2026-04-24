@@ -1,0 +1,85 @@
+{
+  "cookies": [
+    {
+      "name": "sf_redirect",
+      "value": "%7B%22token%22%3A%22e21b54%22%2C%22route%22%3A%22login_check%22%2C%22method%22%3A%22GET%22%2C%22controller%22%3A%7B%22class%22%3A%22App%5C%5CController%5C%5CSecurityController%22%2C%22method%22%3A%22check%22%2C%22file%22%3A%22%5C%2Fvar%5C%2Fwww%5C%2Fstaging%5C%2Fbvb%5C%2Fbvb-backend%5C%2Fsrc%5C%2FController%5C%2FSecurityController.php%22%2C%22line%22%3A24%7D%2C%22status_code%22%3A302%2C%22status_text%22%3A%22Found%22%7D",
+      "domain": "api-staging.bluevalorisbusiness.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "main_auth_profile_token",
+      "value": "e21b54",
+      "domain": "api-staging.bluevalorisbusiness.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "9u791ujgj6spphnfuifvnikhn0",
+      "domain": "api-staging.bluevalorisbusiness.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "token",
+      "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE3NzcwMTkxNjksImV4cCI6MTc3NzEwNTU2OSwicm9sZXMiOlsiUk9MRV9TVVBFUl9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6IndlYm1hc3RlckBibHVldmFsb3Jpcy5jb20ifQ.KHltIGLIn5GL4T-UuChn3VNTM3XIpMwSW8Am0lxe93bH2dHpHaGBdjt8ntB6PGE2qD3Fdq0__gDHc94R0piBKJpoKAsvsmSECbEjwzTnsgWUvsLOA6twZV8LCQOfHWJ_rV-DLptLPPGPbNXNKziNEz2S2ksKNJ8RpQZAhlu8eNcUraF6XoDVnG4wOtMYAfpQtv89SyETc1cWQ0dgbXLdBMwfoSVrXk6Oadt9OkJ73E-5Nn-AYTZd34R1-HS5XtM2khXhWSJSL8RKyVFj9HTLX-GCIjtVLcB64htRQMg8-QapwPWrVpQwidGVYZp7_HoynedPHGH3g9xbfOjzsf_bUA",
+      "domain": "staging.bluevalorisbusiness.com",
+      "path": "/",
+      "expires": 1779611172.140004,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "is_logged_in",
+      "value": "true",
+      "domain": "staging.bluevalorisbusiness.com",
+      "path": "/",
+      "expires": 1779611172.140102,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "main_auth_profile_token",
+      "value": "2d5193",
+      "domain": "staging.bluevalorisbusiness.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "PHPSESSID",
+      "value": "4qhfqdrcd2hrhra6mml6k9cqda",
+      "domain": "staging.bluevalorisbusiness.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://mailpit.bluevalorisportage.com",
+      "localStorage": [
+        {
+          "name": "html-check-platforms",
+          "value": "[\"windows\",\"windows-mail\",\"outlook-com\",\"macos\",\"ios\",\"android\",\"desktop-webmail\",\"mobile-webmail\"]"
+        }
+      ]
+    }
+  ]
+}
