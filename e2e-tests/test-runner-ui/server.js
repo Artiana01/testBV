@@ -1,7 +1,7 @@
 /**
  * test-runner-ui/server.js
  * -------------------------
- * Interface web pour lancer les tests Playwright BV Tech.
+ * Interface web pour lancer les tests Playwright BV Tech & BV Business.
  * Accessible sur http://localhost:4000
  *
  * Démarrage : node test-runner-ui/server.js
@@ -19,24 +19,38 @@ const PORT = process.env.PORT || 4000;
 const HTML_FILE = path.join(__dirname, 'index.html');
 const ROOT_DIR = path.join(__dirname, '..');
 
-// Config Playwright disponibles
+// Configs Playwright disponibles
 const CONFIGS = {
-  bvtech: 'playwright.bvtech.config.ts',
-  default: 'playwright.config.ts',
+  bvtech:     'playwright.bvtech.config.ts',
+  bvbusiness: 'playwright.bvbusiness.config.ts',
 };
 
-// Tests disponibles avec leur fichier
-const TESTS = {
-  'e2e-01-signup':        { file: 'apps/bvtech/tests/e2e-01-signup.spec.ts',        label: 'E2E-01 — Inscription (Signup)', project: 'bvtech-public' },
-  'e2e-02-login':         { file: 'apps/bvtech/tests/e2e-02-login-navigation.spec.ts', label: 'E2E-02 — Connexion & Navigation', project: 'bvtech-login-flow' },
-  'e2e-03-profile':       { file: 'apps/bvtech/tests/e2e-03-profile.spec.ts',        label: 'E2E-03 — Profil Client', project: 'bvtech-client' },
-  'e2e-04-dashboard':     { file: 'apps/bvtech/tests/e2e-04-dashboard.spec.ts',      label: 'E2E-04 — Dashboard Client', project: 'bvtech-client' },
-  'e2e-05-admin-login':   { file: 'apps/bvtech/tests/e2e-05-admin-login.spec.ts',    label: 'E2E-05 — Connexion Admin', project: 'bvtech-login-flow' },
-  'e2e-06-admin-users':   { file: 'apps/bvtech/tests/e2e-06-admin-users.spec.ts',    label: 'E2E-06 — Gestion Utilisateurs (Admin)', project: 'bvtech-admin' },
-  'e2e-07-admin-packs':   { file: 'apps/bvtech/tests/e2e-07-admin-packs.spec.ts',    label: 'E2E-07 — Gestion Packs (Admin)', project: 'bvtech-admin' },
-  'e2e-08-admin-payments':{ file: 'apps/bvtech/tests/e2e-08-admin-payments.spec.ts', label: 'E2E-08 — Paiements (Admin)', project: 'bvtech-admin' },
-  'e2e-09-admin-contacts':{ file: 'apps/bvtech/tests/e2e-09-admin-contacts.spec.ts', label: 'E2E-09 — Contacts (Admin)', project: 'bvtech-admin' },
-  'regression':           { file: 'apps/bvtech/tests/regression.spec.ts',            label: 'Régression Complète', project: 'bvtech-regression' },
+// Tests BV Tech
+const TESTS_BVTECH = {
+  'e2e-01-signup':         { file: 'apps/bvtech/tests/e2e-01-signup.spec.ts',           label: 'E2E-01 — Inscription (Signup)' },
+  'e2e-02-login':          { file: 'apps/bvtech/tests/e2e-02-login-navigation.spec.ts',  label: 'E2E-02 — Connexion & Navigation' },
+  'e2e-03-profile':        { file: 'apps/bvtech/tests/e2e-03-profile.spec.ts',           label: 'E2E-03 — Profil Client' },
+  'e2e-04-dashboard':      { file: 'apps/bvtech/tests/e2e-04-dashboard.spec.ts',         label: 'E2E-04 — Dashboard Client' },
+  'e2e-05-admin-login':    { file: 'apps/bvtech/tests/e2e-05-admin-login.spec.ts',       label: 'E2E-05 — Connexion Admin' },
+  'e2e-06-admin-users':    { file: 'apps/bvtech/tests/e2e-06-admin-users.spec.ts',       label: 'E2E-06 — Gestion Utilisateurs (Admin)' },
+  'e2e-07-admin-packs':    { file: 'apps/bvtech/tests/e2e-07-admin-packs.spec.ts',       label: 'E2E-07 — Gestion Packs (Admin)' },
+  'e2e-08-admin-payments': { file: 'apps/bvtech/tests/e2e-08-admin-payments.spec.ts',    label: 'E2E-08 — Paiements (Admin)' },
+  'e2e-09-admin-contacts': { file: 'apps/bvtech/tests/e2e-09-admin-contacts.spec.ts',    label: 'E2E-09 — Contacts (Admin)' },
+  'regression':            { file: 'apps/bvtech/tests/regression.spec.ts',               label: 'Régression Complète' },
+};
+
+// Tests BV Business
+const TESTS_BVBUSINESS = {
+  'e2e-01-signup':    { file: 'apps/bvbusiness/tests/e2e-01-signup.spec.ts',           label: 'SC-01 — Inscription (Signup)' },
+  'e2e-02-login':     { file: 'apps/bvbusiness/tests/e2e-02-login-dashboard.spec.ts',  label: 'SC-02 — Login & Dashboard' },
+  'e2e-03-packages':  { file: 'apps/bvbusiness/tests/e2e-03-packages.spec.ts',         label: 'SC-03 — Packages & Pricing' },
+  'e2e-04-navigation':{ file: 'apps/bvbusiness/tests/e2e-04-navigation.spec.ts',       label: 'SC-04 — Navigation Admin' },
+  'e2e-05-content':   { file: 'apps/bvbusiness/tests/e2e-05-admin-content.spec.ts',    label: 'SC-05 — Content Management' },
+  'e2e-06-media':     { file: 'apps/bvbusiness/tests/e2e-06-admin-media.spec.ts',      label: 'SC-06 — Media Library' },
+  'e2e-07-regional':  { file: 'apps/bvbusiness/tests/e2e-07-regional-content.spec.ts', label: 'SC-07 — Contenu Régional' },
+  'e2e-08-users':     { file: 'apps/bvbusiness/tests/e2e-08-admin-users.spec.ts',      label: 'SC-08 — Gestion Utilisateurs' },
+  'e2e-09-payments':  { file: 'apps/bvbusiness/tests/e2e-09-admin-payments.spec.ts',   label: 'SC-09 — Paiements Admin' },
+  'regression':       { file: 'apps/bvbusiness/tests/regression.spec.ts',              label: 'Régression Complète' },
 };
 
 // Clients SSE actifs
@@ -59,12 +73,12 @@ function stripAnsi(str) {
 
 function classifyLine(line) {
   const clean = stripAnsi(line).trim();
-  // Playwright list reporter: "ok 1 [project] >" = pass, "x 2 [project] >" = fail
   if (/^ok\s+\d+\s/.test(clean)) return 'pass';
   if (/^x\s+\d+\s/.test(clean)) return 'fail';
-  // Playwright summary line: "5 passed", "3 failed", "Running N tests"
-  if (/^\d+ passed/.test(clean) || /✓|✅/.test(clean)) return 'pass';
-  if (/^\d+ failed/.test(clean) || /✗|×|❌/.test(clean)) return 'fail';
+  // Lignes résumé final : "65 passed (6.7m)", "3 failed" → 'summary' pour que les KPIs se mettent à jour
+  if (/^\d+\s+passed/.test(clean) || /^\d+\s+failed/.test(clean)) return 'summary';
+  if (/✓|✅/.test(clean)) return 'pass';
+  if (/✗|×|❌/.test(clean)) return 'fail';
   if (/^Running \d+ test|^Finished|workers|suite/i.test(clean)) return 'summary';
   if (/passed.*failed|failed.*passed|\d+ (passed|failed|skipped)/i.test(clean)) return 'summary';
   if (/Error:|⚠|warn|WARN|rate limit|limite/i.test(clean)) return 'warn';
@@ -73,25 +87,28 @@ function classifyLine(line) {
   return 'info';
 }
 
-function runTests(selectedTests) {
+function runTests(selectedTests, app) {
   if (isRunning) {
     sendToAllClients({ type: 'error', message: 'Un test est déjà en cours. Attendez la fin avant de relancer.' });
     return;
   }
 
+  const appKey = app === 'bvbusiness' ? 'bvbusiness' : 'bvtech';
+  const config = CONFIGS[appKey];
+  const testsMap = appKey === 'bvbusiness' ? TESTS_BVBUSINESS : TESTS_BVTECH;
+
   isRunning = true;
-  sendToAllClients({ type: 'start', message: '🚀 Démarrage des tests...' });
+  sendToAllClients({ type: 'start', message: `🚀 Démarrage des tests ${appKey === 'bvbusiness' ? 'BV Business' : 'BV Tech'}...` });
 
   const args = [
     'playwright', 'test',
-    '--config', CONFIGS.bvtech,
+    '--config', config,
     '--reporter=list',
   ];
 
-  // Ajouter les fichiers de tests sélectionnés
   if (selectedTests && selectedTests.length > 0 && !selectedTests.includes('all')) {
     selectedTests.forEach(key => {
-      const t = TESTS[key];
+      const t = testsMap[key];
       if (t) args.push(t.file);
     });
   }
@@ -169,8 +186,13 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => { body += chunk; });
     req.on('end', () => {
       let selected = [];
-      try { selected = JSON.parse(body).tests || []; } catch (_) {}
-      runTests(selected);
+      let app = 'bvtech';
+      try {
+        const parsed = JSON.parse(body);
+        selected = parsed.tests || [];
+        app = parsed.app || 'bvtech';
+      } catch (_) {}
+      runTests(selected, app);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true }));
     });
@@ -193,7 +215,7 @@ const server = http.createServer((req, res) => {
   // === GET /status : état courant ===
   if (parsed.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ running: isRunning, tests: TESTS }));
+    res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS } }));
     return;
   }
 
@@ -253,6 +275,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\n🎭 Interface de tests BV Tech démarrée`);
+  console.log(`\n🎭 Interface de tests E2E démarrée`);
   console.log(`   → http://localhost:${PORT}\n`);
 });

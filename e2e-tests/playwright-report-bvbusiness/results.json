@@ -1,0 +1,2611 @@
+{
+  "config": {
+    "configFile": "D:\\PLAYRIGHT\\e2e-tests\\playwright.bvbusiness.config.ts",
+    "rootDir": "D:/PLAYRIGHT/e2e-tests/apps/bvbusiness/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "D:\\PLAYRIGHT\\e2e-tests\\apps\\bvbusiness\\global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/PLAYRIGHT/e2e-tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "bvbusiness-public",
+        "name": "bvbusiness-public",
+        "testDir": "D:/PLAYRIGHT/e2e-tests/apps/bvbusiness/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e-01-signup.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/PLAYRIGHT/e2e-tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "bvbusiness-login-flow",
+        "name": "bvbusiness-login-flow",
+        "testDir": "D:/PLAYRIGHT/e2e-tests/apps/bvbusiness/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e-02-login-dashboard.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/PLAYRIGHT/e2e-tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "bvbusiness-packages-public",
+        "name": "bvbusiness-packages-public",
+        "testDir": "D:/PLAYRIGHT/e2e-tests/apps/bvbusiness/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e-03-packages.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/PLAYRIGHT/e2e-tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "bvbusiness-admin",
+        "name": "bvbusiness-admin",
+        "testDir": "D:/PLAYRIGHT/e2e-tests/apps/bvbusiness/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/e2e-04-navigation.spec.ts",
+          "**/e2e-05-admin-content.spec.ts",
+          "**/e2e-06-admin-media.spec.ts",
+          "**/e2e-07-regional-content.spec.ts",
+          "**/e2e-08-admin-users.spec.ts",
+          "**/e2e-09-admin-payments.spec.ts"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "D:/PLAYRIGHT/e2e-tests/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "bvbusiness-regression",
+        "name": "bvbusiness-regression",
+        "testDir": "D:/PLAYRIGHT/e2e-tests/apps/bvbusiness/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/regression.spec.ts"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report-bvbusiness",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "playwright-report-bvbusiness/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.59.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "e2e-01-signup.spec.ts",
+      "file": "e2e-01-signup.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "SC-01 — Création de compte Magic Link (CRITIQUE)",
+          "file": "e2e-01-signup.spec.ts",
+          "line": 30,
+          "column": 6,
+          "specs": [
+            {
+              "title": "01.1 — La page login/inscription est accessible et contient le formulaire",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-public",
+                  "projectName": "bvbusiness-public",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3338,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:05.234Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "12f3ebe89edc25481ba8-0738fdab1e01f9531962",
+              "file": "e2e-01-signup.spec.ts",
+              "line": 32,
+              "column": 7
+            },
+            {
+              "title": "01.2 — Soumission sans email reste sur /login (validation)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 20000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-public",
+                  "projectName": "bvbusiness-public",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4016,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:08.708Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "12f3ebe89edc25481ba8-4f7e1abf5a889212d11a",
+              "file": "e2e-01-signup.spec.ts",
+              "line": 39,
+              "column": 7
+            },
+            {
+              "title": "01.3 — Soumission avec un nouvel email envoie un magic link",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-public",
+                  "projectName": "bvbusiness-public",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4885,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Magic link envoyé pour nouveau compte : bvb-new-1777022772811@mailinator.com\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:12.734Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "12f3ebe89edc25481ba8-bd10b57490b77827f73f",
+              "file": "e2e-01-signup.spec.ts",
+              "line": 49,
+              "column": 7
+            },
+            {
+              "title": "01.4 — L'email est affiché après envoi du magic link",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-public",
+                  "projectName": "bvbusiness-public",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4274,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:17.631Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "12f3ebe89edc25481ba8-0f8911893ad228e14377",
+              "file": "e2e-01-signup.spec.ts",
+              "line": 60,
+              "column": 7
+            },
+            {
+              "title": "01.5 — Le bouton \"Continuer avec Google\" est disponible comme alternative",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 20000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-public",
+                  "projectName": "bvbusiness-public",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3534,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:21.920Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "12f3ebe89edc25481ba8-183188c7a319b3b0097b",
+              "file": "e2e-01-signup.spec.ts",
+              "line": 73,
+              "column": 7
+            },
+            {
+              "title": "01.6 — La page affiche les mentions légales (CGU / Politique de confidentialité)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 20000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-public",
+                  "projectName": "bvbusiness-public",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3098,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:25.464Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "12f3ebe89edc25481ba8-6c06452d81ab32a1d88d",
+              "file": "e2e-01-signup.spec.ts",
+              "line": 81,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-02-login-dashboard.spec.ts",
+      "file": "e2e-02-login-dashboard.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "SC-02 — Formulaire Magic Link (CRITIQUE)",
+          "file": "e2e-02-login-dashboard.spec.ts",
+          "line": 33,
+          "column": 6,
+          "specs": [
+            {
+              "title": "02.1 — La page login est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2985,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:29.772Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-f1e998f960a2f7fdbf9c",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "02.2 — Le formulaire contient le champ email et le bouton \"Continuer avec l'adresse email\"",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2971,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:32.925Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-576c006366eca133e878",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "02.3 — Le bouton \"Continuer avec Google\" est présent",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2789,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:35.907Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-6bcf4cfaf6c1a0030aa3",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 55,
+              "column": 7
+            },
+            {
+              "title": "02.4 — Soumission avec email valide affiche le bandeau de confirmation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4146,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "Magic link envoyé à : webmaster@bluevaloris.com\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:38.708Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-319e2ec003443d05f5a9",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 62,
+              "column": 7
+            },
+            {
+              "title": "02.5 — Soumission avec email invalide affiche une erreur",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6330,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:42.864Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-a1dbe45578801a239ee9",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "02.6 — Soumission sans email affiche une erreur de validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4532,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:49.208Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-9f1755854071086fc200",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 84,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "SC-02 — Dashboard après connexion (storageState)",
+          "file": "e2e-02-login-dashboard.spec.ts",
+          "line": 100,
+          "column": 6,
+          "specs": [
+            {
+              "title": "02.7 — Dashboard est accessible avec la session active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4950,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:53.752Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-7faa674fee89ccef6c84",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 102,
+              "column": 7
+            },
+            {
+              "title": "02.8 — KPIs sont visibles sur le dashboard admin",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4905,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:26:58.711Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-6102b977fd1aa229ef21",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 109,
+              "column": 7
+            },
+            {
+              "title": "02.9 — La navigation admin (sidebar/menu) est visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5217,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:03.626Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-fb52de35d4e3068c0bf9",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 116,
+              "column": 7
+            },
+            {
+              "title": "02.10 — Pas de redirection vers /login avec session active",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-login-flow",
+                  "projectName": "bvbusiness-login-flow",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5030,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:08.863Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e1cc9e2522dccab4c96-0f5f0373e6690a5142bc",
+              "file": "e2e-02-login-dashboard.spec.ts",
+              "line": 123,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-03-packages.spec.ts",
+      "file": "e2e-03-packages.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "SC-03 — Packages & Souscription (CRITIQUE)",
+          "file": "e2e-03-packages.spec.ts",
+          "line": 27,
+          "column": 6,
+          "specs": [
+            {
+              "title": "03.1 — La page Packages est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-packages-public",
+                  "projectName": "bvbusiness-packages-public",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6588,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:15.119Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "36dc8cead6a1390663c6-6e2f51342b7ee035c23e",
+              "file": "e2e-03-packages.spec.ts",
+              "line": 29,
+              "column": 7
+            },
+            {
+              "title": "03.2 — Les offres/packages sont affichés (cartes visibles)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-packages-public",
+                  "projectName": "bvbusiness-packages-public",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4348,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:21.820Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "36dc8cead6a1390663c6-c50fe1e88720bf7c8cb1",
+              "file": "e2e-03-packages.spec.ts",
+              "line": 36,
+              "column": 7
+            },
+            {
+              "title": "03.3 — Les prix sont affichés sur les offres",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-packages-public",
+                  "projectName": "bvbusiness-packages-public",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4934,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:26.179Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "36dc8cead6a1390663c6-999db12f560f0b792eb8",
+              "file": "e2e-03-packages.spec.ts",
+              "line": 43,
+              "column": 7
+            },
+            {
+              "title": "03.4 — La recherche de package fonctionne",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-packages-public",
+                  "projectName": "bvbusiness-packages-public",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6427,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:31.124Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "36dc8cead6a1390663c6-f0de4d69e7cd502ec2f5",
+              "file": "e2e-03-packages.spec.ts",
+              "line": 50,
+              "column": 7
+            },
+            {
+              "title": "03.5 — Clic sur \"Souscrire\" mène à la page de paiement",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-packages-public",
+                  "projectName": "bvbusiness-packages-public",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6467,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:37.563Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "36dc8cead6a1390663c6-05e42fc3847bbf13c51c",
+              "file": "e2e-03-packages.spec.ts",
+              "line": 60,
+              "column": 7
+            },
+            {
+              "title": "03.6 — Les données packages sont cohérentes (pas de valeurs nulles/vides)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-packages-public",
+                  "projectName": "bvbusiness-packages-public",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4467,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:44.042Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "36dc8cead6a1390663c6-5467812731fff5f775c0",
+              "file": "e2e-03-packages.spec.ts",
+              "line": 69,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-04-navigation.spec.ts",
+      "file": "e2e-04-navigation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "SC-04 — Navigation globale admin (IMPORTANT)",
+          "file": "e2e-04-navigation.spec.ts",
+          "line": 25,
+          "column": 6,
+          "specs": [
+            {
+              "title": "04.1 — Dashboard admin est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5103,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:49.705Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-a04abfe19fd8f0b17ebb",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 27,
+              "column": 7
+            },
+            {
+              "title": "04.2 — Navigation vers la section Users",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9574,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:27:54.940Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-b80bfcc76956d6a3006d",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 34,
+              "column": 7
+            },
+            {
+              "title": "04.3 — Navigation vers la section Packages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8795,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:28:04.525Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-b4e6dbb6c1e94757488c",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 45,
+              "column": 7
+            },
+            {
+              "title": "04.4 — Navigation vers la section Payments",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8794,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:28:13.339Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-d27e0f7a1cec8813d181",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 55,
+              "column": 7
+            },
+            {
+              "title": "04.5 — Navigation vers la section Content Management",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10900,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:28:22.146Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-f237c5df138b9bb762ee",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 65,
+              "column": 7
+            },
+            {
+              "title": "04.6 — Navigation vers la Media Library",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9200,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:28:33.059Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-273e50ddf152b1c0df27",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "04.7 — Navigation vers le Contenu Régional",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11117,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:28:42.268Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-4e434451c96be3349b85",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 85,
+              "column": 7
+            },
+            {
+              "title": "04.8 — La page packages publique est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2801,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:28:53.400Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "99414cab142606222413-82bb1ed968cfb2431212",
+              "file": "e2e-04-navigation.spec.ts",
+              "line": 95,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-05-admin-content.spec.ts",
+      "file": "e2e-05-admin-content.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "SC-05 — Content Management Admin (IMPORTANT)",
+          "file": "e2e-05-admin-content.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "05.1 — La page Content Management est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7518,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:28:56.222Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a06f79b665631baeb953-f93a024b4ed4487f40a8",
+              "file": "e2e-05-admin-content.spec.ts",
+              "line": 20,
+              "column": 7
+            },
+            {
+              "title": "05.2 — La section Hero est accessible dans le CMS",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3608,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:03.749Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a06f79b665631baeb953-cdd15569208c480bd681",
+              "file": "e2e-05-admin-content.spec.ts",
+              "line": 28,
+              "column": 7
+            },
+            {
+              "title": "05.3 — La section Services est accessible dans le CMS",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3611,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:07.367Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a06f79b665631baeb953-ae068e48aa3c724e1aad",
+              "file": "e2e-05-admin-content.spec.ts",
+              "line": 36,
+              "column": 7
+            },
+            {
+              "title": "05.4 — Modification et sauvegarde d'un champ de contenu",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3491,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "   ℹ️  Aucun champ éditable trouvé — vérifier les sélecteurs CMS dans AdminContentPage\n"
+                        },
+                        {
+                          "text": "   ℹ️  Bouton de sauvegarde non trouvé — vérifier les sélecteurs CMS dans AdminContentPage\n"
+                        },
+                        {
+                          "text": "Contenu modifié avec : \"Test BV Business 1777022954256\"\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:10.989Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a06f79b665631baeb953-c55f9af2b23deb0ae148",
+              "file": "e2e-05-admin-content.spec.ts",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "05.5 — Les sections sont isolées (modification n'affecte pas les autres)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3300,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "   ℹ️  Aucun onglet de section trouvé — vérifier les sélecteurs dans AdminContentPage\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:14.489Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a06f79b665631baeb953-736677346f23e1a982bd",
+              "file": "e2e-05-admin-content.spec.ts",
+              "line": 56,
+              "column": 7
+            },
+            {
+              "title": "05.6 — Vérification du support multilingue dans le CMS",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3533,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "   ℹ️  Sélecteur de langue non trouvé dans le CMS — vérifier manuellement\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:17.802Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a06f79b665631baeb953-887b1c287c2f6478205d",
+              "file": "e2e-05-admin-content.spec.ts",
+              "line": 63,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-06-admin-media.spec.ts",
+      "file": "e2e-06-admin-media.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "SC-06 — Media Library Admin (IMPORTANT)",
+          "file": "e2e-06-admin-media.spec.ts",
+          "line": 20,
+          "column": 6,
+          "specs": [
+            {
+              "title": "06.1 — La Media Library est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 9133,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:21.352Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f76f698f2a4f933842b7-2988413b8d7fea57c566",
+              "file": "e2e-06-admin-media.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "06.2 — Le bouton d'upload est visible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5113,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:30.494Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f76f698f2a4f933842b7-932bde3a108e84479400",
+              "file": "e2e-06-admin-media.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "06.3 — Upload d'une image fonctionne",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12273,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "   ℹ️  File chooser non déclenché — le mécanisme d'upload peut utiliser drag-and-drop ou une API directe\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:35.617Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f76f698f2a4f933842b7-e15e8e1e870d1687ec53",
+              "file": "e2e-06-admin-media.spec.ts",
+              "line": 38,
+              "column": 7
+            },
+            {
+              "title": "06.4 — La grille media contient des fichiers après upload",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5267,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:47.901Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f76f698f2a4f933842b7-90038b705ec71651d255",
+              "file": "e2e-06-admin-media.spec.ts",
+              "line": 46,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-07-regional-content.spec.ts",
+      "file": "e2e-07-regional-content.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "SC-07 — Contenu Régional Admin (SECONDAIRE)",
+          "file": "e2e-07-regional-content.spec.ts",
+          "line": 20,
+          "column": 6,
+          "specs": [
+            {
+              "title": "07.1 — La page Contenu Régional est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7370,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:29:53.188Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "74343afb7aa8b3a06da8-cdc19afc2a74cb7600fd",
+              "file": "e2e-07-regional-content.spec.ts",
+              "line": 22,
+              "column": 7
+            },
+            {
+              "title": "07.2 — Un sélecteur de région est présent",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3730,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "   ℹ️  Sélecteur de région non trouvé — vérifier URL réelle dans goto()\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:00.569Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "74343afb7aa8b3a06da8-2c8e8f26fc49f04f9fa4",
+              "file": "e2e-07-regional-content.spec.ts",
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "07.3 — Modification et sauvegarde du contenu régional",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3732,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "   ℹ️  Sélecteur de région non trouvé — vérifier URL réelle dans goto()\n"
+                        },
+                        {
+                          "text": "   ℹ️  Bouton de sauvegarde régional non trouvé — vérifier URL/sélecteurs dans AdminRegionalContentPage\n"
+                        },
+                        {
+                          "text": "Contenu régional modifié : \"Contenu régional test 1777023007752\"\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:04.308Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "74343afb7aa8b3a06da8-ba1d2109a9e372066d37",
+              "file": "e2e-07-regional-content.spec.ts",
+              "line": 37,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-08-admin-users.spec.ts",
+      "file": "e2e-08-admin-users.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Admin — Gestion Users & Clients",
+          "file": "e2e-08-admin-users.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "08.1 — La page admin Users est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4361,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:08.059Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2bd71eed5478cf84636d-62c2cb5e37a722456cac",
+              "file": "e2e-08-admin-users.spec.ts",
+              "line": 19,
+              "column": 7
+            },
+            {
+              "title": "08.2 — La liste des utilisateurs est affichée",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4618,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:12.429Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2bd71eed5478cf84636d-292e33e6f2b1806b9ec1",
+              "file": "e2e-08-admin-users.spec.ts",
+              "line": 26,
+              "column": 7
+            },
+            {
+              "title": "08.3 — La recherche d'utilisateur fonctionne",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6146,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:17.057Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2bd71eed5478cf84636d-fd2b74ad8e8fb9c3eb24",
+              "file": "e2e-08-admin-users.spec.ts",
+              "line": 33,
+              "column": 7
+            },
+            {
+              "title": "08.4 — La pagination est fonctionnelle si présente",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4609,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:23.212Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2bd71eed5478cf84636d-5adb75393ddcb0a73ef1",
+              "file": "e2e-08-admin-users.spec.ts",
+              "line": 42,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "e2e-09-admin-payments.spec.ts",
+      "file": "e2e-09-admin-payments.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Admin — Paiements & Facturation",
+          "file": "e2e-09-admin-payments.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "09.1 — La page admin Payments est accessible",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4626,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:27.840Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e4b3309469821fe06b4-7f8ac286b36e99618c94",
+              "file": "e2e-09-admin-payments.spec.ts",
+              "line": 23,
+              "column": 7
+            },
+            {
+              "title": "09.2 — Le tableau des transactions est affiché",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6428,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:32.477Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e4b3309469821fe06b4-6c44ff27e5d812100a7b",
+              "file": "e2e-09-admin-payments.spec.ts",
+              "line": 30,
+              "column": 7
+            },
+            {
+              "title": "09.3 — Les badges de statut des transactions sont visibles",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4875,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:38.917Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e4b3309469821fe06b4-a53507593b4708e3b0c0",
+              "file": "e2e-09-admin-payments.spec.ts",
+              "line": 37,
+              "column": 7
+            },
+            {
+              "title": "09.4 — L'intégrité des données de transaction est correcte",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4719,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:43.802Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e4b3309469821fe06b4-cf758ae2a9c8ceba7c1a",
+              "file": "e2e-09-admin-payments.spec.ts",
+              "line": 44,
+              "column": 7
+            },
+            {
+              "title": "09.5 — Pas de valeurs \"undefined\" ou \"null\" dans la liste",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-admin",
+                  "projectName": "bvbusiness-admin",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5127,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:48.530Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5e4b3309469821fe06b4-52d38b7c549d1acb00cc",
+              "file": "e2e-09-admin-payments.spec.ts",
+              "line": 51,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "regression.spec.ts",
+      "file": "regression.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Régression — Authentification",
+          "file": "regression.spec.ts",
+          "line": 32,
+          "column": 6,
+          "specs": [
+            {
+              "title": "REG-01 — La connexion fonctionne avec les identifiants actifs",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3241,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:55.157Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-f82356895694cf194d43",
+              "file": "regression.spec.ts",
+              "line": 34,
+              "column": 7
+            },
+            {
+              "title": "REG-02 — La redirection post-login est correcte (pas de boucle)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6788,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:30:58.538Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-a12039ff5063cef2dff9",
+              "file": "regression.spec.ts",
+              "line": 43,
+              "column": 7
+            },
+            {
+              "title": "REG-03 — Pas de page forgot-password (magic link — normal)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 20000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3135,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:05.336Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-475ed75dd2fff7ca9369",
+              "file": "regression.spec.ts",
+              "line": 55,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Régression — Navigation",
+          "file": "regression.spec.ts",
+          "line": 71,
+          "column": 6,
+          "specs": [
+            {
+              "title": "REG-04 — Le menu admin est accessible depuis toutes les sections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4946,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:08.482Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-23cbd9071b53c36d402e",
+              "file": "regression.spec.ts",
+              "line": 73,
+              "column": 7
+            },
+            {
+              "title": "REG-05 — L'accès direct à /fr/dashboard ne redirige pas vers login",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4511,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:13.439Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-fbb2d22ebe7cdfdc1ecc",
+              "file": "regression.spec.ts",
+              "line": 81,
+              "column": 7
+            },
+            {
+              "title": "REG-06 — Aucune section admin ne retourne une erreur 404",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 11612,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:17.961Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-733f673c7d6c7fbed757",
+              "file": "regression.spec.ts",
+              "line": 89,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Régression — Content Management",
+          "file": "regression.spec.ts",
+          "line": 110,
+          "column": 6,
+          "specs": [
+            {
+              "title": "REG-07 — La page CMS se charge sans erreur",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10786,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:29.584Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-389dc31a27f5959ac8b2",
+              "file": "regression.spec.ts",
+              "line": 112,
+              "column": 7
+            },
+            {
+              "title": "REG-08 — La page CMS contient des éléments d'interface",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7264,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:40.384Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-5f92adcefe8af394e780",
+              "file": "regression.spec.ts",
+              "line": 121,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Régression — Packages & Pricing",
+          "file": "regression.spec.ts",
+          "line": 136,
+          "column": 6,
+          "specs": [
+            {
+              "title": "REG-09 — La page packages se charge et affiche du contenu",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6285,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:47.659Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-226e58978a338da38b80",
+              "file": "regression.spec.ts",
+              "line": 138,
+              "column": 7
+            },
+            {
+              "title": "REG-10 — Aucune valeur \"undefined\" ou \"null\" dans les packages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4502,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:53.957Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-00ea0d6dbc36ce34d8d6",
+              "file": "regression.spec.ts",
+              "line": 146,
+              "column": 7
+            }
+          ]
+        },
+        {
+          "title": "Régression — Paiements",
+          "file": "regression.spec.ts",
+          "line": 160,
+          "column": 6,
+          "specs": [
+            {
+              "title": "REG-11 — La page paiements admin se charge sans erreur",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4683,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:31:58.478Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-4bd1015e45eaf4a817d5",
+              "file": "regression.spec.ts",
+              "line": 162,
+              "column": 7
+            },
+            {
+              "title": "REG-12 — L'intégrité des données de transaction est préservée",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4687,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:32:03.170Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-e3fc333d2f9aeeceb031",
+              "file": "regression.spec.ts",
+              "line": 170,
+              "column": 7
+            },
+            {
+              "title": "REG-13 — Pas de valeurs corrompues dans les transactions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "bvbusiness-regression",
+                  "projectName": "bvbusiness-regression",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4990,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-04-24T09:32:07.869Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9dc370239c4a30f174fb-40b04c940576784e7710",
+              "file": "regression.spec.ts",
+              "line": 177,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-04-24T09:25:59.366Z",
+    "duration": 373797.003,
+    "expected": 65,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
