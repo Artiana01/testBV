@@ -23,6 +23,7 @@ const ROOT_DIR = path.join(__dirname, '..');
 const CONFIGS = {
   bvtech:     'playwright.bvtech.config.ts',
   bvbusiness: 'playwright.bvbusiness.config.ts',
+  bvinvest:   'playwright.bvinvest.config.ts',
 };
 
 // Tests BV Tech
@@ -51,6 +52,21 @@ const TESTS_BVBUSINESS = {
   'e2e-08-users':     { file: 'apps/bvbusiness/tests/e2e-08-admin-users.spec.ts',      label: 'SC-08 — Gestion Utilisateurs' },
   'e2e-09-payments':  { file: 'apps/bvbusiness/tests/e2e-09-admin-payments.spec.ts',   label: 'SC-09 — Paiements Admin' },
   'regression':       { file: 'apps/bvbusiness/tests/regression.spec.ts',              label: 'Régression Complète' },
+};
+
+// Tests BV Invest
+const TESTS_BVINVEST = {
+  'e2e-01-login':          { file: 'apps/bvinvest/tests/e2e-01-login.spec.ts',           label: 'SC-01 — Connexion utilisateur' },
+  'e2e-02-member':         { file: 'apps/bvinvest/tests/e2e-02-member-space.spec.ts',     label: 'SC-02 — Espace Membre' },
+  'e2e-03-packages':       { file: 'apps/bvinvest/tests/e2e-03-packages.spec.ts',         label: 'SC-03 — Packages & Souscription' },
+  'e2e-04-opportunities':  { file: 'apps/bvinvest/tests/e2e-04-opportunities.spec.ts',    label: 'SC-04/07 — Opportunités & Documents' },
+  'e2e-05-kyc':            { file: 'apps/bvinvest/tests/e2e-05-kyc-pipeline.spec.ts',     label: 'SC-05 — Pipeline KYC/AML' },
+  'e2e-06-profile':        { file: 'apps/bvinvest/tests/e2e-06-profile.spec.ts',          label: 'SC-06 — Profil Utilisateur' },
+  'e2e-08-admin-access':   { file: 'apps/bvinvest/tests/e2e-08-admin-access.spec.ts',     label: 'SC-08 — Demandes d\'Accès (Admin)' },
+  'e2e-09-admin-dashboard':{ file: 'apps/bvinvest/tests/e2e-09-admin-dashboard.spec.ts',  label: 'SC-09 — Dashboard Admin' },
+  'e2e-10-navigation':     { file: 'apps/bvinvest/tests/e2e-10-navigation.spec.ts',       label: 'SC-10 — Navigation Globale' },
+  'e2e-11-analytics':      { file: 'apps/bvinvest/tests/e2e-11-analytics.spec.ts',        label: 'SC-11 — Analytics & Stats' },
+  'regression':            { file: 'apps/bvinvest/tests/regression.spec.ts',              label: 'Régression Complète' },
 };
 
 // Clients SSE actifs
@@ -93,12 +109,13 @@ function runTests(selectedTests, app) {
     return;
   }
 
-  const appKey = app === 'bvbusiness' ? 'bvbusiness' : 'bvtech';
+  const appKey = ['bvbusiness', 'bvinvest'].includes(app) ? app : 'bvtech';
   const config = CONFIGS[appKey];
-  const testsMap = appKey === 'bvbusiness' ? TESTS_BVBUSINESS : TESTS_BVTECH;
+  const testsMap = appKey === 'bvbusiness' ? TESTS_BVBUSINESS : appKey === 'bvinvest' ? TESTS_BVINVEST : TESTS_BVTECH;
+  const appLabel = appKey === 'bvbusiness' ? 'BV Business' : appKey === 'bvinvest' ? 'BV Invest' : 'BV Tech';
 
   isRunning = true;
-  sendToAllClients({ type: 'start', message: `🚀 Démarrage des tests ${appKey === 'bvbusiness' ? 'BV Business' : 'BV Tech'}...` });
+  sendToAllClients({ type: 'start', message: `🚀 Démarrage des tests ${appLabel}...` });
 
   const args = [
     'playwright', 'test',
@@ -215,7 +232,7 @@ const server = http.createServer((req, res) => {
   // === GET /status : état courant ===
   if (parsed.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS } }));
+    res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST } }));
     return;
   }
 
@@ -233,6 +250,7 @@ const server = http.createServer((req, res) => {
       // Filtrer par app si demandé
       if (appFilter === 'bvtech'     && !name.includes('-bvtech-'))     return null;
       if (appFilter === 'bvbusiness' && !name.includes('-bvbusiness-')) return null;
+      if (appFilter === 'bvinvest'   && !name.includes('-bvinvest-'))   return null;
       const files = fs.readdirSync(dir);
       const hasPng  = files.find(f => f.endsWith('.png'));
       const hasVideo = files.find(f => f.endsWith('.webm'));

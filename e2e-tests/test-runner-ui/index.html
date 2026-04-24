@@ -24,6 +24,7 @@
       --radius:    10px;
       --bvtech:    #6366f1;
       --bvbiz:     #0ea5e9;
+      --bvinvest:  #10b981;
     }
 
     body {
@@ -73,8 +74,9 @@
       color: var(--text-dim);
     }
     .app-btn:hover { color: var(--text); }
-    .app-btn.active.bvtech  { background: rgba(99,102,241,0.2); color: #818cf8; }
-    .app-btn.active.bvbiz   { background: rgba(14,165,233,0.2); color: #38bdf8; }
+    .app-btn.active.bvtech   { background: rgba(99,102,241,0.2); color: #818cf8; }
+    .app-btn.active.bvbiz    { background: rgba(14,165,233,0.2); color: #38bdf8; }
+    .app-btn.active.bvinvest { background: rgba(16,185,129,0.2); color: #34d399; }
 
     header .subtitle {
       font-size: 12px;
@@ -196,6 +198,8 @@
     .btn-primary:hover:not(:disabled) { background: var(--accent-h); }
     .btn-primary.bvbiz { background: #0284c7; }
     .btn-primary.bvbiz:hover:not(:disabled) { background: #0ea5e9; }
+    .btn-primary.bvinvest { background: #059669; }
+    .btn-primary.bvinvest:hover:not(:disabled) { background: #10b981; }
 
     .btn-ghost {
       background: var(--surface2);
@@ -394,8 +398,9 @@
 
   <!-- Sélecteur d'application -->
   <div class="app-switcher">
-    <button class="app-btn bvtech active" id="btnBvtech" onclick="switchApp('bvtech')">BV Tech</button>
-    <button class="app-btn bvbiz"         id="btnBvbiz"  onclick="switchApp('bvbusiness')">BV Business</button>
+    <button class="app-btn bvtech active" id="btnBvtech"   onclick="switchApp('bvtech')">BV Tech</button>
+    <button class="app-btn bvbiz"         id="btnBvbiz"    onclick="switchApp('bvbusiness')">BV Business</button>
+    <button class="app-btn bvinvest"      id="btnBvinvest" onclick="switchApp('bvinvest')">BV Invest</button>
   </div>
 
   <span id="headerSubtitle" class="subtitle">https://dev.bluevaloristech.com</span>
@@ -498,9 +503,24 @@
     'regression':        '🔄 Régression Complète',
   };
 
+  const TESTS_BVINVEST = {
+    'e2e-01-login':           'SC-01 — Connexion utilisateur',
+    'e2e-02-member':          'SC-02 — Espace Membre',
+    'e2e-03-packages':        'SC-03 — Packages & Souscription',
+    'e2e-04-opportunities':   'SC-04/07 — Opportunités & Documents',
+    'e2e-05-kyc':             'SC-05 — Pipeline KYC/AML',
+    'e2e-06-profile':         'SC-06 — Profil Utilisateur',
+    'e2e-08-admin-access':    'SC-08 — Demandes d\'Accès (Admin)',
+    'e2e-09-admin-dashboard': 'SC-09 — Dashboard Admin',
+    'e2e-10-navigation':      'SC-10 — Navigation Globale',
+    'e2e-11-analytics':       'SC-11 — Analytics & Stats',
+    'regression':             '🔄 Régression Complète',
+  };
+
   const APP_META = {
-    bvtech:     { label: 'BV Tech',     url: 'https://dev.bluevaloristech.com',       tests: TESTS_BVTECH },
-    bvbusiness: { label: 'BV Business', url: 'https://staging.bluevalorisbusiness.com', tests: TESTS_BVBUSINESS },
+    bvtech:     { label: 'BV Tech',     url: 'https://dev.bluevaloristech.com',         tests: TESTS_BVTECH },
+    bvbusiness: { label: 'BV Business', url: 'https://staging.bluevalorisbusiness.com',  tests: TESTS_BVBUSINESS },
+    bvinvest:   { label: 'BV Invest',   url: 'https://dev.bluevalorisinvest.com',        tests: TESTS_BVINVEST },
   };
 
   // ── État ──
@@ -521,6 +541,8 @@
     document.getElementById('btnBvtech').classList.toggle('bvtech', app === 'bvtech');
     document.getElementById('btnBvbiz').classList.toggle('active', app === 'bvbusiness');
     document.getElementById('btnBvbiz').classList.toggle('bvbiz', app === 'bvbusiness');
+    document.getElementById('btnBvinvest').classList.toggle('active', app === 'bvinvest');
+    document.getElementById('btnBvinvest').classList.toggle('bvinvest', app === 'bvinvest');
 
     // Sous-titre URL
     document.getElementById('headerSubtitle').textContent = APP_META[app].url;
@@ -528,6 +550,7 @@
     // Couleur du bouton Lancer
     const btnRun = document.getElementById('btnRun');
     btnRun.classList.toggle('bvbiz', app === 'bvbusiness');
+    btnRun.classList.toggle('bvinvest', app === 'bvinvest');
 
     buildTestList();
     clearOutput();
@@ -765,6 +788,7 @@
       const shortName = f.name
         .replace(/-bvtech-(admin|client|public|login-flow|regression)$/,    '')
         .replace(/-bvbusiness-(admin|public|login-flow|regression|packages-public)$/, '')
+        .replace(/-bvinvest-(admin|client|public|regression)$/, '')
         .replace(/^e2e-\d+-[^-]+-/, '')
         .replace(/-/g, ' ')
         .replace(/[a-f0-9]{5,}/g, '')
