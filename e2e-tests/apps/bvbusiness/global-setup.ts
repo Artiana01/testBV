@@ -70,6 +70,20 @@ export default async function globalSetup(_config: FullConfig) {
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
+  // Sur Railway : si la variable BVBUSINESS_SESSION est définie (base64 du admin.json),
+  // on l'écrit dans le fichier avant de valider.
+  const sessionEnv = process.env.BVBUSINESS_SESSION;
+  if (sessionEnv) {
+    try {
+      const decoded = Buffer.from(sessionEnv, 'base64').toString('utf-8');
+      JSON.parse(decoded); // vérifier que c'est du JSON valide
+      fs.writeFileSync(ADMIN_SESSION, decoded, 'utf-8');
+      console.log('   📦  Session chargée depuis BVBUSINESS_SESSION (Railway).');
+    } catch {
+      console.log('   ⚠️   BVBUSINESS_SESSION invalide — ignorée.');
+    }
+  }
+
   console.log('\n🔍  Vérification de la session admin BV Business...');
 
   const valid = await isSessionValid(ADMIN_SESSION);
