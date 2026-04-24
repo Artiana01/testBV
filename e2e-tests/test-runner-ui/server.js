@@ -219,20 +219,24 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // === GET /failures : liste des dossiers d'échec ===
+  // === GET /failures?app=bvtech|bvbusiness : liste des dossiers d'échec filtrés par app ===
   if (parsed.pathname === '/failures') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     if (!fs.existsSync(TEST_RESULTS_DIR)) {
       res.end(JSON.stringify([]));
       return;
     }
+    const appFilter = parsed.query.app || null; // 'bvtech' | 'bvbusiness' | null
     const folders = fs.readdirSync(TEST_RESULTS_DIR).map(name => {
       const dir = path.join(TEST_RESULTS_DIR, name);
       if (!fs.statSync(dir).isDirectory()) return null;
+      // Filtrer par app si demandé
+      if (appFilter === 'bvtech'     && !name.includes('-bvtech-'))     return null;
+      if (appFilter === 'bvbusiness' && !name.includes('-bvbusiness-')) return null;
       const files = fs.readdirSync(dir);
-      const hasPng = files.find(f => f.endsWith('.png'));
+      const hasPng  = files.find(f => f.endsWith('.png'));
       const hasVideo = files.find(f => f.endsWith('.webm'));
-      const hasMd = files.find(f => f.endsWith('.md'));
+      const hasMd   = files.find(f => f.endsWith('.md'));
       return { name, hasPng: !!hasPng, hasVideo: !!hasVideo, hasMd: !!hasMd };
     }).filter(f => f && (f.hasPng || f.hasVideo));
     res.end(JSON.stringify(folders.reverse()));

@@ -750,7 +750,7 @@
     const panel = document.getElementById('failuresPanel');
     const empty = document.getElementById('failuresEmpty');
 
-    const res  = await fetch('/failures');
+    const res  = await fetch(`/failures?app=${currentApp}`);
     const folders = await res.json();
 
     Array.from(panel.children).forEach(c => { if (c.id !== 'failuresEmpty') c.remove(); });
@@ -816,7 +816,7 @@
   }
 
   async function refreshFailureBadge() {
-    const res = await fetch('/failures');
+    const res = await fetch(`/failures?app=${currentApp}`);
     const folders = await res.json();
     const badge = document.getElementById('failuresBadge');
     badge.textContent  = folders.length;
