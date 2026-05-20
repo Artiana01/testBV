@@ -10,14 +10,19 @@ export class BasePage {
   }
 
   async goto(path: string = '') {
-    await this.page.goto(`${this.baseURL}${path}`);
+    // Normaliser les paths sans préfixe /fr/ vers /fr/<path>
+    const normalized = path && !path.startsWith('/fr/') && !path.startsWith('http')
+      ? `/fr${path}`
+      : path;
+    await this.page.goto(`${this.baseURL}${normalized}`);
   }
 
   async waitForLoad(selector?: string) {
     if (selector) {
       await this.page.waitForSelector(selector, { timeout: 60000 });
     } else {
-      await this.page.waitForLoadState('networkidle');
+      // 'load' au lieu de 'networkidle' — Next.js garde des connexions HMR ouvertes
+      await this.page.waitForLoadState('load');
     }
   }
 

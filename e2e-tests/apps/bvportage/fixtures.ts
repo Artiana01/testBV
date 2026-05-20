@@ -34,15 +34,16 @@ type BVPortageFixtures = {
 };
 
 export const test = base.extend<BVPortageFixtures>({
+  // ── signupPage : instancié SANS navigation automatique ──────────────────
+  // La navigation se fait dans le test pour éviter les doubles navigations.
   signupPage: async ({ page }, use) => {
     const signupPage = new SignupPage(page);
-    await signupPage.navigate('/signup');
     await use(signupPage);
   },
 
+  // ── loginPage : instancié SANS navigation automatique ───────────────────
   loginPage: async ({ page }, use) => {
     const loginPage = new LoginPage(page);
-    await loginPage.navigate('/login');
     await use(loginPage);
   },
 

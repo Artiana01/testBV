@@ -24,7 +24,7 @@ export class PackPage extends BasePage {
 
   async proceedToPayment() {
     await this.click(this.selectPackButton);
-    await this.page.waitForNavigation({ timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
   }
 
   async fillPaymentDetails(cardNumber: string, expiry: string, cvc: string) {
@@ -40,7 +40,7 @@ export class PackPage extends BasePage {
 
   async completePayment() {
     await this.click(this.payButton);
-    await this.page.waitForNavigation({ timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
   }
 
   async getSuccessMessage(): Promise<string> {

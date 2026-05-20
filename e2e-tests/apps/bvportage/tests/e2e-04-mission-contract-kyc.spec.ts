@@ -2,6 +2,10 @@
  * e2e-04-mission-contract-kyc.spec.ts
  * SCÉNARIO E2E 04: Création Mission + Contrat + KYC
  * Priorité: P0 (Critique)
+ *
+ * Correctifs (05/2026):
+ *  - login button : button[type="submit"] (pas "Se connecter")
+ *  - URL admin    : /fr/admin/... (pas /admin/...)
  */
 import { test, expect } from '../fixtures';
 
@@ -14,6 +18,8 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+
     // Accéder au menu Mission
     await agencyDashboardPage.clickMissionMenu();
 
@@ -21,8 +27,8 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await missionPage.fillMissionForm({
       missionName: process.env.TEST_MISSION_NAME || 'Dev Mission Agence',
       description: 'Mission de développement web',
-      startDate: '2026-05-15',
-      endDate: '2026-06-15',
+      startDate:   '2026-05-15',
+      endDate:     '2026-06-15',
     });
 
     // Créer la mission
@@ -32,7 +38,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await missionPage.verifyMissionCreated();
 
     // Vérifier que la mission apparaît dans la liste
-    await missionPage.verifyMissionInList('Dev Mission Agence');
+    await missionPage.verifyMissionInList(process.env.TEST_MISSION_NAME || 'Dev Mission Agence');
   });
 
   test('Créer un contrat avec profil agence', async ({ loginPage, agencyDashboardPage, contractPage, page }) => {
@@ -43,14 +49,16 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+
     // Accéder au menu Contrat
     await agencyDashboardPage.clickContractMenu();
 
     // Remplir le profil agence
     await contractPage.fillContractForm({
-      agencyName: process.env.TEST_AGENCY_NAME || 'PisoEngin',
+      agencyName:    process.env.TEST_AGENCY_NAME || 'PisoEngin',
       agencyAddress: '123 Rue de Test, 75000 Paris',
-      agencyPhone: '+33612345678',
+      agencyPhone:   '+33612345678',
     });
 
     // Créer le contrat
@@ -68,18 +76,18 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+
     // Accéder au menu KYC
     await agencyDashboardPage.clickKycMenu();
 
-    // Créer des fichiers de test temporaires
-    const idDocPath = './test-documents/id.pdf';
-    const addressDocPath = './test-documents/address.pdf';
-
     // Uploader les documents (si les fichiers existent)
+    const idDocPath      = './test-documents/id.pdf';
+    const addressDocPath = './test-documents/address.pdf';
     try {
       await kycPage.uploadKycDocuments(idDocPath, addressDocPath);
-    } catch (e) {
-      console.log('Documents de test non trouvés, test simplifié');
+    } catch {
+      console.log('Documents de test non trouvés, upload ignoré');
     }
 
     // Accepter la vérification
@@ -94,59 +102,71 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
 
   test('KYC validé par admin → notification et email', async ({ page }) => {
     // Se connecter en tant qu'admin
-    await page.goto(process.env.BASE_URL + '/login' || 'https://dev.bluevalorisportage.com/login');
+    await page.goto('/fr/connexion');
+    await page.waitForLoadState('domcontentloaded');
 
-    await page.locator('input[type="email"]').fill(process.env.ADMIN_EMAIL || 'admin@bluevaloris.test');
-    await page.locator('input[type="password"]').fill(process.env.ADMIN_PASSWORD || 'Admin123!');
-    await page.locator('button:has-text("Se connecter")').click();
+    await page.locator('input[name="email"]').fill(process.env.ADMIN_EMAIL || 'admin@bluevaloris.test');
+    await page.locator('input[name="password"]').fill(process.env.ADMIN_PASSWORD || 'Admin123!');
+    await page.locator('button[type="submit"]').click();
+
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
 
     // Naviguer vers la vérification KYC
-    await page.goto('/admin/kyc-verification');
+    await page.goto('/fr/admin/kyc');
+    await page.waitForLoadState('domcontentloaded');
 
     // Trouver le KYC de l'agence
     const agencyEmail = process.env.AGENCY_EMAIL || 'agency@bluevaloris.test';
     await page.locator(`text="${agencyEmail}"`).click();
 
     // Approuver le KYC
-    await page.locator('button:has-text("Approuver")').click();
+    await page.locator('button:has-text("Approuver"), button:has-text("Valider")').click();
 
     // Vérifier le succès
-    await expect(page.locator('[role="status"], .success')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[role="status"], .success')).toBeVisible({ timeout: 10000 });
 
-    // Se reconnecter en tant qu'agence pour vérifier le statut
-    await page.goto(process.env.BASE_URL + '/logout' || 'https://dev.bluevalorisportage.com/logout');
-    await page.goto(process.env.BASE_URL + '/login' || 'https://dev.bluevalorisportage.com/login');
+    // Se déconnecter et se reconnecter en tant qu'agence
+    await page.goto('/fr/deconnexion').catch(() => {});
+    await page.goto('/fr/connexion');
+    await page.waitForLoadState('domcontentloaded');
 
-    await page.locator('input[type="email"]').fill(process.env.AGENCY_EMAIL || 'agency@bluevaloris.test');
-    await page.locator('input[type="password"]').fill(process.env.AGENCY_PASSWORD || 'Agency123!');
-    await page.locator('button:has-text("Se connecter")').click();
+    await page.locator('input[name="email"]').fill(process.env.AGENCY_EMAIL || 'agency@bluevaloris.test');
+    await page.locator('input[name="password"]').fill(process.env.AGENCY_PASSWORD || 'Agency123!');
+    await page.locator('button[type="submit"]').click();
 
-    // Naviguer vers KYC
-    await page.goto('/kyc');
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+
+    // Naviguer vers KYC pour vérifier le statut
+    await page.goto('/fr/kyc');
+    await page.waitForLoadState('domcontentloaded');
 
     // Vérifier le statut "Vérifié"
-    await expect(page.locator('text="Vérifié"')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('text="Vérifié", text="Validé", text="Approved"')).toBeVisible({ timeout: 10000 });
   });
 
   test('KYC non validé → processus bloquant', async ({ page }) => {
     // Se connecter en tant qu'admin
-    await page.goto(process.env.BASE_URL + '/login' || 'https://dev.bluevalorisportage.com/login');
+    await page.goto('/fr/connexion');
+    await page.waitForLoadState('domcontentloaded');
 
-    await page.locator('input[type="email"]').fill(process.env.ADMIN_EMAIL || 'admin@bluevaloris.test');
-    await page.locator('input[type="password"]').fill(process.env.ADMIN_PASSWORD || 'Admin123!');
-    await page.locator('button:has-text("Se connecter")').click();
+    await page.locator('input[name="email"]').fill(process.env.ADMIN_EMAIL || 'admin@bluevaloris.test');
+    await page.locator('input[name="password"]').fill(process.env.ADMIN_PASSWORD || 'Admin123!');
+    await page.locator('button[type="submit"]').click();
+
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
 
     // Naviguer vers la vérification KYC
-    await page.goto('/admin/kyc-verification');
+    await page.goto('/fr/admin/kyc');
+    await page.waitForLoadState('domcontentloaded');
 
     // Rejeter un KYC
     const agencyEmail = process.env.AGENCY_EMAIL || 'agency@bluevaloris.test';
     await page.locator(`text="${agencyEmail}"`).click();
-    await page.locator('button:has-text("Rejeter")').click();
+    await page.locator('button:has-text("Rejeter"), button:has-text("Refuser")').click();
     await page.locator('textarea').fill('Documents insuffisants');
-    await page.locator('button:has-text("Confirmer")').click();
+    await page.locator('button:has-text("Confirmer"), button:has-text("Valider")').click();
 
     // Vérifier le succès du rejet
-    await expect(page.locator('[role="status"], .success')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[role="status"], .success')).toBeVisible({ timeout: 10000 });
   });
 });

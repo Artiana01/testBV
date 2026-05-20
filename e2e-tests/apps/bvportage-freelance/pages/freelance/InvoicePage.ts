@@ -26,7 +26,7 @@ export class InvoicePage extends BasePage {
 
   async generateInvoice() {
     await this.click(this.generateInvoiceButton);
-    await this.page.waitForNavigation({ timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
   }
 
   async getSuccessMessage(): Promise<string> {
@@ -56,6 +56,6 @@ export class InvoicePage extends BasePage {
 
   async sendInvoiceToClient() {
     await this.click(this.sendInvoiceButton);
-    await this.page.waitForNavigation({ timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
   }
 }

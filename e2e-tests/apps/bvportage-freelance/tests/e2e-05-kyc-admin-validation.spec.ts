@@ -5,30 +5,27 @@ dotenv.config();
 
 test.describe('E2E-05 — KYC + Validation Admin', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
-    await page.goto(process.env.BASE_URL || 'https://dev.bluevalorisportage.com');
-    
-    // Connexion Freelancer
+    await page.goto('/fr/connexion');
+    await page.waitForLoadState('domcontentloaded');
+
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
       process.env.FREELANCER_PASSWORD || 'Freelance123!'
     );
-    
-    // Choix profil Freelance
+
     await loginPage.chooseFreelanceProfile();
-    
-    // Vérifier connexion
-    await expect(dashboardFreelancePage.page).toHaveURL(new RegExp('dashboard|home'), { timeout: 30000 });
+
+    await expect(dashboardFreelancePage.page).toHaveURL(new RegExp('dashboard|home|tableau'), { timeout: 30000 });
   });
 
   test('Soumission KYC: Selfie + CIN + RIB', async ({ kycPage, page }) => {
-    await page.goto(`${process.env.BASE_URL}/kyc`);
-    
-    // Créer fichiers temporaires pour test
+    await page.goto('/fr/kyc');
+    await page.waitForLoadState('domcontentloaded');
+
     const testImagePath = './test-files/selfie.jpg';
     const testDocPath = './test-files/cin.jpg';
     const testRibPath = './test-files/rib.jpg';
-    
-    // Upload documents (en vrai, les fichiers existeraient)
+
     try {
       await kycPage.uploadSelfie(testImagePath);
       await kycPage.uploadIdDocument(testDocPath);
@@ -39,13 +36,12 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Notification envoi KYC', async ({ kycPage, page }) => {
-    await page.goto(`${process.env.BASE_URL}/kyc`);
-    
-    // Attendre et soumettre KYC
+    await page.goto('/fr/kyc');
+    await page.waitForLoadState('domcontentloaded');
+
     try {
       await kycPage.submitKyc();
-      
-      // Vérifier notification succès
+
       const isSuccess = await kycPage.isSuccessVisible();
       expect(isSuccess).toBeTruthy();
     } catch (e) {
@@ -54,32 +50,29 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Admin: Validation KYC en attente', async ({ loginPage, adminDashboardPage, page }) => {
-    // Déconnexion Freelancer
-    await page.goto(`${process.env.BASE_URL}/logout`);
-    
-    // Connexion Admin
+    await page.goto('/fr/deconnexion').catch(() => {});
+    await page.goto('/fr/connexion');
+    await page.waitForLoadState('domcontentloaded');
+
     await loginPage.login(
       process.env.ADMIN_EMAIL || 'admin@bluevaloris.test',
       process.env.ADMIN_PASSWORD || 'Admin123!'
     );
-    
-    // Aller à KYC
+
     await adminDashboardPage.goToKyc();
-    
-    // Vérifier liste d'attente
+
     const kycList = await page.$('[class*="pending"]');
     expect(kycList).toBeTruthy();
   });
 
   test('Admin: Clic sur freelancer à valider', async ({ adminDashboardPage, page }) => {
-    await page.goto(`${process.env.BASE_URL}/admin/kyc`);
-    
-    // Cliquer sur un freelancer en attente
+    await page.goto('/fr/admin/kyc');
+    await page.waitForLoadState('domcontentloaded');
+
     try {
       const freelancerName = 'Daniellah';
       await adminDashboardPage.selectFreelancerKyc(freelancerName);
-      
-      // Vérifier détails affichés
+
       const details = await page.$('[class*="details"], [role="dialog"]');
       expect(details).toBeTruthy();
     } catch (e) {
@@ -88,15 +81,14 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Admin: Validation du document KYC', async ({ adminDashboardPage, page }) => {
-    await page.goto(`${process.env.BASE_URL}/admin/kyc`);
-    
+    await page.goto('/fr/admin/kyc');
+    await page.waitForLoadState('domcontentloaded');
+
     try {
-      // Sélectionner et valider
       const freelancerName = 'Daniellah';
       await adminDashboardPage.selectFreelancerKyc(freelancerName);
       await adminDashboardPage.validateKyc();
-      
-      // Vérifier notification succès
+
       const isSuccess = await adminDashboardPage.isSuccessVisible();
       expect(isSuccess).toBeTruthy();
     } catch (e) {
@@ -105,19 +97,19 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Freelancer: Statut KYC validé', async ({ loginPage, dashboardFreelancePage, kycPage, page }) => {
-    // Retour connexion Freelancer
-    await page.goto(process.env.BASE_URL || 'https://dev.bluevalorisportage.com');
-    
+    await page.goto('/fr/connexion');
+    await page.waitForLoadState('domcontentloaded');
+
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
       process.env.FREELANCER_PASSWORD || 'Freelance123!'
     );
-    
+
     await loginPage.chooseFreelanceProfile();
-    
-    // Vérifier KYC
-    await page.goto(`${process.env.BASE_URL}/kyc`);
-    
+
+    await page.goto('/fr/kyc');
+    await page.waitForLoadState('domcontentloaded');
+
     try {
       const status = await kycPage.getKycStatus();
       expect(status).toContain('validé');

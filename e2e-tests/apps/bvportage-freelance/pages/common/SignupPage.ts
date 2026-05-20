@@ -61,7 +61,7 @@ export class SignupPage extends BasePage {
 
   async submit() {
     await this.click(this.signupButton);
-    await this.page.waitForNavigation({ timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
   }
 
   async getErrorMessage(): Promise<string> {

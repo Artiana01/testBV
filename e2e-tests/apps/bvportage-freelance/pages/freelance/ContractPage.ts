@@ -34,7 +34,7 @@ export class ContractPage extends BasePage {
 
   async sendForSignature() {
     await this.click(this.sendSignatureButton);
-    await this.page.waitForNavigation({ timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
   }
 
   async getSuccessMessage(): Promise<string> {
@@ -52,6 +52,6 @@ export class ContractPage extends BasePage {
   async signContract(signature: string) {
     await this.fill(this.signatureInput, signature);
     await this.click(this.confirmSignatureButton);
-    await this.page.waitForNavigation({ timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
   }
 }

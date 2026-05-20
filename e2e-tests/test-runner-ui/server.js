@@ -27,6 +27,7 @@ const CONFIGS = {
   emiragate:  'playwright.emiragate.config.ts',
   bvportage:  'playwright.bvportage.config.ts',
   bvportageFreelance: 'playwright.bvportage-freelance.config.ts',
+  creerailleurs: 'playwright.creerailleurs.config.ts',
 };
 
 // Tests BV Tech
@@ -112,6 +113,19 @@ const TESTS_BVPORTAGE_FREELANCE = {
   'e2e-09-edge-cases': { file: 'apps/bvportage-freelance/tests/e2e-09-edge-cases.spec.ts',               label: 'E2E-09 — Cas limites & comptes' },
 };
 
+// Tests Créer Ailleurs
+const TESTS_CREERAILLEURS = {
+  'e2e-01-navigation':  { file: 'apps/creerailleurs/tests/e2e-01-navigation.spec.ts',      label: 'SC-01 — Navigation & Accessibilité' },
+  'e2e-02-cta':         { file: 'apps/creerailleurs/tests/e2e-02-cta-redirections.spec.ts', label: 'SC-02 — CTAs & Redirections' },
+  'e2e-03-signup':      { file: 'apps/creerailleurs/tests/e2e-03-signup.spec.ts',           label: 'SC-03 — Inscription' },
+  'e2e-04-login':       { file: 'apps/creerailleurs/tests/e2e-04-login.spec.ts',            label: 'SC-04 — Connexion' },
+  'e2e-05-tunnel':      { file: 'apps/creerailleurs/tests/e2e-05-tunnel-vente.spec.ts',     label: 'SC-05 — Tunnel de Vente' },
+  'e2e-06-guest':       { file: 'apps/creerailleurs/tests/e2e-06-achat-sans-compte.spec.ts',label: 'SC-06 — Achat sans Compte' },
+  'e2e-07-dashboard':   { file: 'apps/creerailleurs/tests/e2e-07-dashboard-user.spec.ts',   label: 'SC-07 — Dashboard Utilisateur' },
+  'e2e-08-admin':       { file: 'apps/creerailleurs/tests/e2e-08-admin.spec.ts',            label: 'SC-08 — Dashboard Admin' },
+  'e2e-09-multilingue': { file: 'apps/creerailleurs/tests/e2e-09-multilingue.spec.ts',      label: 'SC-09 — Multilingue FR/EN' },
+};
+
 // Clients SSE actifs
 let sseClients = [];
 
@@ -165,7 +179,7 @@ function runTests(selectedTests, app) {
     return;
   }
 
-  const appKey = ['bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance'].includes(app) ? app : 'bvtech';
+  const appKey = ['bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'creerailleurs'].includes(app) ? app : 'bvtech';
   const config = CONFIGS[appKey];
   
   if (!config) {
@@ -173,8 +187,8 @@ function runTests(selectedTests, app) {
     return;
   }
 
-  const testsMap = { bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE }[appKey] ?? TESTS_BVTECH;
-  const appLabel = { bvbusiness: 'BV Business', bvinvest: 'BV Invest', emiragate: 'Emiragate', bvportage: 'BV Portage', bvportageFreelance: 'BV Portage Freelance' }[appKey] ?? 'BV Tech';
+  const testsMap = { bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE, creerailleurs: TESTS_CREERAILLEURS }[appKey] ?? TESTS_BVTECH;
+  const appLabel = { bvbusiness: 'BV Business', bvinvest: 'BV Invest', emiragate: 'Emiragate', bvportage: 'BV Portage', bvportageFreelance: 'BV Portage Freelance', creerailleurs: 'Créer Ailleurs' }[appKey] ?? 'BV Tech';
 
   // Tuer tout processus précédent
   if (runningProcess) {
@@ -352,7 +366,7 @@ const server = http.createServer((req, res) => {
   // === GET /status : état courant ===
   if (parsed.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE } }));
+    res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE, creerailleurs: TESTS_CREERAILLEURS } }));
     return;
   }
 
@@ -380,6 +394,7 @@ const server = http.createServer((req, res) => {
       if (filter === 'bvbusiness')         return /^ui-run-bvbusiness-\d/.test(n);
       if (filter === 'bvinvest')           return /^ui-run-bvinvest-\d/.test(n);
       if (filter === 'emiragate')          return /^ui-run-emiragate-\d/.test(n);
+      if (filter === 'creerailleurs')      return /^ui-run-creerailleurs-\d/.test(n);
       return false;
     }
 
@@ -432,7 +447,7 @@ const server = http.createServer((req, res) => {
   // === DELETE /clear-history?app=... : supprimer l'historique filtré par app ===
   if (req.method === 'DELETE' && parsed.pathname === '/clear-history') {
     const appFilter = parsed.query.app || null;
-    const ALLOWED_APPS = ['bvtech', 'bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'all'];
+    const ALLOWED_APPS = ['bvtech', 'bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'creerailleurs', 'all'];
 
     if (!appFilter || !ALLOWED_APPS.includes(appFilter)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -456,6 +471,7 @@ const server = http.createServer((req, res) => {
       if (filter === 'bvbusiness'         && /^ui-run-bvbusiness-\d/.test(n))          return true;
       if (filter === 'bvinvest'           && /^ui-run-bvinvest-\d/.test(n))            return true;
       if (filter === 'emiragate'          && /^ui-run-emiragate-\d/.test(n))           return true;
+      if (filter === 'creerailleurs'      && /^ui-run-creerailleurs-\d/.test(n))       return true;
       // Ancien format (rétro-compat) : nom contenant le pattern d'app
       if (filter === 'bvtech'            && n.includes('-bvtech-') && !n.includes('-bvbusiness-') && !n.includes('-bvinvest-')) return true;
       if (filter === 'bvbusiness'         && n.includes('-bvbusiness-'))         return true;

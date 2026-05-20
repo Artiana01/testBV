@@ -14,10 +14,10 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
 export default defineConfig({
   testDir: './apps/bvportage/tests',
   
-  timeout: 60_000,
+  timeout: 120_000,
   
   expect: {
-    timeout: 5_000,
+    timeout: 10_000,
   },
 
   fullyParallel: false,

@@ -28,6 +28,7 @@
       --emiragate: #f59e0b;
       --bvportage: #ec4899;
       --bvportageFreelance: #d946ef;
+      --creerailleurs: #f97316;
     }
 
     body {
@@ -90,6 +91,7 @@
     .app-btn.active.emiragate { background: rgba(245,158,11,0.2); color: #fbbf24; }
     .app-btn.active.bvportage { background: rgba(236,72,153,0.2); color: #f472b6; }
     .app-btn.active.bvportageFreelance { background: rgba(217,70,239,0.2); color: #e879f9; }
+    .app-btn.active.creerailleurs { background: rgba(249,115,22,0.2); color: #fb923c; }
 
     header .subtitle {
       font-size: 12px;
@@ -225,6 +227,8 @@
     .btn-primary.bvportage:hover:not(:disabled) { background: #ec4899; }
     .btn-primary.bvportageFreelance { background: #a855f7; }
     .btn-primary.bvportageFreelance:hover:not(:disabled) { background: #d946ef; }
+    .btn-primary.creerailleurs { background: #ea580c; }
+    .btn-primary.creerailleurs:hover:not(:disabled) { background: #f97316; }
 
     .btn-ghost {
       background: var(--surface2);
@@ -548,6 +552,7 @@
     <button class="app-btn emiragate"     id="btnEmiragate" onclick="switchApp('emiragate')">Emiragate</button>
     <button class="app-btn bvportage"     id="btnBvportage" onclick="switchApp('bvportage')">BV Portage</button>
     <button class="app-btn bvportageFreelance" id="btnBvportageFreelance" onclick="switchApp('bvportageFreelance')">BV Portage Freelance</button>
+    <button class="app-btn creerailleurs" id="btnCreerailleurs" onclick="switchApp('creerailleurs')">Créer Ailleurs</button>
   </div>
 
   <span id="headerSubtitle" class="subtitle">https://dev.bluevaloristech.com</span>
@@ -717,6 +722,18 @@
     'e2e-08-reversal': 'E2E-08 — Reversement',
   };
 
+  const TESTS_CREERAILLEURS = {
+    'e2e-01-navigation':  'SC-01 — Navigation & Accessibilité',
+    'e2e-02-cta':         'SC-02 — CTAs & Redirections',
+    'e2e-03-signup':      'SC-03 — Inscription',
+    'e2e-04-login':       'SC-04 — Connexion',
+    'e2e-05-tunnel':      'SC-05 — Tunnel de Vente',
+    'e2e-06-guest':       'SC-06 — Achat sans Compte',
+    'e2e-07-dashboard':   'SC-07 — Dashboard Utilisateur',
+    'e2e-08-admin':       'SC-08 — Dashboard Admin',
+    'e2e-09-multilingue': 'SC-09 — Multilingue FR/EN',
+  };
+
   const TESTS_BVPORTAGE_FREELANCE = {
     'e2e-01-signup-otp': 'E2E-01 — Inscription Freelance + OTP',
     'e2e-02-pack-subscription': 'E2E-02 — Souscription Pack (79€)',
@@ -736,6 +753,7 @@
     emiragate:  { label: 'Emiragate',   url: 'https://dev.bluevalorisinstall.com',        tests: TESTS_EMIRAGATE },
     bvportage:  { label: 'BV Portage',  url: 'https://dev.bluevalorisportage.com',       tests: TESTS_BVPORTAGE },
     bvportageFreelance: { label: 'BV Portage Freelance', url: 'https://dev.bluevalorisportage.com', tests: TESTS_BVPORTAGE_FREELANCE },
+    creerailleurs: { label: 'Créer Ailleurs', url: 'https://www.creerailleurs.com', tests: TESTS_CREERAILLEURS },
   };
 
   // ── État ──
@@ -755,6 +773,7 @@
     emiragate:  createAppState(),
     bvportage:  createAppState(),
     bvportageFreelance: createAppState(),
+    creerailleurs: createAppState(),
   };
 
   function createAppState() {
@@ -804,30 +823,39 @@
     saveCurrentAppState();
     currentApp = app;
 
-    // Boutons header
-    document.getElementById('btnBvtech').classList.toggle('active', app === 'bvtech');
-    document.getElementById('btnBvtech').classList.toggle('bvtech', app === 'bvtech');
-    document.getElementById('btnBvbiz').classList.toggle('active', app === 'bvbusiness');
-    document.getElementById('btnBvbiz').classList.toggle('bvbiz', app === 'bvbusiness');
-    document.getElementById('btnBvinvest').classList.toggle('active', app === 'bvinvest');
-    document.getElementById('btnBvinvest').classList.toggle('bvinvest', app === 'bvinvest');
-    document.getElementById('btnEmiragate').classList.toggle('active', app === 'emiragate');
-    document.getElementById('btnEmiragate').classList.toggle('emiragate', app === 'emiragate');
-    document.getElementById('btnBvportage').classList.toggle('active', app === 'bvportage');
-    document.getElementById('btnBvportage').classList.toggle('bvportage', app === 'bvportage');
-    document.getElementById('btnBvportageFreelance').classList.toggle('active', app === 'bvportageFreelance');
-    document.getElementById('btnBvportageFreelance').classList.toggle('bvportageFreelance', app === 'bvportageFreelance');
+    // Boutons header : retirer 'active' de tous, l'ajouter au bouton courant
+    const appButtonMap = {
+      bvtech:             'btnBvtech',
+      bvbusiness:         'btnBvbiz',
+      bvinvest:           'btnBvinvest',
+      emiragate:          'btnEmiragate',
+      bvportage:          'btnBvportage',
+      bvportageFreelance: 'btnBvportageFreelance',
+      creerailleurs:      'btnCreerailleurs',
+    };
+    Object.entries(appButtonMap).forEach(([key, btnId]) => {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.classList.toggle('active', key === app);
+    });
 
     // Sous-titre URL
-    document.getElementById('headerSubtitle').textContent = APP_META[app].url;
+    document.getElementById('headerSubtitle').textContent = APP_META[app]?.url ?? '';
 
-    // Couleur du bouton Lancer
+    // Couleur du bouton Lancer : retirer toutes les classes de couleur, ajouter la bonne
     const btnRun = document.getElementById('btnRun');
-    btnRun.classList.toggle('bvbiz', app === 'bvbusiness');
-    btnRun.classList.toggle('bvinvest', app === 'bvinvest');
-    btnRun.classList.toggle('emiragate', app === 'emiragate');
-    btnRun.classList.toggle('bvportage', app === 'bvportage');
-    btnRun.classList.toggle('bvportageFreelance', app === 'bvportageFreelance');
+    ['bvbiz', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'creerailleurs'].forEach(cls => {
+      btnRun.classList.remove(cls);
+    });
+    const runColorMap = {
+      bvbusiness:         'bvbiz',
+      bvinvest:           'bvinvest',
+      emiragate:          'emiragate',
+      bvportage:          'bvportage',
+      bvportageFreelance: 'bvportageFreelance',
+      creerailleurs:      'creerailleurs',
+    };
+    if (runColorMap[app]) btnRun.classList.add(runColorMap[app]);
 
     buildTestList();
     restoreCurrentAppState();
