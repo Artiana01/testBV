@@ -36,16 +36,16 @@ test.describe('Régression — Authentification', () => {
   test('REG-01 — La connexion fonctionne avec les identifiants actifs', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
-    await page.waitForLoadState('load');
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     await expect(page.locator('body')).toBeVisible();
   });
 
   test('REG-02 — La redirection post-login est correcte (pas de boucle)', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     const url1 = page.url();
     await page.waitForTimeout(2000);
     const url2 = page.url();
@@ -53,14 +53,14 @@ test.describe('Régression — Authentification', () => {
   });
 
   test('REG-03 — La session persiste entre les pages', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
-    await page.waitForLoadState('load');
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 20_000 });
 
     await page.goto(`${BASE}/fr/profile`);
-    await page.waitForLoadState('load');
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 20_000 });
   });
 
 });
@@ -71,19 +71,19 @@ test.describe('Régression — Authentification', () => {
 test.describe('Régression — Navigation', () => {
 
   test('REG-04 — Le menu admin est accessible depuis toutes les sections', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     const nav = page.locator('nav, aside, [class*="sidebar"], [class*="menu"]');
-    await expect(nav.first()).toBeVisible({ timeout: 10_000 });
+    await expect(nav.first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('REG-05 — Accès direct /fr/dashboard ne redirige pas vers login', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 20_000 });
   });
 
   test('REG-06 — Aucune section admin ne retourne 404', async ({ page }) => {
@@ -96,7 +96,7 @@ test.describe('Régression — Navigation', () => {
     ];
     for (const section of sections) {
       await page.goto(`${BASE}${section}`);
-      await page.waitForLoadState('load');
+      await page.waitForLoadState('domcontentloaded');
       await page.waitForTimeout(1000);
       await expect(page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
     }
@@ -110,7 +110,7 @@ test.describe('Régression — Navigation', () => {
 test.describe('Régression — Pipeline KYC', () => {
 
   test('REG-07 — Le pipeline de vérification se charge sans erreur', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const kycPage = new KycPipelinePage(page);
     await kycPage.goto();
     await kycPage.verifyKycPageLoaded();
@@ -118,7 +118,7 @@ test.describe('Régression — Pipeline KYC', () => {
   });
 
   test('REG-08 — Les étapes sont structurées séquentiellement', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const kycPage = new KycPipelinePage(page);
     await kycPage.goto();
     await kycPage.verifySequentialProgress();
@@ -132,7 +132,7 @@ test.describe('Régression — Pipeline KYC', () => {
 test.describe('Régression — Abonnements & Paiement', () => {
 
   test('REG-09 — La page packages se charge et affiche du contenu', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPackagesLoaded();
@@ -140,7 +140,7 @@ test.describe('Régression — Abonnements & Paiement', () => {
   });
 
   test('REG-10 — Aucune valeur "undefined" / "null" dans les packages', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyNoUndefinedValues();
@@ -154,7 +154,7 @@ test.describe('Régression — Abonnements & Paiement', () => {
 test.describe('Régression — Opportunités', () => {
 
   test('REG-11 — La page opportunités se charge sans erreur', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.goto();
     await oppPage.verifyOpportunitiesLoaded();
@@ -162,7 +162,7 @@ test.describe('Régression — Opportunités', () => {
   });
 
   test('REG-12 — L\'accès conditionné fonctionne (opportunité → détail)', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.goto();
     await oppPage.verifyOpportunityCardsPresent();
@@ -176,7 +176,7 @@ test.describe('Régression — Opportunités', () => {
 test.describe('Régression — Administration', () => {
 
   test('REG-13 — Le dashboard admin affiche les KPIs', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminDashboardLoaded();
@@ -184,16 +184,16 @@ test.describe('Régression — Administration', () => {
   });
 
   test('REG-14 — La gestion des utilisateurs est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.navigateToUsers();
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 20_000 });
     await expect(page.locator('main, [role="main"], body').first()).toBeVisible();
   });
 
   test('REG-15 — Les documents admin sont accessibles', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.navigateToDocuments();

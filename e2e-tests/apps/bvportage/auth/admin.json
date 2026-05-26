@@ -1,5 +1,35 @@
 {
-  "email": "admin@bluevaloris.test",
-  "password": "Admin123!",
-  "role": "admin"
+  "cookies": [
+    {
+      "name": "KEYCLOAK_3P_COOKIE_SAMESITE",
+      "value": "supported",
+      "domain": "keycloak.bluevaloris.com",
+      "path": "/realms/bluevaloris/protocol/openid-connect/3p-cookies",
+      "expires": 1779308087.888553,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "NEXT_LOCALE",
+      "value": "fr",
+      "domain": "dev.bluevalorisportage.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://dev.bluevalorisportage.com",
+      "localStorage": [
+        {
+          "name": "auth-store",
+          "value": "{\"state\":{\"user\":{\"id\":\"54b5813d-b424-405b-a5c2-a16de7722647\",\"first_name\":\"Admin\",\"last_name\":\"BlueValoris\",\"email\":\"admin@bluevaloris.test\",\"role\":\"admin\",\"is_verified\":true,\"verification_status\":\"verified\",\"country\":\"France\",\"city\":\"Paris\",\"phone\":\"+33100000000\",\"first_login_at\":\"2026-04-30T08:18:34+00:00\",\"has_completed_first_login\":false,\"avatar\":null},\"accessToken\":\"160|QXxfJD7LDyQI9pHsKPTXpdcMUv9DVMaUYhfA7CC45adbd244\",\"expiresAt\":null},\"version\":0}"
+        }
+      ]
+    }
+  ]
 }

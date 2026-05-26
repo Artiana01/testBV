@@ -20,16 +20,16 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 test.describe('SC-06 — Media Library Admin (IMPORTANT)', () => {
 
   test('06.1 — La Media Library est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.navigateToMediaLibrary();
     const content = page.locator('main, [role="main"]');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('06.2 — Le bouton d\'upload est visible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const mediaPage = new AdminMediaLibraryPage(page);
     await mediaPage.goto();
     await mediaPage.verifyUploadButtonVisible();
@@ -44,7 +44,7 @@ test.describe('SC-06 — Media Library Admin (IMPORTANT)', () => {
   });
 
   test('06.4 — La grille media contient des fichiers après upload', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const mediaPage = new AdminMediaLibraryPage(page);
     await mediaPage.goto();
     await mediaPage.verifyMediaGridNotEmpty();

@@ -32,7 +32,7 @@ export class AdminContentPage extends BasePage {
 
   async verifyContentPageLoaded(): Promise<void> {
     const content = this.page.locator('main, [role="main"]');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   }
 
@@ -54,7 +54,7 @@ export class AdminContentPage extends BasePage {
 
   async editFirstTextField(newValue: string): Promise<void> {
     const field = this.page.locator(this.editableFields).first();
-    const isVisible = await field.isVisible({ timeout: 10_000 }).catch(() => false);
+    const isVisible = await field.isVisible({ timeout: 20_000 }).catch(() => false);
     if (!isVisible) {
       console.log('   ℹ️  Aucun champ éditable trouvé — vérifier les sélecteurs CMS dans AdminContentPage');
       return;

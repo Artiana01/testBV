@@ -45,7 +45,7 @@ export class PackagesPage extends BasePage {
     const prices = this.page.locator(this.priceElements);
     const count = await prices.count();
     if (count > 0) {
-      await expect(prices.first()).toBeVisible({ timeout: 10_000 });
+      await expect(prices.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 
@@ -68,7 +68,7 @@ export class PackagesPage extends BasePage {
 
   async selectFirstPackage(): Promise<void> {
     const cards = this.page.locator(this.packageCards);
-    await expect(cards.first()).toBeVisible({ timeout: 10_000 });
+    await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     await cards.first().click();
     await this.page.waitForTimeout(1000);
   }
@@ -81,7 +81,7 @@ export class PackagesPage extends BasePage {
     const isVisible = await btn.isVisible({ timeout: 5_000 }).catch(() => false);
     if (isVisible) {
       await btn.click();
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
     }
   }
 

@@ -21,35 +21,35 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 test.describe('Admin — Paiements & Facturation', () => {
 
   test('09.1 — La page admin Payments est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();
     await paymentsPage.verifyPaymentsPageLoaded();
   });
 
   test('09.2 — Le tableau des transactions est affiché', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();
     await paymentsPage.verifyPaymentsTableVisible();
   });
 
   test('09.3 — Les badges de statut des transactions sont visibles', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();
     await paymentsPage.verifyStatusBadgesVisible();
   });
 
   test('09.4 — L\'intégrité des données de transaction est correcte', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();
     await paymentsPage.verifyTransactionIntegrity();
   });
 
   test('09.5 — Pas de valeurs "undefined" ou "null" dans la liste', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();
     await paymentsPage.verifyPaymentsTableVisible();

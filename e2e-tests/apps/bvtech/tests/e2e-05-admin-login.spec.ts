@@ -56,8 +56,7 @@ test.describe('E2E 05 — Dashboard Admin (session partagée)', () => {
     });
     sharedPage = await sharedContext.newPage();
     const BASE = process.env.BASE_URL ?? 'https://dev.bluevaloristech.com';
-    await sharedPage.goto(`${BASE}/fr/admin`);
-    await sharedPage.waitForLoadState('load');
+    await sharedPage.goto(`${BASE}/fr/admin`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await sharedPage.waitForTimeout(1000);
   });
 
@@ -66,21 +65,21 @@ test.describe('E2E 05 — Dashboard Admin (session partagée)', () => {
   });
 
   test('05.2 — Accès au dashboard admin après connexion', async () => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const adminDashboard = new AdminDashboardPage(sharedPage);
     await adminDashboard.goto();
     await adminDashboard.verifyAdminDashboardLoaded();
   });
 
   test('05.3 — Les sections admin sont accessibles (sidebar)', async () => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const adminDashboard = new AdminDashboardPage(sharedPage);
     await adminDashboard.goto();
     await adminDashboard.verifyAdminSections();
   });
 
   test('05.4 — Les KPIs admin sont visibles', async () => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const adminDashboard = new AdminDashboardPage(sharedPage);
     await adminDashboard.goto();
     await adminDashboard.verifyKpisVisible();

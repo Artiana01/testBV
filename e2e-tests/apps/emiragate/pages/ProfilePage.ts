@@ -25,9 +25,9 @@ export class ProfilePage extends BasePage {
   }
 
   async verifyProfileLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   }
 

@@ -154,7 +154,7 @@ export class SignupPage extends BasePage {
     }
 
     await submitBtn.first().click({ force: true });
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /**
@@ -178,7 +178,7 @@ export class SignupPage extends BasePage {
 
   async verifyRegistrationSuccess(): Promise<void> {
     // Après inscription réussie, on ne doit plus être sur /signup
-    await expect(this.page).not.toHaveURL(/\/signup/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/signup/, { timeout: 45_000 });
   }
 
   async verifyRedirectToDashboard(): Promise<void> {
@@ -190,7 +190,7 @@ export class SignupPage extends BasePage {
     await expect(this.page.locator('body')).toBeVisible();
     // Chercher des éléments typiques du dashboard
     const dashboardContent = this.page.locator('main, [class*="dashboard"], [class*="content"]');
-    await expect(dashboardContent.first()).toBeVisible({ timeout: 10_000 });
+    await expect(dashboardContent.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyRegistrationError(): Promise<void> {

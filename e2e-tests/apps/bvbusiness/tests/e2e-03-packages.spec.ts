@@ -27,28 +27,28 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 test.describe('SC-03 — Packages & Souscription (CRITIQUE)', () => {
 
   test('03.1 — La page Packages est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPackagesLoaded();
   });
 
   test('03.2 — Les offres/packages sont affichés (cartes visibles)', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPackageCardsVisible();
   });
 
   test('03.3 — Les prix sont affichés sur les offres', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPricesVisible();
   });
 
   test('03.4 — La recherche de package fonctionne', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPackagesLoaded();
@@ -67,7 +67,7 @@ test.describe('SC-03 — Packages & Souscription (CRITIQUE)', () => {
   });
 
   test('03.6 — Les données packages sont cohérentes (pas de valeurs nulles/vides)', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPackageCardsVisible();

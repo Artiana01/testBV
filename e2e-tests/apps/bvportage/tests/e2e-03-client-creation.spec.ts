@@ -14,7 +14,7 @@ test.describe('E2E 03: Création Client + Projet', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Accéder au menu Client
     await agencyDashboardPage.clickClientMenu();
@@ -50,7 +50,7 @@ test.describe('E2E 03: Création Client + Projet', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Accéder au menu Client
     await agencyDashboardPage.clickClientMenu();
@@ -75,7 +75,7 @@ test.describe('E2E 03: Création Client + Projet', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     await agencyDashboardPage.clickClientMenu();
     await agencyDashboardPage.clickNewClient();
@@ -105,7 +105,7 @@ test.describe('E2E 03: Création Client + Projet', () => {
     await page.locator('input[name="password"]').fill(process.env.ADMIN_PASSWORD || 'Admin123!');
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Naviguer vers la section des clients admin
     await page.goto('/fr/admin/clients');

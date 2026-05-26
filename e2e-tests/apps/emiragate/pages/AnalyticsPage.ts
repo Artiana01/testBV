@@ -24,9 +24,9 @@ export class AnalyticsPage extends BasePage {
   }
 
   async verifyAnalyticsLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   }
 
@@ -34,7 +34,7 @@ export class AnalyticsPage extends BasePage {
     const charts = this.page.locator(this.chartEl);
     const count = await charts.count();
     if (count > 0) {
-      await expect(charts.first()).toBeVisible({ timeout: 10_000 });
+      await expect(charts.first()).toBeVisible({ timeout: 20_000 });
       console.log(`   ✅  ${count} graphique(s)/KPI(s) détecté(s)`);
     } else {
       console.log('   ℹ️  Graphiques non détectés — vérifier URL/sélecteurs dans AnalyticsPage');

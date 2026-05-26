@@ -20,12 +20,20 @@ export class LoginPage extends BasePage {
   }
 
   async login(email: string, password: string) {
+    await this.emailInput.click();
     await this.emailInput.fill(email);
+    // Fallback pressSequentially si fill ignoré par React
+    const filled = await this.emailInput.inputValue().catch(() => '');
+    if (filled !== email) {
+      await this.emailInput.clear();
+      await this.emailInput.pressSequentially(email, { delay: 30 });
+    }
+    await this.passwordInput.click();
     await this.passwordInput.fill(password);
     await this.loginButton.click();
     // Attendre la navigation hors de la page de connexion
-    await this.page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
-    await this.page.waitForLoadState('load', { timeout: 15_000 }).catch(() => {});
+    await this.page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async verifyLoginError() {

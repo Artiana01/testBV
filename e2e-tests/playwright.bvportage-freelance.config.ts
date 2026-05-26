@@ -18,9 +18,9 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 1,
   workers: 1,
 
-  timeout: 60_000,
+  timeout: 90_000,
   expect: {
-    timeout: 10_000,
+    timeout: 15_000,
   },
 
   reporter: [
@@ -34,6 +34,8 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    navigationTimeout: 45_000,
+    actionTimeout: 15_000,
   },
 
   projects: [

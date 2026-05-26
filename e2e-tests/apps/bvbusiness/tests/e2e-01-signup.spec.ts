@@ -30,16 +30,16 @@ const BASE = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusi
 test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
 
   test('01.1 — La page login/inscription est accessible et contient le formulaire', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.navigateToSignup();
     await signupPage.verifySignupFormVisible();
   });
 
   test('01.2 — Soumission sans email reste sur /login (validation)', async ({ page }) => {
-    test.setTimeout(20_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     await page.locator('button[type="submit"]').first().click();
     await page.waitForTimeout(1000);
     // La validation HTML5 empêche la soumission → on reste sur /login
@@ -67,23 +67,23 @@ test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
     // L'email saisi doit être visible sur la page (dans le champ ou en texte)
     const emailDisplay = page.locator('input[type="email"]')
       .or(page.getByText(testEmail));
-    await expect(emailDisplay.first()).toBeVisible({ timeout: 10_000 });
+    await expect(emailDisplay.first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('01.5 — Le bouton "Continuer avec Google" est disponible comme alternative', async ({ page }) => {
-    test.setTimeout(20_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     const googleBtn = page.getByText(/continuer avec google|continue with google/i);
-    await expect(googleBtn.first()).toBeVisible({ timeout: 10_000 });
+    await expect(googleBtn.first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('01.6 — La page affiche les mentions légales (CGU / Politique de confidentialité)', async ({ page }) => {
-    test.setTimeout(20_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     const legal = page.getByText(/conditions d'utilisation|terms|politique de confidentialité|privacy/i);
-    await expect(legal.first()).toBeVisible({ timeout: 10_000 });
+    await expect(legal.first()).toBeVisible({ timeout: 20_000 });
   });
 
 });

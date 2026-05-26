@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tests E2E</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f1117;
+      --surface:  #1a1d27;
+      --surface2: #22263a;
+      --border:   #2e3349;
+      --pass:     #22c55e;
+      --fail:     #ef4444;
+      --warn:     #f59e0b;
+      --info:     #94a3b8;
+      --summary:  #e2e8f0;
+      --text:     #e2e8f0;
+      --text-dim: #64748b;
+      --radius:   10px;
+      --accent:   #6366f1; /* remplacé dynamiquement via JS */
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-top: 62px;
+    }
+
+    /* ── Header ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex; align-items: center; gap: 16px; height: 62px;
+    }
+    .logo { font-size: 18px; font-weight: 700; color: var(--text); white-space: nowrap; }
+    .app-badge {
+      padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700;
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+    .hub-link {
+      font-size: 12px; color: var(--text-dim); text-decoration: none;
+      padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px;
+      transition: all .15s;
+    }
+    .hub-link:hover { color: var(--text); border-color: var(--accent); }
+    .app-url { font-size: 12px; color: var(--text-dim); margin-left: 4px; }
+    .status-dot {
+      margin-left: auto; width: 10px; height: 10px; border-radius: 50%;
+      background: var(--text-dim); transition: background .3s; flex-shrink: 0;
+    }
+    .status-dot.running   { background: var(--warn); animation: pulse 1s infinite; }
+    .status-dot.connected { background: var(--pass); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* ── Layout ── */
+    main { display: flex; flex-direction: column; flex: 1; min-height: 0; margin-left: 300px; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      position: fixed; left: 0; top: 62px; bottom: 0; width: 300px;
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 20px; display: flex; flex-direction: column; gap: 16px;
+      overflow-y: auto; z-index: 100;
+    }
+    .sidebar h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--text-dim); }
+
+    .test-list { display: flex; flex-direction: column; gap: 6px; }
+    .test-item {
+      display: flex; align-items: center; gap: 10px; padding: 9px 11px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius); cursor: pointer; transition: border-color .15s;
+      user-select: none;
+    }
+    .test-item:hover { border-color: var(--accent); }
+    .test-item input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+    .test-item label { font-size: 12.5px; cursor: pointer; flex: 1; line-height: 1.4; }
+    .result-badge { font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 4px; display: none; }
+    .result-badge.pass { background: rgba(34,197,94,.15); color: var(--pass); display: inline-block; }
+    .result-badge.fail { background: rgba(239,68,68,.15); color: var(--fail); display: inline-block; }
+
+    .select-all-row { display: flex; gap: 6px; }
+
+    /* ── Buttons ── */
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 10px 16px; border: none; border-radius: var(--radius);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:active  { transform: scale(.98); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    .btn-primary { background: var(--accent); color: #fff; flex: 1; }
+    .btn-primary:hover:not(:disabled) { filter: brightness(1.15); }
+
+    .btn-ghost {
+      background: var(--surface2); color: var(--text-dim);
+      border: 1px solid var(--border); font-size: 11px; padding: 6px 10px;
+    }
+    .btn-ghost:hover:not(:disabled) { color: var(--text); border-color: var(--accent); }
+    .btn-danger  { background: rgba(239,68,68,.12); color: var(--fail);  border: 1px solid rgba(239,68,68,.3); }
+    .btn-danger:hover:not(:disabled)  { background: rgba(239,68,68,.2); }
+    .btn-warning { background: rgba(245,158,11,.12); color: var(--warn); border: 1px solid rgba(245,158,11,.3); }
+    .btn-warning:hover:not(:disabled) { background: rgba(245,158,11,.2); }
+
+    .action-row { display: flex; gap: 8px; flex-direction: column; }
+
+    /* ── Stats ── */
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px; text-align: center; }
+    .stat-card .num { font-size: 20px; font-weight: 700; }
+    .stat-card .lbl { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+    .stat-card.pass .num  { color: var(--pass); }
+    .stat-card.fail .num  { color: var(--fail); }
+    .stat-card.total .num { color: var(--accent); }
+
+    /* ── Output panel ── */
+    .output-panel { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+    .tab-bar { display: flex; border-bottom: 1px solid var(--border); background: var(--surface); }
+    .tab {
+      padding: 10px 18px; font-size: 12px; font-weight: 600; cursor: pointer;
+      color: var(--text-dim); border-bottom: 2px solid transparent; transition: all .15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab .badge { background: rgba(239,68,68,.2); color: var(--fail); font-size: 10px; padding: 1px 5px; border-radius: 10px; }
+
+    .output-toolbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 18px; display: flex; align-items: center; gap: 10px; }
+    .filter-pills { display: flex; gap: 6px; }
+    .pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); cursor: pointer; transition: all .15s; }
+    .pill.active           { border-color: var(--accent); color: var(--accent);  background: color-mix(in srgb, var(--accent) 10%, transparent); }
+    .pill.pass-pill.active { border-color: var(--pass);   color: var(--pass);   background: rgba(34,197,94,.1); }
+    .pill.fail-pill.active { border-color: var(--fail);   color: var(--fail);   background: rgba(239,68,68,.1); }
+
+    #output {
+      flex: 1; overflow-y: auto; padding: 14px 18px;
+      font-family: 'Cascadia Code','Fira Code','Consolas',monospace;
+      font-size: 12px; line-height: 1.7; background: var(--bg);
+    }
+    .log-line { display: flex; gap: 10px; align-items: baseline; padding: 1px 0; border-radius: 4px; }
+    .log-line:hover { background: rgba(255,255,255,.03); }
+    .log-line .time { color: var(--text-dim); font-size: 10px; min-width: 52px; flex-shrink: 0; }
+    .log-line .msg  { flex: 1; word-break: break-all; }
+    .log-line.pass    .msg { color: var(--pass); }
+    .log-line.fail    .msg { color: var(--fail); }
+    .log-line.warn    .msg { color: var(--warn); }
+    .log-line.info    .msg { color: var(--info); }
+    .log-line.summary .msg { color: var(--summary); font-weight: 600; }
+    .log-line.cmd     .msg { color: var(--accent); font-style: italic; }
+    .log-line.done.success .msg { color: var(--pass); font-weight: 700; font-size: 13px; }
+    .log-line.done.fail    .msg { color: var(--fail); font-weight: 700; font-size: 13px; }
+
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-dim); gap: 12px; }
+    .empty-state .icon { font-size: 46px; opacity: .35; }
+    .empty-state p { font-size: 14px; }
+
+    #failuresPanel { display: none; flex: 1; overflow-y: auto; padding: 16px 18px; background: var(--bg); }
+    #failuresPanel.active { display: block; }
+    #output.hidden { display: none; }
+
+    .failure-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--fail); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+    .failure-header { padding: 9px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .failure-header:hover { background: rgba(255,255,255,.03); }
+    .failure-title { font-size: 12px; font-weight: 600; color: var(--text); flex: 1; word-break: break-all; }
+    .failure-body { display: none; padding: 12px; border-top: 1px solid var(--border); gap: 10px; flex-direction: column; }
+    .failure-body.open { display: flex; }
+    .file-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: opacity .15s; }
+    .file-btn:hover { opacity: .8; }
+    .file-btn.screenshot { background: rgba(99,102,241,.15); color: #818cf8; }
+    .file-btn.video      { background: rgba(239,68,68,.12);  color: var(--fail); }
+    .failure-preview img, .failure-preview video { max-width: 100%; border-radius: 6px; border: 1px solid var(--border); margin-top: 8px; }
+
+    /* ── Modal ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal-dialog { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; max-width: 480px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .modal-desc  { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+    .modal-buttons { display: flex; gap: 8px; }
+    .modal-btn { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-weight: 500; transition: all .2s; }
+    .modal-btn.ok     { background: rgba(34,197,94,.12); color: var(--pass); border-color: rgba(34,197,94,.3); }
+    .modal-btn.ok:hover { background: rgba(34,197,94,.2); }
+    .modal-btn.cancel { background: rgba(239,68,68,.12); color: var(--fail); border-color: rgba(239,68,68,.3); }
+    .modal-btn.cancel:hover { background: rgba(239,68,68,.2); }
+
+    /* ── Toast ── */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 18px; font-size: 13px; font-weight: 600; color: var(--text); box-shadow: 0 8px 32px rgba(0,0,0,.4); z-index: 9999; transform: translateY(80px); opacity: 0; transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s; pointer-events: none; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 3px solid var(--pass); }
+    .toast.error   { border-left: 3px solid var(--fail); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🎭 Tests E2E</div>
+  <span class="app-badge" id="appBadge">—</span>
+  <a class="hub-link" href="http://localhost:4000" title="Retour au hub">⬅ Hub</a>
+  <span class="app-url" id="appUrl"></span>
+  <span id="statusDot" class="status-dot" title="Déconnecté"></span>
+</header>
+
+<main>
+  <aside class="sidebar">
+    <div><h2>Sélectionner les tests</h2></div>
+    <div class="select-all-row">
+      <button class="btn btn-ghost" onclick="selectAll(true)">Tout sélectionner</button>
+      <button class="btn btn-ghost" onclick="selectAll(false)">Tout désélectionner</button>
+    </div>
+    <div class="test-list" id="testList"></div>
+    <div class="stats-row">
+      <div class="stat-card total"><div class="num" id="statTotal">0</div><div class="lbl">Total</div></div>
+      <div class="stat-card pass"><div class="num"  id="statPass">0</div><div class="lbl">Réussis</div></div>
+      <div class="stat-card fail"><div class="num"  id="statFail">0</div><div class="lbl">Échoués</div></div>
+    </div>
+    <div class="action-row">
+      <button class="btn btn-primary" id="btnRun" onclick="startTests()">▶ Lancer les tests</button>
+      <button class="btn btn-danger"  id="btnStop" onclick="stopTests()" disabled>⛔ Arrêter</button>
+      <button class="btn btn-ghost"   onclick="clearOutput()">🗑 Effacer la sortie</button>
+      <button class="btn btn-warning" onclick="openClearModal()">🗑️ Nettoyer l'historique</button>
+    </div>
+  </aside>
+
+  <section class="output-panel">
+    <div class="tab-bar">
+      <div class="tab active" id="tabOutput"   onclick="switchTab('output')">📋 Sortie en temps réel</div>
+      <div class="tab"        id="tabFailures" onclick="switchTab('failures')">
+        📸 Screenshots &amp; Vidéos
+        <span class="badge" id="failuresBadge" style="display:none">0</span>
+      </div>
+    </div>
+    <div class="output-toolbar" id="outputToolbar">
+      <div class="filter-pills">
+        <button class="pill active"    data-filter="all"     onclick="setFilter('all')">Tout</button>
+        <button class="pill pass-pill" data-filter="pass"    onclick="setFilter('pass')">✓ Réussis</button>
+        <button class="pill fail-pill" data-filter="fail"    onclick="setFilter('fail')">✗ Échoués</button>
+        <button class="pill"           data-filter="summary" onclick="setFilter('summary')">Résumé</button>
+      </div>
+    </div>
+    <div id="output">
+      <div class="empty-state" id="emptyState">
+        <div class="icon">🎭</div>
+        <p>Sélectionnez des tests et cliquez sur <strong>Lancer</strong>.</p>
+      </div>
+    </div>
+    <div id="failuresPanel">
+      <div class="empty-state" id="failuresEmpty">
+        <div class="icon">📸</div>
+        <p>Les screenshots et vidéos des tests échoués apparaîtront ici.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Modal suppression -->
+<div class="modal-overlay" id="clearModal">
+  <div class="modal-dialog">
+    <div class="modal-title">🗑️ Nettoyer l'historique ?</div>
+    <p class="modal-desc">Cette action supprimera définitivement tous les résultats de <strong id="modalAppName"></strong>.</p>
+    <div class="modal-buttons">
+      <button class="modal-btn cancel" onclick="closeClearModal()">Annuler</button>
+      <button class="modal-btn ok"     onclick="confirmClear()">✅ Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toastMsg"></div>
+
+<script>
+  /* __APP_CONFIG__ */   // remplacé par app-server.js à la volée
+
+  // ── Init couleur de l'app ──────────────────────────────────────────────────
+  document.documentElement.style.setProperty('--accent', APP_CONFIG.color);
+  document.title = `Tests E2E — ${APP_CONFIG.label}`;
+  document.getElementById('appBadge').textContent = APP_CONFIG.label;
+  document.getElementById('appUrl').textContent   = APP_CONFIG.url;
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let currentFilter = 'all';
+  let currentTab    = 'output';
+  let logLines      = [];
+  let stats         = { total: 0, pass: 0, fail: 0 };
+  let autoScroll    = true;
+  let isRunning     = false;
+  let es            = null;
+
+  // ── Build test list ────────────────────────────────────────────────────────
+  function buildTestList() {
+    const list = document.getElementById('testList');
+    list.innerHTML = '';
+    let first = true;
+    Object.entries(APP_CONFIG.tests).forEach(([key, t]) => {
+      const item = document.createElement('div');
+      item.className  = 'test-item';
+      item.dataset.key = key;
+      item.innerHTML = `
+        <input type="checkbox" id="cb_${key}" ${first ? 'checked' : ''} />
+        <label for="cb_${key}">${t.label}</label>
+        <span class="result-badge" id="badge_${key}"></span>`;
+      list.appendChild(item);
+      first = false;
+    });
+  }
+
+  function selectAll(checked) {
+    document.querySelectorAll('.test-item input[type="checkbox"]').forEach(cb => { cb.checked = checked; });
+  }
+
+  // ── SSE ────────────────────────────────────────────────────────────────────
+  function connectSSE() {
+    if (es && es.readyState !== EventSource.CLOSED) es.close();
+    es = new EventSource('/events');
+    es.onmessage = e => handleEvent(JSON.parse(e.data));
+    es.onopen    = ()  => setDot('connected');
+    es.onerror   = ()  => { setDot('disconnected'); setTimeout(connectSSE, 3000); };
+  }
+
+  function handleEvent(data) {
+    switch (data.type) {
+      case 'connected':
+        if (data.running) setRunningState(true);
+        break;
+      case 'start':
+        setRunningState(true); resetStats();
+        appendLine('start', '─'.repeat(60));
+        appendLine('start', data.message);
+        break;
+      case 'cmd':
+        appendLine('cmd', '$ ' + data.message);
+        break;
+      case 'pass':
+        if (/^ok\s+\d+\s/.test(data.message)) { stats.pass++; stats.total++; updateStats(); }
+        appendLine('pass', data.message);
+        break;
+      case 'fail':
+        if (/^x\s+\d+\s/.test(data.message)) { stats.fail++; stats.total++; updateStats(); }
+        appendLine('fail', data.message);
+        break;
+      case 'warn':
+        appendLine('warn', data.message);
+        break;
+      case 'summary': {
+        appendLine('summary', data.message);
+        const mp = data.message.match(/(\d+)\s+passed/);
+        const mf = data.message.match(/(\d+)\s+failed/);
+        if (mp || mf) {
+          if (mp) stats.pass = parseInt(mp[1]);
+          if (mf) stats.fail = parseInt(mf[1]);
+          stats.total = stats.pass + stats.fail;
+          updateStats();
+        }
+        break;
+      }
+      case 'done':
+        setRunningState(false);
+        appendLine('summary', '─'.repeat(60));
+        appendLine(data.success ? 'done success' : 'done fail', data.message);
+        setTimeout(() => { refreshFailureBadge(); if (currentTab === 'failures') loadFailures(); }, 1000);
+        appendLine('info', '→ Onglet "Screenshots & Vidéos" pour les détails des échecs');
+        break;
+      case 'error':
+        appendLine('fail', '⚠ ' + data.message);
+        setRunningState(false);
+        break;
+      default:
+        appendLine('info', data.message);
+    }
+  }
+
+  // ── Output ─────────────────────────────────────────────────────────────────
+  function appendLine(type, message) {
+    if (!message || !message.trim()) return;
+    document.getElementById('emptyState').style.display = 'none';
+    const entry = { type, message, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) };
+    logLines.push(entry);
+    const el = createLineEl(entry);
+    document.getElementById('output').appendChild(el);
+    applyFilter();
+    if (autoScroll) el.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  }
+
+  function createLineEl(entry) {
+    const div = document.createElement('div');
+    div.className    = `log-line ${entry.type}`;
+    div.dataset.type = entry.type.split(' ')[0];
+    div.innerHTML    = `<span class="time">${entry.time}</span><span class="msg">${escapeHtml(entry.message)}</span>`;
+    return div;
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function clearOutput() {
+    logLines = []; resetStats();
+    const out = document.getElementById('output');
+    out.innerHTML = '<div class="empty-state" id="emptyState"><div class="icon">🎭</div><p>Sélectionnez des tests et cliquez sur <strong>Lancer</strong>.</p></div>';
+    document.querySelectorAll('.result-badge').forEach(b => { b.className = 'result-badge'; b.textContent = ''; });
+  }
+
+  // ── Filtres ────────────────────────────────────────────────────────────────
+  function setFilter(f) {
+    currentFilter = f;
+    document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.filter === f));
+    applyFilter();
+  }
+
+  function applyFilter() {
+    document.querySelectorAll('#output .log-line').forEach(el => {
+      el.style.display = currentFilter === 'all' ? '' : (el.dataset.type === currentFilter ? '' : 'none');
+    });
+  }
+
+  // ── Stats ──────────────────────────────────────────────────────────────────
+  function resetStats() {
+    stats = { total: 0, pass: 0, fail: 0 }; updateStats();
+    document.querySelectorAll('.result-badge').forEach(b => { b.className = 'result-badge'; b.textContent = ''; });
+  }
+
+  function updateStats() {
+    document.getElementById('statTotal').textContent = stats.total;
+    document.getElementById('statPass').textContent  = stats.pass;
+    document.getElementById('statFail').textContent  = stats.fail;
+  }
+
+  // ── Running state ──────────────────────────────────────────────────────────
+  function setRunningState(running) {
+    isRunning = running;
+    document.getElementById('btnRun').disabled  = running;
+    document.getElementById('btnStop').disabled = !running;
+    const list = document.getElementById('testList');
+    list.style.opacity       = running ? '0.5' : '1';
+    list.style.pointerEvents = running ? 'none' : 'auto';
+    setDot(running ? 'running' : 'connected');
+  }
+
+  function setDot(state) {
+    const dot = document.getElementById('statusDot');
+    dot.className = `status-dot ${state}`;
+    dot.title = { running: 'Tests en cours...', connected: 'Connecté', disconnected: 'Déconnecté' }[state] || state;
+  }
+
+  // ── Lancer / Arrêter ───────────────────────────────────────────────────────
+  async function startTests() {
+    if (isRunning) { alert('❌ Un test est déjà en cours.'); return; }
+    const selected = Array.from(document.querySelectorAll('.test-item input:checked')).map(cb => cb.id.replace('cb_', ''));
+    if (selected.length === 0) { alert('⚠️ Veuillez sélectionner au moins un test.'); return; }
+    setRunningState(true);
+    await fetch('/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tests: selected }) });
+  }
+
+  async function stopTests() {
+    if (!isRunning) { alert('❌ Aucun test en cours.'); return; }
+    setRunningState(false);
+    appendLine('warn', '⏹ Arrêt des tests en cours...');
+    await fetch('/stop', { method: 'POST' }).catch(() => {});
+  }
+
+  // ── Tabs ───────────────────────────────────────────────────────────────────
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabOutput').classList.toggle('active',   tab === 'output');
+    document.getElementById('tabFailures').classList.toggle('active', tab === 'failures');
+    document.getElementById('output').classList.toggle('hidden',      tab !== 'output');
+    document.getElementById('outputToolbar').style.display = tab === 'output' ? '' : 'none';
+    document.getElementById('failuresPanel').classList.toggle('active', tab === 'failures');
+    if (tab === 'failures') loadFailures();
+  }
+
+  // ── Failures ───────────────────────────────────────────────────────────────
+  async function loadFailures() {
+    const panel = document.getElementById('failuresPanel');
+    const empty = document.getElementById('failuresEmpty');
+    const folders = await fetch('/failures').then(r => r.json());
+    Array.from(panel.children).forEach(c => { if (c.id !== 'failuresEmpty') c.remove(); });
+    if (folders.length === 0) { empty.style.display = ''; return; }
+    empty.style.display = 'none';
+    folders.forEach(f => {
+      const card = document.createElement('div');
+      card.className = 'failure-card';
+      const short = f.name.replace(/^[^/]+\//, '').replace(/-/g,' ').replace(/[a-f0-9]{5,}/g,'').trim();
+      card.innerHTML = `
+        <div class="failure-header" onclick="this.nextElementSibling.classList.toggle('open')">
+          <span style="color:var(--fail)">✗</span>
+          <span class="failure-title">${short || f.name}</span>
+          <span style="font-size:11px;color:var(--text-dim)">${f.hasPng?'📸':''} ${f.hasVideo?'🎬':''}</span>
+          <span style="color:var(--text-dim);font-size:11px">▼</span>
+        </div>
+        <div class="failure-body">
+          <div>
+            ${f.hasPng   ? `<button class="file-btn screenshot" onclick="showFile('${f.name}','test-failed-1.png','img')">📸 Screenshot</button>` : ''}
+            ${f.hasVideo ? `<button class="file-btn video"      onclick="showFile('${f.name}','video.webm','video')">🎬 Vidéo</button>` : ''}
+            ${f.hasMd    ? `<button class="file-btn screenshot" style="background:rgba(100,116,139,.2);color:var(--info)" onclick="showFile('${f.name}','error-context.md','text')">📄 Contexte</button>` : ''}
+          </div>
+          <div class="failure-preview" id="preview_${CSS.escape(f.name)}"></div>
+        </div>`;
+      panel.appendChild(card);
+    });
+    const badge = document.getElementById('failuresBadge');
+    badge.textContent  = folders.length;
+    badge.style.display = folders.length > 0 ? '' : 'none';
+  }
+
+  function showFile(dir, file, type) {
+    const preview = document.getElementById('preview_' + CSS.escape(dir));
+    if (!preview) return;
+    const src = `/failure-file?dir=${encodeURIComponent(dir)}&file=${encodeURIComponent(file)}`;
+    if (type === 'img')   preview.innerHTML = `<img src="${src}" alt="Screenshot" />`;
+    else if (type === 'video') preview.innerHTML = `<video src="${src}" controls autoplay style="max-width:100%"></video>`;
+    else fetch(src).then(r=>r.text()).then(t => {
+      preview.innerHTML = `<pre style="background:var(--surface2);padding:12px;border-radius:6px;font-size:11px;overflow:auto;max-height:300px;color:var(--info)">${escapeHtml(t)}</pre>`;
+    });
+  }
+
+  async function refreshFailureBadge() {
+    const folders = await fetch('/failures').then(r => r.json());
+    const badge = document.getElementById('failuresBadge');
+    badge.textContent  = folders.length;
+    badge.style.display = folders.length > 0 ? '' : 'none';
+  }
+
+  // ── Clear modal ────────────────────────────────────────────────────────────
+  function openClearModal() {
+    document.getElementById('modalAppName').textContent = APP_CONFIG.label;
+    document.getElementById('clearModal').classList.add('active');
+  }
+  function closeClearModal() {
+    document.getElementById('clearModal').classList.remove('active');
+  }
+  async function confirmClear() {
+    closeClearModal();
+    const data = await fetch('/clear-history', { method: 'DELETE' }).then(r => r.json());
+    if (data.ok) {
+      showToast(data.deleted === 0 ? `ℹ️ Aucun résultat à supprimer` : `✅ ${data.deleted} dossier(s) supprimé(s)`, 'success');
+      setTimeout(() => { refreshFailureBadge(); if (currentTab === 'failures') loadFailures(); }, 300);
+    } else {
+      showToast('❌ Erreur : ' + (data.error || 'Suppression échouée'), 'error');
+    }
+  }
+  document.getElementById('clearModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeClearModal(); });
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  function showToast(message, type = 'success') {
+    const t = document.getElementById('toastMsg');
+    t.textContent = message; t.className = `toast ${type}`;
+    void t.offsetWidth; t.classList.add('show');
+    clearTimeout(t._hide);
+    t._hide = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── Auto-scroll ────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('output').addEventListener('scroll', e => {
+      const el = e.target;
+      autoScroll = el.scrollHeight - el.scrollTop - el.clientHeight < 50;
+    });
+  });
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  buildTestList();
+  connectSSE();
+  refreshFailureBadge();
+</script>
+</body>
+</html>

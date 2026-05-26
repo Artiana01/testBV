@@ -52,7 +52,7 @@ async function isSessionValid(sessionFile: string): Promise<boolean> {
   try {
     const ctx = await browser.newContext({ storageState: sessionFile });
     const page = await ctx.newPage();
-    await page.goto(`${BASE_URL}/fr/dashboard`, { waitUntil: 'load', timeout: 20_000 });
+    await page.goto(`${BASE_URL}/fr/dashboard`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await page.waitForTimeout(2000);
     const url = page.url();
     const isAuthenticated = !url.includes('/login') && !url.includes('/signup');

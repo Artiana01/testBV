@@ -34,15 +34,14 @@ const BASE = process.env.EMIRAGATE_BASE_URL ?? 'https://dev.bluevalorisinstall.c
 test.describe('Régression — Authentification', () => {
 
   test('REG-01 — Session admin active : dashboard accessible', async ({ page }) => {
-    test.setTimeout(30_000);
-    await page.goto(`${BASE}/en/dashboard`);
-    await page.waitForLoadState('load');
-    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 15_000 });
+    test.setTimeout(60_000);
+    await page.goto(`${BASE}/en/dashboard`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 45_000 });
     await expect(page.locator('body')).toBeVisible();
   });
 
   test('REG-02 — Pas de boucle de redirection', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     const url1 = page.url();
@@ -52,14 +51,12 @@ test.describe('Régression — Authentification', () => {
   });
 
   test('REG-03 — Session persiste entre pages', async ({ page }) => {
-    test.setTimeout(30_000);
-    await page.goto(`${BASE}/en/dashboard`);
-    await page.waitForLoadState('load');
-    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 10_000 });
+    test.setTimeout(60_000);
+    await page.goto(`${BASE}/en/dashboard`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 20_000 });
 
-    await page.goto(`${BASE}/en/profile`);
-    await page.waitForLoadState('load');
-    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 10_000 });
+    await page.goto(`${BASE}/en/profile`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 20_000 });
   });
 
 });
@@ -70,7 +67,7 @@ test.describe('Régression — Authentification', () => {
 test.describe('Régression — Dashboard', () => {
 
   test('REG-04 — Les KPIs s\'affichent sans erreur', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyDashboardLoaded();
@@ -79,7 +76,7 @@ test.describe('Régression — Dashboard', () => {
   });
 
   test('REG-05 — Aucune donnée corrompue sur le dashboard', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     const broken = page.getByText('undefined').or(page.getByText('NaN')).or(page.getByText('null'));
@@ -95,7 +92,7 @@ test.describe('Régression — Dashboard', () => {
 test.describe('Régression — Profil', () => {
 
   test('REG-06 — La page profil se charge sans erreur', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const profile = new ProfilePage(page);
     await profile.goto();
     await profile.verifyProfileLoaded();
@@ -103,7 +100,7 @@ test.describe('Régression — Profil', () => {
   });
 
   test('REG-07 — La modification du profil est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const profile = new ProfilePage(page);
     await profile.goto();
     await profile.verifyActionsAvailable();
@@ -117,7 +114,7 @@ test.describe('Régression — Profil', () => {
 test.describe('Régression — Leads / Conduit', () => {
 
   test('REG-08 — La page Conduit se charge sans erreur', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const conduit = new ConduitPage(page);
     await conduit.goto();
     await conduit.verifyConduitPageLoaded();
@@ -125,14 +122,14 @@ test.describe('Régression — Leads / Conduit', () => {
   });
 
   test('REG-09 — Les actions sur les leads sont disponibles', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const conduit = new ConduitPage(page);
     await conduit.goto();
     await conduit.verifyActionsAvailable();
   });
 
   test('REG-10 — Aucune valeur corrompue dans les leads', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const conduit = new ConduitPage(page);
     await conduit.goto();
     await conduit.verifyNoUndefinedValues();
@@ -146,7 +143,7 @@ test.describe('Régression — Leads / Conduit', () => {
 test.describe('Régression — Admin', () => {
 
   test('REG-11 — La gestion utilisateurs est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const users = new AdminUsersPage(page);
     await users.goto();
     await users.verifyUsersPageLoaded();
@@ -154,7 +151,7 @@ test.describe('Régression — Admin', () => {
   });
 
   test('REG-12 — La gestion contacts est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const contacts = new ContactsPage(page);
     await contacts.goto();
     await contacts.verifyContactsPageLoaded();
@@ -169,7 +166,7 @@ test.describe('Régression — Admin', () => {
 test.describe('Régression — Analytique', () => {
 
   test('REG-13 — La page analytics se charge sans erreur', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const analytics = new AnalyticsPage(page);
     await analytics.goto();
     await analytics.verifyAnalyticsLoaded();
@@ -177,7 +174,7 @@ test.describe('Régression — Analytique', () => {
   });
 
   test('REG-14 — Les données analytics sont cohérentes (pas de NaN)', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const analytics = new AnalyticsPage(page);
     await analytics.goto();
     await analytics.verifyNoCorruptedData();

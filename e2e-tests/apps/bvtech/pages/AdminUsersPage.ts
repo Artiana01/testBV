@@ -34,7 +34,7 @@ export class AdminUsersPage extends BasePage {
     // Vérifier le contenu
     const heading = this.page.getByText(/gestion des utilisateurs|manage users|users management/i)
       .or(this.page.locator('main h1, main h2, h1, h2'));
-    await expect(heading.first()).toBeVisible({ timeout: 10_000 });
+    await expect(heading.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async getUsersCount(): Promise<number> {
@@ -82,7 +82,7 @@ export class AdminUsersPage extends BasePage {
       if (await editBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
         console.log('✏️  Clic sur le bouton Edit (2e bouton)');
         await editBtn.click();
-        await this.page.waitForLoadState('load');
+        await this.page.waitForLoadState('domcontentloaded');
         await this.page.waitForTimeout(2000);
         
         // Vérifier qu'on n'est pas allé sur payments
@@ -108,7 +108,7 @@ export class AdminUsersPage extends BasePage {
       const firstBtn = btns.first();
       console.log('🔄 Essai du 1er bouton...');
       await firstBtn.click();
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
       await this.page.waitForTimeout(2000);
     }
   }
@@ -129,7 +129,7 @@ export class AdminUsersPage extends BasePage {
     }).or(this.page.locator('button[type="submit"]'))
       .or(this.page.locator('[aria-label*="save"], [aria-label*="sauve"], [aria-label*="enregistr"]'));
     await saveBtn.first().click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifyModificationSaved(): Promise<void> {

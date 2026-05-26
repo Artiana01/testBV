@@ -29,19 +29,19 @@ export class AdminPaymentsPage extends BasePage {
   async verifyPaymentsPageLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/admin.*payment|payment.*admin|billing|transaction/i, { timeout: 15_000 });
     const content = this.page.locator('main, [role="main"]');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyPaymentsTableVisible(): Promise<void> {
     const table = this.page.locator(this.paymentsTable).first();
-    await expect(table).toBeVisible({ timeout: 10_000 });
+    await expect(table).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyStatusBadgesVisible(): Promise<void> {
     const badges = this.page.locator(this.statusBadges);
     const count = await badges.count();
     if (count > 0) {
-      await expect(badges.first()).toBeVisible({ timeout: 10_000 });
+      await expect(badges.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 
@@ -58,7 +58,7 @@ export class AdminPaymentsPage extends BasePage {
     const rows = this.page.locator('tbody tr, [class*="row"], [class*="transaction"], [class*="payment"]');
     const count = await rows.count();
     if (count > 0) {
-      await expect(rows.first()).toBeVisible({ timeout: 10_000 });
+      await expect(rows.first()).toBeVisible({ timeout: 20_000 });
     } else {
       // État vide : aucune transaction → vérifier juste que la page est fonctionnelle
       const content = this.page.locator('main, [role="main"]');

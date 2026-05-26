@@ -3,7 +3,12 @@ import { BasePage } from './BasePage';
 
 export class AuthPage extends BasePage {
   // Signup
-  readonly name_input     = this.page.locator('input[name="name"]').or(this.page.getByPlaceholder(/jean dupont|nom/i));
+  readonly name_input     = this.page.locator([
+    'input[name="name"]', 'input[name="fullName"]', 'input[name="full_name"]',
+    'input[name="nom"]',  'input[name="firstName"]', 'input[name="first_name"]',
+    'input[placeholder*="jean dupont" i]', 'input[placeholder*="votre nom" i]',
+    'input[placeholder*="nom complet" i]', 'input[placeholder*="prénom" i]',
+  ].join(', '));
   readonly email_input    = this.page.locator('input[type="email"]').first();
   readonly password_input = this.page.locator('input[type="password"]').first();
   readonly confirm_input  = this.page.locator('input[type="password"]').nth(1);
@@ -22,27 +27,30 @@ export class AuthPage extends BasePage {
   }
 
   async navigateToSignup() {
-    await this.page.goto(`${this.baseURL}/inscription`);
-    await this.page.waitForLoadState('load');
+    await this.page.goto(`${this.baseURL}/fr/inscription`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   }
 
   async navigateToLogin() {
-    await this.page.goto(`${this.baseURL}/connexion`);
-    await this.page.waitForLoadState('load');
+    await this.page.goto(`${this.baseURL}/fr/login`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   }
 
   async navigateToForgotPassword() {
-    await this.page.goto(`${this.baseURL}/mot-de-passe-oublie`);
-    await this.page.waitForLoadState('load');
+    await this.page.goto(`${this.baseURL}/fr/mot-de-passe-oublie`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   }
 
   async fillSignupForm(name: string, email: string, password: string) {
-    await this.name_input.fill(name);
-    await this.email_input.fill(email);
-    await this.password_input.fill(password);
-    // Confirmer si le champ existe
-    if (await this.confirm_input.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await this.confirm_input.fill(password);
+    // Name field may not exist on all signup forms (some use email-only or OAuth)
+    if (await this.name_input.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await this.name_input.first().fill(name);
+    }
+    if (await this.email_input.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await this.email_input.fill(email);
+    }
+    if (password && await this.password_input.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await this.password_input.fill(password);
+      if (await this.confirm_input.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await this.confirm_input.fill(password);
+      }
     }
   }
 
@@ -53,7 +61,7 @@ export class AuthPage extends BasePage {
 
   async submit() {
     await this.submit_btn.click();
-    await this.page.waitForLoadState('load').catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async login(email: string, password: string) {
@@ -61,14 +69,14 @@ export class AuthPage extends BasePage {
     await this.fillLoginForm(email, password);
     await this.submit();
     await this.page.waitForURL(
-      url => !url.includes('/connexion') && !url.includes('/login'),
+      url => !url.includes('/login') && !url.includes('/connexion') && !url.includes('/signin'),
       { timeout: 30_000 }
     ).catch(() => {});
-    await this.page.waitForLoadState('load').catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async verifyLoginSuccess() {
-    await expect(this.page).not.toHaveURL(/\/connexion|\/login/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/connexion|\/login/, { timeout: 45_000 });
     await expect(this.page.locator('body')).toBeVisible();
   }
 

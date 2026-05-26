@@ -46,7 +46,7 @@ export class ProfilePage extends BasePage {
 
   async saveProfile() {
     await this.click(this.saveButton);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async getSuccessMessage(): Promise<string> {

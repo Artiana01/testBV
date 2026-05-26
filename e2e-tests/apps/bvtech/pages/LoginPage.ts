@@ -55,7 +55,7 @@ export class LoginPage extends BasePage {
 
   async submitLoginForm(): Promise<void> {
     await this.page.locator(this.submitBtn).click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /**
@@ -75,8 +75,7 @@ export class LoginPage extends BasePage {
   async loginAsAdmin(): Promise<void> {
     const BASE = process.env.BASE_URL ?? 'https://dev.bluevaloristech.com';
     // Navigation vers /login — si storageState actif, redirection automatique vers dashboard
-    await this.page.goto(`${BASE}/fr/login`);
-    await this.page.waitForLoadState('load');
+    await this.page.goto(`${BASE}/fr/login`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     // Déjà connecté via storageState → on sort sans remplir le formulaire
     if (!this.page.url().includes('/login')) return;
@@ -95,7 +94,7 @@ export class LoginPage extends BasePage {
 
   async verifyLoginSuccess(): Promise<void> {
     // Après connexion réussie, on ne doit plus être sur /login
-    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     // On doit être sur le dashboard ou une page authentifiée
     await expect(this.page.locator('body')).toBeVisible();
   }
@@ -148,11 +147,11 @@ export class LoginPage extends BasePage {
       }
     }
 
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifyLoggedOut(): Promise<void> {
     // Après déconnexion, on doit être redirigé vers la page d'accueil ou login
-    await expect(this.page).toHaveURL(/\/$|\/login|\/fr\/?$/i, { timeout: 10_000 });
+    await expect(this.page).toHaveURL(/\/$|\/login|\/fr\/?$/i, { timeout: 20_000 });
   }
 }

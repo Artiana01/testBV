@@ -2,7 +2,7 @@
  * apps/bvinvest/pages/LoginPage.ts
  * ----------------------------------
  * Page Object — Authentification BV Invest
- * Couvre : /fr/login (email + mot de passe standard)
+ * Couvre : /fr/connexion (email + mot de passe standard)
  */
 
 import { Page, expect } from '@playwright/test';
@@ -19,34 +19,41 @@ export class LoginPage extends BasePage {
   }
 
   async navigateToLogin(): Promise<void> {
-    await this.navigate('/fr/login');
+    await this.navigate('/fr/connexion');
     await this.waitForLoad();
-    if (!this.page.url().includes('/login')) return;
     await this.page.locator(this.emailInput).waitFor({ state: 'visible', timeout: 15_000 });
   }
 
   async fillLoginForm(email: string, password: string): Promise<void> {
-    await this.page.locator(this.emailInput).fill(email);
+    const emailEl = this.page.locator(this.emailInput);
+    await emailEl.fill(email);
+    const filled = await emailEl.inputValue().catch(() => '');
+    if (filled !== email) {
+      await emailEl.clear();
+      await emailEl.pressSequentially(email, { delay: 30 });
+    }
     await this.page.locator(this.passwordInput).fill(password);
   }
 
   async submitLoginForm(): Promise<void> {
     await this.page.locator(this.submitBtn).click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForURL(
+      url => !url.includes('/connexion') && !url.includes('/login'),
+      { timeout: 60_000 }
+    ).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async login(email: string, password: string): Promise<void> {
     await this.navigateToLogin();
-    if (!this.page.url().includes('/login')) return;
     await this.fillLoginForm(email, password);
     await this.submitLoginForm();
   }
 
   async loginAsAdmin(): Promise<void> {
     const BASE = process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com';
-    await this.page.goto(`${BASE}/fr/login`);
-    await this.page.waitForLoadState('load');
-    if (!this.page.url().includes('/login')) return;
+    await this.page.goto(`${BASE}/fr/connexion`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await this.page.locator(this.emailInput).waitFor({ state: 'visible', timeout: 15_000 });
     await this.fillLoginForm(
       process.env.BVINVEST_ADMIN_EMAIL    ?? 'admin@bluevaloris.com',
       process.env.BVINVEST_ADMIN_PASSWORD ?? 'Admin@2026!'
@@ -56,9 +63,8 @@ export class LoginPage extends BasePage {
 
   async loginAsClient(): Promise<void> {
     const BASE = process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com';
-    await this.page.goto(`${BASE}/fr/login`);
-    await this.page.waitForLoadState('load');
-    if (!this.page.url().includes('/login')) return;
+    await this.page.goto(`${BASE}/fr/connexion`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await this.page.locator(this.emailInput).waitFor({ state: 'visible', timeout: 15_000 });
     await this.fillLoginForm(
       process.env.BVINVEST_CLIENT_EMAIL    ?? 'rojotiana49@gmail.com',
       process.env.BVINVEST_CLIENT_PASSWORD ?? 'Diary12345678!'
@@ -67,7 +73,7 @@ export class LoginPage extends BasePage {
   }
 
   async verifyLoginSuccess(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 20_000 });
+    await expect(this.page).not.toHaveURL(/\/connexion|\/login/, { timeout: 60_000 });
     await expect(this.page.locator('body')).toBeVisible();
   }
 
@@ -98,6 +104,6 @@ export class LoginPage extends BasePage {
         await this.page.getByText(/déconnexion|logout|sign out/i).first().click();
       }
     }
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 }

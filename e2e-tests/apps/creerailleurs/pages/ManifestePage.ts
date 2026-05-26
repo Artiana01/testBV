@@ -25,16 +25,25 @@ export class ManifestePage extends BasePage {
   }
 
   async navigateToManifeste() {
-    // Essayer différentes URLs possibles
-    await this.goto(`${this.baseURL}/manifeste`);
+    for (const path of ['/fr/manifeste', '/manifeste', '/fr/le-manifeste', '/le-manifeste']) {
+      await this.page.goto(`${this.baseURL}${path}`);
+      await this.page.waitForLoadState('domcontentloaded');
+      const url = this.page.url();
+      if (!url.includes('/connexion') && !url.includes('/login') && !url.includes('404')) return;
+    }
   }
 
   async navigateToOrder() {
-    await this.goto(`${this.baseURL}/commande`);
+    for (const path of ['/fr/commande', '/commande', '/fr/checkout', '/checkout']) {
+      await this.page.goto(`${this.baseURL}${path}`);
+      await this.page.waitForLoadState('domcontentloaded');
+      const url = this.page.url();
+      if (!url.includes('/connexion') && !url.includes('/login') && !url.includes('404')) return;
+    }
   }
 
   async verifyPriceDisplayed(expectedAmount?: string) {
-    await expect(this.price_display).toBeVisible({ timeout: 10_000 });
+    await expect(this.price_display).toBeVisible({ timeout: 20_000 });
     if (expectedAmount) {
       await expect(this.price_display).toContainText(expectedAmount, { timeout: 5_000 });
     }
@@ -43,7 +52,7 @@ export class ManifestePage extends BasePage {
   async verifyDiscountApplied() {
     // Vérifier que la réduction de -5€ est affichée pour les utilisateurs connectés
     const discount = this.page.locator('text=/-5|réduction|remise|-5 EUR/i').first();
-    await expect(discount).toBeVisible({ timeout: 10_000 });
+    await expect(discount).toBeVisible({ timeout: 20_000 });
   }
 
   async fillStripePayment(cardNumber: string, expiry: string, cvc: string, name: string) {
@@ -66,14 +75,14 @@ export class ManifestePage extends BasePage {
 
   async clickPay() {
     await this.pay_btn.click();
-    await this.page.waitForLoadState('load', { timeout: 30_000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
   }
 
   async verifyPaymentSuccess() {
-    await expect(this.success_msg).toBeVisible({ timeout: 30_000 });
+    await expect(this.success_msg).toBeVisible({ timeout: 60_000 });
   }
 
   async verifyDownloadAvailable() {
-    await expect(this.download_btn).toBeVisible({ timeout: 10_000 });
+    await expect(this.download_btn).toBeVisible({ timeout: 20_000 });
   }
 }

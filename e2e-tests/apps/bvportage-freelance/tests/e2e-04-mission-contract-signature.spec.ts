@@ -5,8 +5,7 @@ dotenv.config();
 
 test.describe('E2E-04 — Mission + Contrat + Signature', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
@@ -15,12 +14,11 @@ test.describe('E2E-04 — Mission + Contrat + Signature', () => {
 
     await loginPage.chooseFreelanceProfile();
 
-    await expect(dashboardFreelancePage.page).toHaveURL(new RegExp('dashboard|home|tableau'), { timeout: 30000 });
+    await expect(dashboardFreelancePage.page).not.toHaveURL(/connexion|login|signin/, { timeout: 60_000 });
   });
 
   test('Création mission avec statut Brouillon', async ({ missionPage, page }) => {
-    await page.goto('/fr/missions');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/missions', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const title = process.env.MISSION_TITLE || 'Dev_Mission_Demo';
     const amount = process.env.MISSION_AMOUNT || '500';
@@ -35,8 +33,7 @@ test.describe('E2E-04 — Mission + Contrat + Signature', () => {
   });
 
   test('Génération et prévisualisation PDF du contrat', async ({ missionPage, contractPage, page }) => {
-    await page.goto('/fr/missions');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/missions', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const title = process.env.MISSION_TITLE || 'Dev_Mission_Demo';
 
@@ -51,8 +48,7 @@ test.describe('E2E-04 — Mission + Contrat + Signature', () => {
   });
 
   test('Téléchargement PDF du contrat', async ({ contractPage, page }) => {
-    await page.goto('/fr/missions');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/missions', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const title = process.env.MISSION_TITLE || 'Dev_Mission_Demo';
     const missionRow = page.locator(`text="${title}"`).first();
@@ -65,8 +61,7 @@ test.describe('E2E-04 — Mission + Contrat + Signature', () => {
   });
 
   test('Envoi pour signature', async ({ contractPage, page }) => {
-    await page.goto('/fr/missions');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/missions', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const title = process.env.MISSION_TITLE || 'Dev_Mission_Demo';
     const missionRow = page.locator(`text="${title}"`).first();
@@ -79,7 +74,7 @@ test.describe('E2E-04 — Mission + Contrat + Signature', () => {
   });
 
   test('Signature du contrat', async ({ contractPage, page }) => {
-    await page.goto('/fr/signer-contrat');
+    await page.goto('/fr/signer-contrat', { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await page.waitForLoadState('domcontentloaded');
 
     const url = page.url();

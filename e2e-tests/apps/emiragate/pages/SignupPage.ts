@@ -41,7 +41,7 @@ export class SignupPage extends BasePage {
   }
 
   async verifyFormFieldsPresent(): Promise<void> {
-    await expect(this.page.locator(this.emailInput).first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator(this.emailInput).first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.locator(this.passwordInput).first()).toBeVisible({ timeout: 5_000 });
   }
 

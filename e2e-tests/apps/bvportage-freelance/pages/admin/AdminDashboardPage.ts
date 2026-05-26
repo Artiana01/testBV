@@ -18,7 +18,7 @@ export class AdminDashboardPage extends BasePage {
 
   async goToKyc() {
     await this.click(this.kycMenu);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async selectFreelancerKyc(freelancerName: string) {
@@ -29,12 +29,12 @@ export class AdminDashboardPage extends BasePage {
 
   async validateKyc() {
     await this.click(this.validateButton);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async rejectKyc() {
     await this.click(this.rejectButton);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async getSuccessMessage(): Promise<string> {

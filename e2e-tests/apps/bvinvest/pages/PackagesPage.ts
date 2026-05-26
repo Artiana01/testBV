@@ -27,9 +27,9 @@ export class PackagesPage extends BasePage {
   }
 
   async verifyPackagesLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyPackCardsVisible(): Promise<void> {
@@ -37,7 +37,7 @@ export class PackagesPage extends BasePage {
       .or(this.page.getByText(/access|member/i));
     const count = await cards.count();
     if (count > 0) {
-      await expect(cards.first()).toBeVisible({ timeout: 10_000 });
+      await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 

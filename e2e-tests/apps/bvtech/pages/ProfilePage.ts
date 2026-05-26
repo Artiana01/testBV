@@ -34,9 +34,9 @@ export class ProfilePage extends BasePage {
   // =========================================================
 
   async verifyProfilePageLoaded(): Promise<void> {
-    await expect(this.page).toHaveURL(/\/fr\/profile/, { timeout: 10_000 });
+    await expect(this.page).toHaveURL(/\/fr\/profile/, { timeout: 20_000 });
     // Utiliser getByRole('heading') pour éviter le mode strict (breadcrumb + h1 tous les deux présents)
-    await expect(this.page.getByRole('heading', { name: 'Profil utilisateur' })).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.getByRole('heading', { name: 'Profil utilisateur' })).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyUserInfoDisplayed(): Promise<void> {
@@ -95,7 +95,7 @@ export class ProfilePage extends BasePage {
     const saveBtn = this.page.getByRole('button', { name: /sauvegarder|enregistrer|save|mettre à jour|update/i })
       .or(this.page.locator('button[type="submit"]'));
     await saveBtn.first().click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifyProfileSaved(): Promise<void> {

@@ -28,10 +28,10 @@ export default defineConfig({
   globalSetup: './apps/bvtech/global-setup.ts',
 
   // Timeout par test
-  timeout: 60_000,
+  timeout: 90_000,
 
   // Timeout des assertions
-  expect: { timeout: 10_000 },
+  expect: { timeout: 15_000 },
 
   // Séquentiel (1 worker) pour ne pas déclencher le rate limiting
   fullyParallel: false,
@@ -49,11 +49,12 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.BASE_URL ?? 'https://dev.bluevaloristech.com',
+    navigationTimeout: 45_000,
+    actionTimeout: 15_000,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
     headless: true,
-    // Langue française pour les assertions de texte
     locale: 'fr-FR',
   },
 

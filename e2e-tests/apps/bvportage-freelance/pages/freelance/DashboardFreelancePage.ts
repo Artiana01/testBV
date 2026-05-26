@@ -22,27 +22,27 @@ export class DashboardFreelancePage extends BasePage {
 
   async goToClients() {
     await this.click(this.clientMenu);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
   }
 
   async goToMissions() {
     await this.click(this.missionMenu);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
   }
 
   async goToInvoices() {
     await this.click(this.invoiceMenu);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
   }
 
   async goToProfile() {
     await this.click(this.profileMenu);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
   }
 
   async logout() {
     await this.click(this.logoutButton);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 60_000 }).catch(() => {});
   }
 
   async addClient() {

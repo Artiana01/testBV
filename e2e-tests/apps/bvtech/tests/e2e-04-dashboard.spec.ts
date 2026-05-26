@@ -108,7 +108,7 @@ test.describe('E2E 04 — Dashboard utilisateur (IMPORTANT)', () => {
 
     // Vérifier qu'il y a un contenu principal visible
     const mainContent = page.locator('main, [role="main"], [class*="dashboard"], [class*="content"]');
-    await expect(mainContent.first()).toBeVisible({ timeout: 10_000 });
+    await expect(mainContent.first()).toBeVisible({ timeout: 20_000 });
   });
 
 });

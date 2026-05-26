@@ -15,7 +15,7 @@ export class BasePage {
   }
 
   async waitForLoad() {
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   getCurrentUrl(): string {

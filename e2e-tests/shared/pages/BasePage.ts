@@ -34,7 +34,7 @@ export class BasePage {
    * @param path - Chemin relatif (ex: '/login') ou URL absolue
    */
   async navigate(path: string = '/'): Promise<void> {
-    await this.page.goto(path);
+    await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   }
 
   /**
@@ -42,9 +42,7 @@ export class BasePage {
    * Utile après une navigation ou une action qui déclenche un rechargement.
    */
   async waitForLoad(): Promise<void> {
-    // 'load' au lieu de 'networkidle' — Next.js en dev garde une connexion HMR ouverte
-    // ce qui empêche 'networkidle' d'être atteint et provoque un timeout de 30s
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   /**

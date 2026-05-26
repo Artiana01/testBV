@@ -47,7 +47,7 @@ test('Initialisation session admin — Magic Link', async ({ page, context }) =>
   console.log('════════════════════════════════════════════════════════════\n');
 
   await page.goto(`${BASE_URL}/fr/login`);
-  await page.waitForLoadState('load');
+  await page.waitForLoadState('domcontentloaded');
 
   // Déjà connecté ?
   if (isConnected(page.url())) {

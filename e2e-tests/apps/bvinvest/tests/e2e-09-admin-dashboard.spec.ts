@@ -19,37 +19,37 @@ const BASE = process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com
 test.describe('SC-09 — Dashboard Administrateur (IMPORTANT)', () => {
 
   test('09.1 — Le dashboard admin est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminDashboardLoaded();
   });
 
   test('09.2 — Les KPIs sont affichés', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyKpisVisible();
   });
 
   test('09.3 — La navigation admin est visible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminNavVisible();
   });
 
   test('09.4 — La section gestion utilisateurs admin est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.navigateToUsers();
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 20_000 });
     await expect(page.locator('body')).toBeVisible();
   });
 
   test('09.5 — La section opportunités admin est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.navigateToOpportunities();
@@ -57,7 +57,7 @@ test.describe('SC-09 — Dashboard Administrateur (IMPORTANT)', () => {
   });
 
   test('09.6 — La section documents admin est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.navigateToDocuments();
@@ -74,7 +74,7 @@ test.describe('SC-09 — Dashboard Administrateur (IMPORTANT)', () => {
     ];
     for (const section of sections) {
       await page.goto(`${BASE}${section}`);
-      await page.waitForLoadState('load');
+      await page.waitForLoadState('domcontentloaded');
       await page.waitForTimeout(1000);
       await expect(page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
     }

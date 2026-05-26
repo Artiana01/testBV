@@ -10,19 +10,17 @@ export class BasePage {
   }
 
   async goto(path: string = '') {
-    // Normaliser les paths sans préfixe /fr/ vers /fr/<path>
     const normalized = path && !path.startsWith('/fr/') && !path.startsWith('http')
       ? `/fr${path}`
       : path;
-    await this.page.goto(`${this.baseURL}${normalized}`);
+    await this.page.goto(`${this.baseURL}${normalized}`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   }
 
   async waitForLoad(selector?: string) {
     if (selector) {
-      await this.page.waitForSelector(selector, { timeout: 60000 });
+      await this.page.waitForSelector(selector, { timeout: 60_000 });
     } else {
-      // 'load' au lieu de 'networkidle' — Next.js garde des connexions HMR ouvertes
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
     }
   }
 
@@ -38,8 +36,8 @@ export class BasePage {
     return await this.page.textContent(selector) || '';
   }
 
-  async isVisible(selector: string): Promise<boolean> {
-    return await this.page.isVisible(selector);
+  async isVisible(selector: string, timeout = 8_000): Promise<boolean> {
+    return await this.page.locator(selector).first().isVisible({ timeout }).catch(() => false);
   }
 
   async waitForSelector(selector: string, timeout: number = 60000) {

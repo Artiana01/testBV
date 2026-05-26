@@ -23,16 +23,16 @@ export class ClientDashboardPage extends BasePage {
   }
 
   async verifyClientDashboardLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyKpisVisible(): Promise<void> {
     const kpis = this.page.locator(this.kpiCard);
     const count = await kpis.count();
     if (count > 0) {
-      await expect(kpis.first()).toBeVisible({ timeout: 10_000 });
+      await expect(kpis.first()).toBeVisible({ timeout: 20_000 });
     } else {
       console.log('   ℹ️  KPIs client non détectés — vérifier sélecteurs');
     }

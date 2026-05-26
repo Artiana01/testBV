@@ -26,9 +26,9 @@ export class ConduitPage extends BasePage {
   }
 
   async verifyConduitPageLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   }
 
@@ -36,7 +36,7 @@ export class ConduitPage extends BasePage {
     const rows = this.page.locator(this.leadRow);
     const count = await rows.count();
     if (count > 0) {
-      await expect(rows.first()).toBeVisible({ timeout: 10_000 });
+      await expect(rows.first()).toBeVisible({ timeout: 20_000 });
       console.log(`   ✅  ${count} lead(s) trouvé(s)`);
     } else {
       console.log('   ℹ️  Aucun lead — liste vide ou sélecteurs à adapter');

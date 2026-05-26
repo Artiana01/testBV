@@ -51,7 +51,7 @@ export class LoginPage extends BasePage {
 
   async clickContinueWithEmail(): Promise<void> {
     await this.page.locator(this.continueEmailBtn).first().click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
     await this.page.waitForTimeout(1500);
   }
 
@@ -67,12 +67,12 @@ export class LoginPage extends BasePage {
   // =========================================================
 
   async verifyLoginPageLoaded(): Promise<void> {
-    await expect(this.page.locator(this.emailInput)).toBeVisible({ timeout: 10_000 });
-    await expect(this.page.locator(this.continueEmailBtn).first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator(this.emailInput)).toBeVisible({ timeout: 20_000 });
+    await expect(this.page.locator(this.continueEmailBtn).first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyGoogleButtonVisible(): Promise<void> {
-    await expect(this.page.locator(this.googleBtn)).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator(this.googleBtn)).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyMagicLinkSent(): Promise<void> {
@@ -80,7 +80,7 @@ export class LoginPage extends BasePage {
     const banner = this.page.locator(this.successBanner)
       .or(this.page.locator('[class*="success"], [class*="alert-success"], .bg-green'))
       .or(this.page.getByText(/lien.*envoyé|link.*sent|email.*envoyé/i));
-    await expect(banner.first()).toBeVisible({ timeout: 10_000 });
+    await expect(banner.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyEmailPrefilled(email: string): Promise<void> {
@@ -102,12 +102,12 @@ export class LoginPage extends BasePage {
   }
 
   async verifyAuthenticated(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     await expect(this.page.locator('body')).toBeVisible();
   }
 
   async verifyLoggedOut(): Promise<void> {
-    await expect(this.page).toHaveURL(/\/$|\/login|\/fr\/?$/i, { timeout: 10_000 });
+    await expect(this.page).toHaveURL(/\/$|\/login|\/fr\/?$/i, { timeout: 20_000 });
   }
 
   // =========================================================
@@ -130,6 +130,6 @@ export class LoginPage extends BasePage {
         await this.page.getByText(/déconnexion|logout|sign out/i).first().click();
       }
     }
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 }

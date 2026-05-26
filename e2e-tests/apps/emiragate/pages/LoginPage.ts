@@ -31,7 +31,7 @@ export class LoginPage extends BasePage {
 
   async submitLoginForm(): Promise<void> {
     await this.page.locator(this.submitBtn).click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async login(email: string, password: string): Promise<void> {

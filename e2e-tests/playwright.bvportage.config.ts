@@ -31,9 +31,13 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.BASE_URL || 'https://dev.bluevalorisportage.com',
+    navigationTimeout: 45_000,
+    actionTimeout: 15_000,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    headless: true,
+    locale: 'fr-FR',
   },
 
   projects: [

@@ -33,7 +33,7 @@ export class AdminPacksPage extends BasePage {
     await expect(this.page).toHaveURL(/admin\/packages/, { timeout: 15_000 });
     // Vérifier le contenu
     const content = this.page.locator('table').or(this.page.getByText(/gestion des packs|manage packages|packages management/i));
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async getPacksCount(): Promise<number> {
@@ -64,7 +64,7 @@ export class AdminPacksPage extends BasePage {
       if (await editBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
         console.log('✏️  Clic sur le bouton Edit (2e bouton)');
         await editBtn.click();
-        await this.page.waitForLoadState('load');
+        await this.page.waitForLoadState('domcontentloaded');
         await this.page.waitForTimeout(2000);
         
         // Vérifier qu'on n'est pas allé sur payments
@@ -90,7 +90,7 @@ export class AdminPacksPage extends BasePage {
       const firstBtn = btns.first();
       console.log('🔄 Essai du 1er bouton...');
       await firstBtn.click();
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
       await this.page.waitForTimeout(2000);
     }
   }
@@ -112,7 +112,7 @@ export class AdminPacksPage extends BasePage {
     }).or(this.page.locator('button[type="submit"]'))
       .or(this.page.locator('[aria-label*="save"], [aria-label*="sauve"], [aria-label*="enregistr"]'));
     await saveBtn.first().click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
   }
 
   async verifyPackSaved(): Promise<void> {

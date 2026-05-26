@@ -6,7 +6,14 @@ export class HomePage extends BasePage {
   readonly manifeste_link    = this.page.getByRole('link', { name: /manifeste/i });
   readonly mathieu_link      = this.page.getByRole('link', { name: /mathieu/i });
   readonly lang_selector     = this.page.locator('button:has-text("FR"), button:has-text("EN"), [aria-label*="langue"], [aria-label*="language"]');
-  readonly login_link        = this.page.getByRole('link', { name: /connexion|login|se connecter/i });
+  readonly login_link        = this.page.locator(
+    'a[href*="/connexion"], a[href*="/login"], a[href*="/signin"], ' +
+    'a:has-text("Connexion"), a:has-text("connexion"), a:has-text("Se connecter"), ' +
+    'button:has-text("Connexion"), button:has-text("connexion"), button:has-text("Se connecter"), ' +
+    'a:has-text("Espace client"), button:has-text("Espace client"), ' +
+    'a:has-text("Mon espace"), button:has-text("Mon espace"), ' +
+    'a:has-text("Accès"), button:has-text("Accès")'
+  );
 
   // CTA principaux
   readonly cta_decouvrir_manifeste = this.page.getByRole('link', { name: /découvrir le manifeste/i })
@@ -34,11 +41,11 @@ export class HomePage extends BasePage {
   }
 
   async verifyHeaderLoaded() {
-    await expect(this.page.locator('header, nav').first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator('header, nav').first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyFooterLoaded() {
-    await expect(this.footer).toBeVisible({ timeout: 10_000 });
+    await expect(this.footer).toBeVisible({ timeout: 20_000 });
   }
 
   async switchToEN() {

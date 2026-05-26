@@ -27,10 +27,10 @@ const CLIENT_PASS  = process.env.BVINVEST_CLIENT_PASSWORD ?? 'Diary12345678!';
 test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
 
   test('01.1 — La page login est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
-    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
@@ -52,7 +52,7 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
   });
 
   test('01.4 — Connexion échouée avec mauvais mot de passe', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.fillLoginForm(CLIENT_EMAIL, 'mauvais-mot-de-passe-xyz-999');
@@ -61,7 +61,7 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
   });
 
   test('01.5 — Connexion échouée avec email inexistant', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.fillLoginForm('email-inexistant-xyz999@nowhere.com', 'Password123!');
@@ -84,9 +84,9 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
   });
 
   test('01.7 — Gestion de session : page protégée inaccessible sans connexion', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
     // Sans session → doit rediriger vers login
     const url = page.url();

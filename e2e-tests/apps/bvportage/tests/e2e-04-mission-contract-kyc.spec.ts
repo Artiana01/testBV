@@ -18,7 +18,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Accéder au menu Mission
     await agencyDashboardPage.clickMissionMenu();
@@ -49,7 +49,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Accéder au menu Contrat
     await agencyDashboardPage.clickContractMenu();
@@ -76,7 +76,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Accéder au menu KYC
     await agencyDashboardPage.clickKycMenu();
@@ -109,7 +109,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await page.locator('input[name="password"]').fill(process.env.ADMIN_PASSWORD || 'Admin123!');
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Naviguer vers la vérification KYC
     await page.goto('/fr/admin/kyc');
@@ -134,7 +134,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await page.locator('input[name="password"]').fill(process.env.AGENCY_PASSWORD || 'Agency123!');
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Naviguer vers KYC pour vérifier le statut
     await page.goto('/fr/kyc');
@@ -153,7 +153,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await page.locator('input[name="password"]').fill(process.env.ADMIN_PASSWORD || 'Admin123!');
     await page.locator('button[type="submit"]').click();
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Naviguer vers la vérification KYC
     await page.goto('/fr/admin/kyc');

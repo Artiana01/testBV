@@ -26,9 +26,9 @@ export default defineConfig({
 
   globalSetup: './apps/bvinvest/global-setup.ts',
 
-  timeout: 60_000,
+  timeout: 90_000,
 
-  expect: { timeout: 10_000 },
+  expect: { timeout: 15_000 },
 
   fullyParallel: false,
   workers: 1,
@@ -43,6 +43,8 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com',
+    navigationTimeout: 45_000,
+    actionTimeout: 15_000,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',

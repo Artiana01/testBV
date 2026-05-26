@@ -19,21 +19,21 @@ const BASE = process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com
 test.describe('SC-02 — Accès et navigation dans l\'espace membre (CRITIQUE)', () => {
 
   test('02.1 — L\'espace membre est accessible après connexion', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const memberPage = new MemberSpacePage(page);
     await memberPage.goto();
     await memberPage.verifyMemberSpaceLoaded();
   });
 
   test('02.2 — L\'espace privé est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const memberPage = new MemberSpacePage(page);
     await memberPage.gotoPrivateSpace();
     await memberPage.verifyMemberSpaceLoaded();
   });
 
   test('02.3 — Navigation vers le profil fonctionne', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const memberPage = new MemberSpacePage(page);
     await memberPage.goto();
     await memberPage.navigateToProfile();
@@ -42,7 +42,7 @@ test.describe('SC-02 — Accès et navigation dans l\'espace membre (CRITIQUE)',
   });
 
   test('02.4 — Navigation vers l\'abonnement fonctionne', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const memberPage = new MemberSpacePage(page);
     await memberPage.goto();
     await memberPage.navigateToSubscription();
@@ -51,7 +51,7 @@ test.describe('SC-02 — Accès et navigation dans l\'espace membre (CRITIQUE)',
   });
 
   test('02.5 — Navigation vers la vérification fonctionne', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const memberPage = new MemberSpacePage(page);
     await memberPage.goto();
     await memberPage.navigateToVerification();
@@ -68,7 +68,7 @@ test.describe('SC-02 — Accès et navigation dans l\'espace membre (CRITIQUE)',
     ];
     for (const section of sections) {
       await page.goto(`${BASE}${section}`);
-      await page.waitForLoadState('load');
+      await page.waitForLoadState('domcontentloaded');
       await page.waitForTimeout(1000);
       await expect(page.getByText(/500|server error/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
     }

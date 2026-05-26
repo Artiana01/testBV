@@ -31,9 +31,9 @@ export default defineConfig({
 
   globalSetup: './apps/bvbusiness/global-setup.ts',
 
-  timeout: 60_000,
+  timeout: 90_000,
 
-  expect: { timeout: 10_000 },
+  expect: { timeout: 15_000 },
 
   // Séquentiel pour éviter le rate limiting sur l'environnement staging
   fullyParallel: false,
@@ -49,6 +49,8 @@ export default defineConfig({
 
   use: {
     baseURL: process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com',
+    navigationTimeout: 45_000,
+    actionTimeout: 15_000,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',

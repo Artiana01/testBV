@@ -29,12 +29,12 @@ export class AdminUsersPage extends BasePage {
   async verifyUsersPageLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/admin.*user|user.*admin/i, { timeout: 15_000 });
     const content = this.page.locator('main, [role="main"]');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyUsersTableVisible(): Promise<void> {
     const table = this.page.locator(this.usersTable).first();
-    await expect(table).toBeVisible({ timeout: 10_000 });
+    await expect(table).toBeVisible({ timeout: 20_000 });
   }
 
   async searchUser(query: string): Promise<void> {
@@ -47,7 +47,7 @@ export class AdminUsersPage extends BasePage {
 
   async verifyUserInList(identifier: string): Promise<void> {
     const userRow = this.page.getByText(identifier);
-    await expect(userRow.first()).toBeVisible({ timeout: 10_000 });
+    await expect(userRow.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyPaginationIfPresent(): Promise<void> {

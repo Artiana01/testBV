@@ -38,7 +38,7 @@ export class DashboardPage extends BasePage {
     await expect(this.page).toHaveURL(/dashboard|account/i, { timeout: 15_000 });
     // Le contenu principal doit être visible
     const mainContent = this.page.locator('main, [class*="dashboard"], [class*="content"], [role="main"]');
-    await expect(mainContent.first()).toBeVisible({ timeout: 10_000 });
+    await expect(mainContent.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyKpisVisible(): Promise<void> {
@@ -50,7 +50,7 @@ export class DashboardPage extends BasePage {
     // Il doit y avoir au moins un élément KPI visible
     const count = await kpiElements.count();
     if (count > 0) {
-      await expect(kpiElements.first()).toBeVisible({ timeout: 10_000 });
+      await expect(kpiElements.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 
@@ -107,12 +107,12 @@ export class DashboardPage extends BasePage {
     const navLink = this.page.locator('nav a, aside a, [class*="sidebar"] a, [class*="nav"] a');
     const count = await navLink.count();
     if (count > 0) {
-      await expect(navLink.first()).toBeVisible({ timeout: 10_000 });
+      await expect(navLink.first()).toBeVisible({ timeout: 20_000 });
       return;
     }
 
     // Fallback : vérifier qu'un élément de navigation est visible
     const navContainer = this.page.locator('nav, aside, [role="navigation"], [class*="sidebar"]');
-    await expect(navContainer.first()).toBeVisible({ timeout: 10_000 });
+    await expect(navContainer.first()).toBeVisible({ timeout: 20_000 });
   }
 }

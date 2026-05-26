@@ -21,7 +21,7 @@ test.describe('E2E 02: Connexion + Souscription Pack', () => {
     );
 
     // Attendre la navigation post-login
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Vérifier que le dashboard est accessible
     await agencyDashboardPage.verifyDashboardLoaded();
@@ -35,7 +35,7 @@ test.describe('E2E 02: Connexion + Souscription Pack', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Naviguer vers la page de sélection des packs
     await page.goto('/fr/packs');
@@ -60,7 +60,7 @@ test.describe('E2E 02: Connexion + Souscription Pack', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
     await page.goto('/fr/packs');
     await page.waitForLoadState('domcontentloaded');
 
@@ -96,7 +96,7 @@ test.describe('E2E 02: Connexion + Souscription Pack', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Vérifier que le dashboard affiche le statut du pack actif
     await agencyDashboardPage.verifyDashboardLoaded();

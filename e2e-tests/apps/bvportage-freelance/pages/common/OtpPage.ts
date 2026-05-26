@@ -26,7 +26,7 @@ export class OtpPage extends BasePage {
 
   async submitOtp() {
     await this.click(this.otpSubmitButton);
-    await this.page.waitForLoadState('load', { timeout: 30000 }).catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async getErrorMessage(): Promise<string> {

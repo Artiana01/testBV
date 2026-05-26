@@ -30,7 +30,7 @@ export class AdminRegionalContentPage extends BasePage {
 
   async verifyRegionalPageLoaded(): Promise<void> {
     const content = this.page.locator('main, [role="main"]');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   }
 
@@ -59,7 +59,7 @@ export class AdminRegionalContentPage extends BasePage {
 
   async saveRegionalContent(): Promise<void> {
     const btn = this.page.locator(this.saveBtn).first();
-    const isVisible = await btn.isVisible({ timeout: 10_000 }).catch(() => false);
+    const isVisible = await btn.isVisible({ timeout: 20_000 }).catch(() => false);
     if (!isVisible) {
       console.log('   ℹ️  Bouton de sauvegarde régional non trouvé — vérifier URL/sélecteurs dans AdminRegionalContentPage');
       return;

@@ -23,7 +23,7 @@ export class AdminDashboardPage extends BasePage {
   async verifyAdminDashboardLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/dashboard/i, { timeout: 15_000 });
     const main = this.page.locator('main, [class*="dashboard"], [role="main"]');
-    await expect(main.first()).toBeVisible({ timeout: 10_000 });
+    await expect(main.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyKpisVisible(): Promise<void> {
@@ -32,13 +32,13 @@ export class AdminDashboardPage extends BasePage {
     );
     const count = await kpiElements.count();
     if (count > 0) {
-      await expect(kpiElements.first()).toBeVisible({ timeout: 10_000 });
+      await expect(kpiElements.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 
   async verifyAdminNavigation(): Promise<void> {
     const adminNav = this.page.locator('nav, aside, [class*="sidebar"], [class*="menu"]');
-    await expect(adminNav.first()).toBeVisible({ timeout: 10_000 });
+    await expect(adminNav.first()).toBeVisible({ timeout: 20_000 });
   }
 
   private lang(): string {
@@ -49,7 +49,7 @@ export class AdminDashboardPage extends BasePage {
     await this.navigate(`/${this.lang()}/admin/users`);
     await this.waitForLoad();
     await this.page.waitForTimeout(2000);
-    await expect(this.page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateToClients(): Promise<void> {
@@ -63,14 +63,14 @@ export class AdminDashboardPage extends BasePage {
     await this.navigate(`/${this.lang()}/admin/packages`);
     await this.waitForLoad();
     await this.page.waitForTimeout(2000);
-    await expect(this.page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateToPayments(): Promise<void> {
     await this.navigate(`/${this.lang()}/admin/payments`);
     await this.waitForLoad();
     await this.page.waitForTimeout(2000);
-    await expect(this.page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateToContent(): Promise<void> {

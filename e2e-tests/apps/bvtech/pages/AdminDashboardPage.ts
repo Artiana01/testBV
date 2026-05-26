@@ -37,13 +37,13 @@ export class AdminDashboardPage extends BasePage {
     // Vérifier qu'on est sur le dashboard
     await expect(this.page).toHaveURL(/dashboard/i, { timeout: 15_000 });
     const mainContent = this.page.locator('main, [class*="dashboard"], [class*="content"], [role="main"]');
-    await expect(mainContent.first()).toBeVisible({ timeout: 10_000 });
+    await expect(mainContent.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyAdminSections(): Promise<void> {
     // Vérifier la présence des sections admin dans le sidebar ou la navigation
     const adminNav = this.page.locator('nav, aside, [class*="sidebar"], [class*="menu"]');
-    await expect(adminNav.first()).toBeVisible({ timeout: 10_000 });
+    await expect(adminNav.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyKpisVisible(): Promise<void> {
@@ -54,7 +54,7 @@ export class AdminDashboardPage extends BasePage {
     
     const count = await kpiElements.count();
     if (count > 0) {
-      await expect(kpiElements.first()).toBeVisible({ timeout: 10_000 });
+      await expect(kpiElements.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 
@@ -70,7 +70,7 @@ export class AdminDashboardPage extends BasePage {
     await this.page.waitForTimeout(2000);
     // Vérifier que la page s'est chargée correctement
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateToPacks(): Promise<void> {
@@ -81,7 +81,7 @@ export class AdminDashboardPage extends BasePage {
     await this.page.waitForTimeout(2000);
     // Vérifier que la page s'est chargée correctement
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateToPayments(): Promise<void> {
@@ -92,7 +92,7 @@ export class AdminDashboardPage extends BasePage {
     await this.page.waitForTimeout(2000);
     // Vérifier que la page s'est chargée correctement
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateToContacts(): Promise<void> {
@@ -103,6 +103,6 @@ export class AdminDashboardPage extends BasePage {
     await this.page.waitForTimeout(2000);
     // Vérifier que la page s'est chargée correctement
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 }

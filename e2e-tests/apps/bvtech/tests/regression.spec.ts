@@ -46,7 +46,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
     // Note : bvtech-regression utilise storageState admin → /fr/signup redirige vers /fr/admin
     // Ce comportement est intentionnel (admin déjà connecté). Le formulaire signup est couvert
     // exhaustivement par E2E-01 (projet bvtech-public sans storageState).
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
 
@@ -57,7 +57,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
     }
 
     await expect(page).toHaveURL(/signup/i);
-    await expect(page.locator('input[type="email"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('input[type="email"]').first()).toBeVisible({ timeout: 20_000 });
     await expect(page.locator('input[type="password"]').first()).toBeVisible();
 
     const recaptcha = page.locator('iframe[src*="recaptcha"], .g-recaptcha, [data-sitekey]')

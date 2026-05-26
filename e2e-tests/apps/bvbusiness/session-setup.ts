@@ -66,7 +66,7 @@ const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes pour recevoir et cliquer le lien
 
   // Aller sur la page login et pré-remplir l'email
   await page.goto(`${BASE_URL}/fr/login`);
-  await page.waitForLoadState('load');
+  await page.waitForLoadState('domcontentloaded');
 
   // Vérifier si déjà connecté
   if (!page.url().includes('/login')) {

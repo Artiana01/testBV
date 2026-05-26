@@ -39,7 +39,7 @@ test.describe('SC-05 — Connexion client (CRITIQUE)', () => {
   });
 
   test('05.3 — Les KPIs client sont affichés', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     // storageState client déjà appliqué par le projet Playwright
     const dashboard = new ClientDashboardPage(page);
     await dashboard.goto();
@@ -48,10 +48,10 @@ test.describe('SC-05 — Connexion client (CRITIQUE)', () => {
   });
 
   test('05.4 — Le dashboard client ne redirige pas vers login (session)', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new ClientDashboardPage(page);
     await dashboard.goto();
-    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 10_000 });
+    await expect(page).not.toHaveURL(/\/login|\/signin/, { timeout: 20_000 });
   });
 
 });

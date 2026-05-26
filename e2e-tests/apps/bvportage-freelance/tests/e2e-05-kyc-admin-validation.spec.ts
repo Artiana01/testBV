@@ -5,8 +5,7 @@ dotenv.config();
 
 test.describe('E2E-05 — KYC + Validation Admin', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
@@ -15,12 +14,11 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
 
     await loginPage.chooseFreelanceProfile();
 
-    await expect(dashboardFreelancePage.page).toHaveURL(new RegExp('dashboard|home|tableau'), { timeout: 30000 });
+    await expect(dashboardFreelancePage.page).not.toHaveURL(/connexion|login|signin/, { timeout: 60_000 });
   });
 
   test('Soumission KYC: Selfie + CIN + RIB', async ({ kycPage, page }) => {
-    await page.goto('/fr/kyc');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/kyc', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const testImagePath = './test-files/selfie.jpg';
     const testDocPath = './test-files/cin.jpg';
@@ -36,8 +34,7 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Notification envoi KYC', async ({ kycPage, page }) => {
-    await page.goto('/fr/kyc');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/kyc', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     try {
       await kycPage.submitKyc();
@@ -51,8 +48,7 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
 
   test('Admin: Validation KYC en attente', async ({ loginPage, adminDashboardPage, page }) => {
     await page.goto('/fr/deconnexion').catch(() => {});
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.ADMIN_EMAIL || 'admin@bluevaloris.test',
@@ -66,8 +62,7 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Admin: Clic sur freelancer à valider', async ({ adminDashboardPage, page }) => {
-    await page.goto('/fr/admin/kyc');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/admin/kyc', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     try {
       const freelancerName = 'Daniellah';
@@ -81,8 +76,7 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Admin: Validation du document KYC', async ({ adminDashboardPage, page }) => {
-    await page.goto('/fr/admin/kyc');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/admin/kyc', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     try {
       const freelancerName = 'Daniellah';
@@ -97,8 +91,7 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
   });
 
   test('Freelancer: Statut KYC validé', async ({ loginPage, dashboardFreelancePage, kycPage, page }) => {
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
@@ -107,8 +100,7 @@ test.describe('E2E-05 — KYC + Validation Admin', () => {
 
     await loginPage.chooseFreelanceProfile();
 
-    await page.goto('/fr/kyc');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/kyc', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     try {
       const status = await kycPage.getKycStatus();

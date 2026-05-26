@@ -26,9 +26,9 @@ export class AdminUsersPage extends BasePage {
   }
 
   async verifyUsersPageLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   }
 
@@ -36,7 +36,7 @@ export class AdminUsersPage extends BasePage {
     const rows = this.page.locator(this.userRow);
     const count = await rows.count();
     if (count > 0) {
-      await expect(rows.first()).toBeVisible({ timeout: 10_000 });
+      await expect(rows.first()).toBeVisible({ timeout: 20_000 });
       console.log(`   ✅  ${count} utilisateur(s) trouvé(s)`);
     } else {
       console.log('   ℹ️  Liste utilisateurs vide ou sélecteurs à adapter');

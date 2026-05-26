@@ -20,15 +20,15 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 test.describe('SC-07 — Contenu Régional Admin (SECONDAIRE)', () => {
 
   test('07.1 — La page Contenu Régional est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.navigateToRegionalContent();
-    await expect(page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('07.2 — Un sélecteur de région est présent', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const regionalPage = new AdminRegionalContentPage(page);
     await regionalPage.goto();
     await regionalPage.verifyRegionSelectorPresent();

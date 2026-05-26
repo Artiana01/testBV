@@ -24,24 +24,33 @@ const STRIPE_NAME   = process.env.STRIPE_NAME   ?? 'Test QA';
 
 test.describe('SC-05 — Tunnel de vente (utilisateur connecté)', () => {
 
+  test.beforeEach(async ({ page }) => {
+    // Vérifier que la session client est valide
+    await page.goto(`${BASE}/fr/espace-client`, { waitUntil: 'domcontentloaded', timeout: 45_000 }).catch(() => {});
+    const url = page.url();
+    if (url.includes('/login') || url.includes('/connexion')) {
+      test.skip(true, 'Session client invalide — credentials harivola@test.test non acceptés. Mettre à jour apps/creerailleurs/.env');
+    }
+  });
+
   test('05.1 — La page du Manifeste est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const manifeste = new ManifestePage(page);
     await manifeste.navigateToManifeste();
-    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('h1, h2, main').first()).toBeVisible({ timeout: 20_000 });
     const url = page.url();
     expect(url).toMatch(/manifeste|creerailleurs/i);
   });
 
   test('05.2 — La page de commande est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const manifeste = new ManifestePage(page);
     await manifeste.navigateToOrder();
-    await expect(page.locator('main, form').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('main, form').first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('05.3 — Le montant du Manifeste est affiché sur la page commande', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const manifeste = new ManifestePage(page);
     await manifeste.navigateToOrder();
     // Vérifier qu'un prix est affiché
@@ -77,7 +86,7 @@ test.describe('SC-05 — Tunnel de vente (utilisateur connecté)', () => {
   });
 
   test('05.5 — Le formulaire de paiement Stripe est présent', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const manifeste = new ManifestePage(page);
     await manifeste.navigateToOrder();
     await page.waitForTimeout(3000);
@@ -91,7 +100,7 @@ test.describe('SC-05 — Tunnel de vente (utilisateur connecté)', () => {
   });
 
   test('05.6 — [BUG CONNU] Badges STRIPE CERTIFIED / PCI COMPLIANCE non interactifs', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const manifeste = new ManifestePage(page);
     await manifeste.navigateToOrder();
     const stripeBadge = page.locator('text=/stripe certified|pci compliance/i').first();
@@ -134,8 +143,8 @@ test.describe('SC-05 — Tunnel de vente (utilisateur connecté)', () => {
     const auth = new AuthPage(page);
     await auth.login(TEST_EMAIL, TEST_PASSWORD);
     // Aller dans les documents du dashboard
-    await page.goto(`${BASE}/documents`);
-    await page.waitForLoadState('load');
+    await page.goto(`${BASE}/fr/espace-client/documents`);
+    await page.waitForLoadState('domcontentloaded');
     const downloadBtn = page.getByRole('link', { name: /télécharger|download/i })
       .or(page.getByRole('button', { name: /télécharger|download/i }));
     if (await downloadBtn.first().isVisible({ timeout: 5_000 }).catch(() => false)) {

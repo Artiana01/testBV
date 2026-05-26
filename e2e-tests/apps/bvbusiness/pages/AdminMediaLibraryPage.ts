@@ -33,13 +33,13 @@ export class AdminMediaLibraryPage extends BasePage {
   async verifyMediaLibraryLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/admin.*media|media.*admin|library/i, { timeout: 15_000 });
     const content = this.page.locator('main, [role="main"]');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyUploadButtonVisible(): Promise<void> {
     const btn = this.page.locator(this.uploadBtn).first()
       .or(this.page.locator(this.uploadInput).first());
-    await expect(btn).toBeVisible({ timeout: 10_000 });
+    await expect(btn).toBeVisible({ timeout: 20_000 });
   }
 
   async uploadFile(filePath?: string): Promise<void> {

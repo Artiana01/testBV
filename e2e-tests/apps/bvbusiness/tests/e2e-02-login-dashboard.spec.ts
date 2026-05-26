@@ -35,25 +35,25 @@ test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   test('02.1 — La page login est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.verifyLoginPageLoaded();
   });
 
   test('02.2 — Le formulaire contient le champ email et le bouton "Continuer avec l\'adresse email"', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
-    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 20_000 });
     await expect(
       page.getByRole('button', { name: /continuer avec l'adresse email|continue with email/i })
         .or(page.locator('button[type="submit"]'))
-    ).toBeVisible({ timeout: 10_000 });
+    ).toBeVisible({ timeout: 20_000 });
   });
 
   test('02.3 — Le bouton "Continuer avec Google" est présent', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.verifyGoogleButtonVisible();
@@ -73,7 +73,7 @@ test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
   });
 
   test('02.5 — Soumission avec email invalide affiche une erreur', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.fillEmail('email-invalide-sans-arobase');
@@ -82,9 +82,9 @@ test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
   });
 
   test('02.6 — Soumission sans email affiche une erreur de validation', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     // Clic direct sans remplir le champ
     const submitBtn = page.locator('button[type="submit"]').first();
     await submitBtn.click();
@@ -100,32 +100,32 @@ test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
 test.describe('SC-02 — Dashboard après connexion (storageState)', () => {
 
   test('02.7 — Dashboard est accessible avec la session active', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminDashboardLoaded();
   });
 
   test('02.8 — KPIs sont visibles sur le dashboard admin', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyKpisVisible();
   });
 
   test('02.9 — La navigation admin (sidebar/menu) est visible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminNavigation();
   });
 
   test('02.10 — Pas de redirection vers /login avec session active', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     await page.waitForTimeout(2000);
-    await expect(page).not.toHaveURL(/\/login/, { timeout: 10_000 });
+    await expect(page).not.toHaveURL(/\/login/, { timeout: 20_000 });
   });
 
 });

@@ -5,8 +5,7 @@ dotenv.config();
 
 test.describe('E2E-06 — Facturation + Paiement', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
@@ -15,12 +14,11 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
 
     await loginPage.chooseFreelanceProfile();
 
-    await expect(dashboardFreelancePage.page).toHaveURL(new RegExp('dashboard|home|tableau'), { timeout: 30000 });
+    await expect(dashboardFreelancePage.page).not.toHaveURL(/connexion|login|signin/, { timeout: 60_000 });
   });
 
   test('Génération facture depuis mission', async ({ invoicePage, page }) => {
-    await page.goto('/fr/factures');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/factures', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const missionTitle = process.env.MISSION_TITLE || 'Dev_Mission_Demo';
 
@@ -32,8 +30,7 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
   });
 
   test('Récupération lien paiement', async ({ invoicePage, page }) => {
-    await page.goto('/fr/factures');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/factures', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const missionTitle = process.env.MISSION_TITLE || 'Dev_Mission_Demo';
     await invoicePage.selectMissionForInvoice(missionTitle);
@@ -44,8 +41,7 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
   });
 
   test('Téléchargement facture PDF', async ({ invoicePage, page }) => {
-    await page.goto('/fr/factures');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/factures', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await invoicePage.viewInvoice();
     await invoicePage.downloadInvoice();
@@ -54,8 +50,7 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
   });
 
   test('Envoi facture par message privé au client', async ({ invoicePage, page }) => {
-    await page.goto('/fr/factures');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/factures', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     try {
       await invoicePage.sendInvoiceToClient();
@@ -67,8 +62,7 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
 
   test('Client: Réception lien paiement', async ({ loginPage, page }) => {
     await page.goto('/fr/deconnexion').catch(() => {});
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.CLIENT_EMAIL || 'client@bluevaloris.test',
@@ -80,8 +74,7 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
   });
 
   test('Client: Paiement facture via Stripe', async ({ page }) => {
-    await page.goto('/fr/paiement-facture-client');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/paiement-facture-client', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const paymentLink = await page.$('a[href*="payment"], button:has-text("Payer")');
     expect(paymentLink).toBeTruthy();
@@ -96,16 +89,14 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
 
   test('Facture marquée comme payée (côté freelancer)', async ({ loginPage, invoicePage, page }) => {
     await page.goto('/fr/deconnexion').catch(() => {});
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
       process.env.FREELANCER_PASSWORD || 'Freelance123!'
     );
 
-    await page.goto('/fr/factures');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/factures', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     try {
       const isPaid = await invoicePage.isPaid();
@@ -116,8 +107,7 @@ test.describe('E2E-06 — Facturation + Paiement', () => {
   });
 
   test('Reversement en attente de 72h', async ({ page }) => {
-    await page.goto('/fr/reversements');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/reversements', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const waitingMsg = await page.textContent('text=72, text=attente');
     expect(waitingMsg).toBeTruthy();

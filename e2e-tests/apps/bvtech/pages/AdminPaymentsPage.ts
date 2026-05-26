@@ -29,9 +29,9 @@ export class AdminPaymentsPage extends BasePage {
   // =========================================================
 
   async verifyPaymentsListVisible(): Promise<void> {
-    await expect(this.page).toHaveURL(/admin\/payments/, { timeout: 10_000 });
+    await expect(this.page).toHaveURL(/admin\/payments/, { timeout: 20_000 });
     // La table est présente même si vide ("Aucun résultat trouvé")
-    await expect(this.page.locator('table')).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator('table')).toBeVisible({ timeout: 20_000 });
   }
 
   async getPaymentsCount(): Promise<number> {
@@ -75,7 +75,7 @@ export class AdminPaymentsPage extends BasePage {
         .or(this.page.locator('[class*="view"], [data-testid*="view"]'));
       await viewBtn.first().click();
     }
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
     await this.page.waitForTimeout(1000);
   }
 
@@ -87,7 +87,7 @@ export class AdminPaymentsPage extends BasePage {
     }
     const detailsContent = this.page.getByText(/montant|amount|statut|status|id|référence|reference/i)
       .or(this.page.locator('[class*="detail"], [class*="payment-info"]'));
-    await expect(detailsContent.first()).toBeVisible({ timeout: 10_000 });
+    await expect(detailsContent.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyPaymentHasAmount(): Promise<void> {

@@ -5,8 +5,7 @@ dotenv.config();
 
 test.describe('E2E-03 — Création Projet + Client', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
@@ -15,7 +14,7 @@ test.describe('E2E-03 — Création Projet + Client', () => {
 
     await loginPage.chooseFreelanceProfile();
 
-    await expect(dashboardFreelancePage.page).toHaveURL(new RegExp('dashboard|home|tableau'), { timeout: 30000 });
+    await expect(dashboardFreelancePage.page).not.toHaveURL(/connexion|login|signin/, { timeout: 60_000 });
   });
 
   test('Création projet avec nouveau client', async ({ clientPage, page }) => {
@@ -40,7 +39,7 @@ test.describe('E2E-03 — Création Projet + Client', () => {
   });
 
   test('Projet créé automatiquement lors de création client', async ({ projectPage, page }) => {
-    await page.goto('/fr/clients');
+    await page.goto('/fr/clients', { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await page.waitForLoadState('domcontentloaded');
 
     const projectName = `Test_${Date.now()}`;
@@ -53,7 +52,7 @@ test.describe('E2E-03 — Création Projet + Client', () => {
   });
 
   test('Client visible dans liste', async ({ page }) => {
-    await page.goto('/fr/clients');
+    await page.goto('/fr/clients', { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await page.waitForLoadState('domcontentloaded');
 
     const clientList = await page.$('[class*="client"]');

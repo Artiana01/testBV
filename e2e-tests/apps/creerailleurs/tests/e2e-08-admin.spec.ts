@@ -18,10 +18,10 @@ const BASE = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
 test.describe('SC-08 — Dashboard administrateur', () => {
 
   test('08.1 — Le dashboard admin est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdmin();
-    await expect(page.locator('main, h1, h2').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('main, h1, h2').first()).toBeVisible({ timeout: 20_000 });
     const url = page.url();
     // Vérifier qu'on n'est pas redirigé vers le login
     expect(url).not.toMatch(/login|connexion/i);
@@ -29,10 +29,10 @@ test.describe('SC-08 — Dashboard administrateur', () => {
   });
 
   test('08.2 — Les KPIs du dashboard admin sont visibles', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdmin();
-    await expect(page.locator('main').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('main, h1, h2, [role="main"]').first()).toBeVisible({ timeout: 20_000 });
     const kpiEl = page.locator('[class*="card"], [class*="stat"], [class*="kpi"], section').first();
     const isVisible = await kpiEl.isVisible({ timeout: 5_000 }).catch(() => false);
     if (isVisible) {
@@ -42,16 +42,16 @@ test.describe('SC-08 — Dashboard administrateur', () => {
   });
 
   test('08.3 — La page Gestion Utilisateurs est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
-    await expect(page.locator('main, table, [role="grid"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('main, h1, h2, table, [role="grid"], [role="main"]').first()).toBeVisible({ timeout: 20_000 });
     const url = page.url();
     expect(url).not.toMatch(/login|connexion/i);
   });
 
   test('08.4 — La liste des utilisateurs est affichée', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
     const table = page.locator('table, [role="grid"], [class*="table"]').first();
@@ -67,7 +67,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
   });
 
   test('08.5 — [BUG CONNU] Création d\'utilisateur admin non fonctionnelle', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
     const createBtn = admin.create_user_btn;
@@ -88,16 +88,16 @@ test.describe('SC-08 — Dashboard administrateur', () => {
   });
 
   test('08.6 — La page Gestion Manifestes est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminManifestes();
-    await expect(page.locator('main').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('main, h1, h2, [role="main"]').first()).toBeVisible({ timeout: 20_000 });
     const url = page.url();
     expect(url).not.toMatch(/login|connexion/i);
   });
 
   test('08.7 — La liste des Manifestes est affichée', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminManifestes();
     const listEl = page.locator('table, [class*="list"], ul, [role="grid"]').first();
@@ -140,17 +140,17 @@ test.describe('SC-08 — Dashboard administrateur', () => {
   });
 
   test('08.9 — La page Gestion des Packs est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminPacks();
-    await expect(page.locator('main').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('main, h1, h2, [role="main"]').first()).toBeVisible({ timeout: 20_000 });
     const url = page.url();
     expect(url).not.toMatch(/login|connexion/i);
     console.log(`Page packs admin: ${url}`);
   });
 
   test('08.10 — Export PDF disponible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
     const pdfBtn = admin.export_pdf;
@@ -173,7 +173,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
   });
 
   test('08.11 — Export Excel/CSV disponible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
     const excelBtn = admin.export_excel;

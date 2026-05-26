@@ -1,55 +1,56 @@
 /**
  * pages/SignupPage.ts
  * Gère le formulaire d'inscription des agences
- * 
+ *
  * Sélecteurs basés sur l'inspection réelle du DOM (05/2026) :
- *   last_name     → "Saisir votre nom"
- *   first_name    → "Saisir votre prénom"
- *   email         → "Saisir votre email ex. nom@gmail.com"
- *   password      → "••••••••"
- *   confirmPassword → "••••••••"
- *   civility      → input[type="radio"] (Monsieur / Madame)
- *   nationalité   → button custom dropdown "Sélectionnez votre nationalité"
- *   birth_date    → input[type="date"]
- *   submit        → button[type="submit"] "Créer mon compte"
- *   google        → button "Continuer avec Google"
+ *   Nom         → "Saisir votre nom"
+ *   Prénom      → "Saisir votre prénom"
+ *   E-mail      → placeholder contenant "@"
+ *   password    → input[type="password"] premier
+ *   confirm     → input[type="password"] second
+ *   Civilité    → input[type="radio"]
+ *   Nationalité → dropdown custom + recherche
+ *   submit      → button[type="submit"] OU "Créer mon compte"
+ *   google      → button "Continuer avec Google"
  */
 import { Page, expect } from '@playwright/test';
 import { BasePage } from '../../../shared/pages/BasePage';
 
 export class SignupPage extends BasePage {
-  // ── Champs du formulaire ──────────────────────────────────────────────────
-  readonly lastNameInput        = this.page.locator('input[name="last_name"]');
-  readonly firstNameInput       = this.page.locator('input[name="first_name"]');
-  readonly emailInput           = this.page.locator('input[name="email"][type="email"]');
-  readonly passwordInput        = this.page.locator('input[name="password"]');
-  readonly confirmPasswordInput = this.page.locator('input[name="confirmPassword"]');
-  readonly birthDateInput       = this.page.locator('input[name="birth_date"]');
+  // ── Champs du formulaire — sélecteurs larges (name ET placeholder) ──────────
+  readonly lastNameInput = this.page.locator(
+    'input[name="last_name"], input[name="nom"], input[name="lastName"], input[placeholder*="votre nom" i]'
+  ).first();
+
+  readonly firstNameInput = this.page.locator(
+    'input[name="first_name"], input[name="prenom"], input[name="firstName"], input[placeholder*="votre pr" i]'
+  ).first();
+
+  readonly emailInput = this.page.locator('input[type="email"], input[name="email"], input[placeholder*="@"]').first();
+
+  readonly passwordInput = this.page.locator('input[type="password"]').first();
+  readonly confirmPasswordInput = this.page.locator('input[type="password"]').nth(1);
+
+  readonly birthDateInput = this.page.locator('input[type="date"], input[name="birth_date"]').first();
 
   // Civilité → radio buttons (Monsieur / Madame)
-  readonly civilityMrRadio      = this.page.locator('input[type="radio"][name="civility"]').first();
-  readonly civilityMrsRadio     = this.page.locator('input[type="radio"][name="civility"]').last();
+  readonly civilityMrRadio  = this.page.locator('input[type="radio"][value="M"], input[type="radio"][name="civility"]').first();
+  readonly civilityMrsRadio = this.page.locator('input[type="radio"][value="F"], input[type="radio"][name="civility"]').last();
 
   // Nationalité → bouton custom dropdown
-  readonly nationalityButton    = this.page.locator('button:has-text("Sélectionnez votre nationalité")');
-  // Pays de résidence → bouton custom dropdown
-  readonly countryButton        = this.page.locator('button:has-text("Sélectionnez le pays de votre résidence")');
+  readonly nationalityButton = this.page.locator('button:has-text("Sélectionnez votre nationalité")');
 
   // Bouton de soumission
-  readonly signupButton         = this.page.locator('button[type="submit"]');
+  readonly signupButton = this.page.locator('button[type="submit"], button:has-text("Créer mon compte")').first();
 
   // Bouton Google
-  readonly googleButton         = this.page.locator('button:has-text("Continuer avec Google")');
+  readonly googleButton = this.page.locator('button:has-text("Continuer avec Google")');
 
   // Messages
-  readonly errorMessage         = this.page.locator('[role="alert"], .error, .text-red');
-  readonly successMessage       = this.page.locator('[role="status"], .success, .text-green');
+  readonly errorMessage   = this.page.locator('[role="alert"], .error, .text-red-500').first();
+  readonly successMessage = this.page.locator('[role="status"], .success, .text-green-500').first();
 
   // ── Navigation ────────────────────────────────────────────────────────────
-  /**
-   * Normalise les chemins courts → chemin réel de l'application.
-   *   /signup  →  /fr/inscription
-   */
   async navigate(path: string = '/fr/inscription'): Promise<void> {
     const map: Record<string, string> = {
       '/signup':      '/fr/inscription',
@@ -60,60 +61,58 @@ export class SignupPage extends BasePage {
     await this.page.waitForLoadState('domcontentloaded');
   }
 
-  // ── Méthodes utilitaires ──────────────────────────────────────────────────
-
-  /**
-   * Sélectionne la civilité via les boutons radio.
-   * @param civility "M." | "Mme" | "Monsieur" | "Madame"
-   */
+  // ── Sélection de civilité ──────────────────────────────────────────────────
   async selectCivility(civility: string): Promise<void> {
-    const isMme = /^(Mme|Madame)$/i.test(civility.trim());
+    const isMme = /^(Mme|Madame|F)$/i.test(civility.trim());
     if (isMme) {
-      await this.civilityMrsRadio.check();
+      await this.civilityMrsRadio.check().catch(() => {});
     } else {
-      await this.civilityMrRadio.check();
+      await this.civilityMrRadio.check().catch(() => {});
     }
   }
 
-  /**
-   * Sélectionne la nationalité dans le custom dropdown.
-   * @param nationality Texte de la nationalité, ex. "Française"
-   */
+  // ── Sélection de nationalité (avec recherche) ──────────────────────────────
   async selectNationality(nationality: string): Promise<void> {
     await this.nationalityButton.click();
-    // Attendre l'ouverture du dropdown puis cliquer sur l'option
-    await this.page.waitForTimeout(300);
-    await this.page.locator(`li:has-text("${nationality}"), [role="option"]:has-text("${nationality}")`).first().click();
+    await this.page.waitForTimeout(400);
+
+    // Utiliser le champ de recherche si disponible
+    const searchInput = this.page.locator(
+      'input[placeholder*="pays" i], input[placeholder*="recherch" i], input[placeholder*="search" i]'
+    ).first();
+    if (await searchInput.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await searchInput.fill(nationality);
+      await this.page.waitForTimeout(400);
+    }
+
+    // Cliquer sur la première option correspondante
+    const option = this.page.locator(
+      `li:has-text("${nationality}"), [role="option"]:has-text("${nationality}")`
+    ).first();
+    await option.waitFor({ state: 'visible', timeout: 8_000 });
+    await option.click();
   }
 
-  /**
-   * Sélectionne le pays de résidence dans le custom dropdown.
-   * @param country Texte du pays, ex. "France"
-   */
-  async selectCountry(country: string): Promise<void> {
-    await this.countryButton.click();
-    await this.page.waitForTimeout(300);
-    await this.page.locator(`li:has-text("${country}"), [role="option"]:has-text("${country}")`).first().click();
-  }
-
-  /**
-   * Remplit le formulaire d'inscription complet.
-   */
+  // ── Remplissage du formulaire complet ─────────────────────────────────────
   async fillSignupForm(data: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-    civility?: string;
+    firstName:   string;
+    lastName:    string;
+    email:       string;
+    password:    string;
+    civility?:   string;
     nationality?: string;
-    birthDate?: string;
-    country?: string;
+    birthDate?:  string;
+    country?:    string;
   }): Promise<void> {
     await this.lastNameInput.fill(data.lastName);
     await this.firstNameInput.fill(data.firstName);
     await this.emailInput.fill(data.email);
     await this.passwordInput.fill(data.password);
-    await this.confirmPasswordInput.fill(data.password);
+
+    const confirm = this.page.locator('input[type="password"]').nth(1);
+    if (await confirm.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await confirm.fill(data.password);
+    }
 
     if (data.civility) {
       await this.selectCivility(data.civility);
@@ -124,26 +123,7 @@ export class SignupPage extends BasePage {
     }
 
     if (data.birthDate) {
-      await this.birthDateInput.fill(data.birthDate);
-    }
-
-    if (data.country) {
-      await this.selectCountry(data.country);
-    }
-  }
-
-  /**
-   * Coche la case des conditions si elle existe (optionnel dans le formulaire réel).
-   */
-  async acceptTerms(): Promise<void> {
-    try {
-      const checkbox = this.page.locator('input[type="checkbox"]');
-      const visible = await checkbox.isVisible({ timeout: 2000 }).catch(() => false);
-      if (visible) {
-        await checkbox.check();
-      }
-    } catch {
-      // Pas de checkbox dans cette version du formulaire
+      await this.birthDateInput.fill(data.birthDate).catch(() => {});
     }
   }
 
@@ -151,15 +131,15 @@ export class SignupPage extends BasePage {
     await this.signupButton.click();
   }
 
+  async verifyGoogleButtonExists(): Promise<void> {
+    await expect(this.googleButton).toBeVisible({ timeout: 20_000 });
+  }
+
   async verifySignupSuccess(): Promise<void> {
-    await expect(this.successMessage).toBeVisible({ timeout: 10000 });
+    await expect(this.successMessage).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyValidationError(): Promise<void> {
-    await expect(this.errorMessage).toBeVisible({ timeout: 8000 });
-  }
-
-  async verifyGoogleButtonExists(): Promise<void> {
-    await expect(this.googleButton).toBeVisible();
+    await expect(this.errorMessage).toBeVisible({ timeout: 8_000 });
   }
 }

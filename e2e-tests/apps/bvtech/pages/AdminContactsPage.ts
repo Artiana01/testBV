@@ -29,8 +29,8 @@ export class AdminContactsPage extends BasePage {
   // =========================================================
 
   async verifyContactsListVisible(): Promise<void> {
-    await expect(this.page).toHaveURL(/admin\/contacts/, { timeout: 10_000 });
-    await expect(this.page.locator('table')).toBeVisible({ timeout: 10_000 });
+    await expect(this.page).toHaveURL(/admin\/contacts/, { timeout: 20_000 });
+    await expect(this.page.locator('table')).toBeVisible({ timeout: 20_000 });
   }
 
   async getContactsCount(): Promise<number> {

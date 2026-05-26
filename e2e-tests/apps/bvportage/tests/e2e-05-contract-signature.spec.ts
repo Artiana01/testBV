@@ -18,7 +18,7 @@ test.describe('E2E 05: Signature Contrat', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Accéder au menu Contrat
     await agencyDashboardPage.clickContractMenu();
@@ -41,13 +41,13 @@ test.describe('E2E 05: Signature Contrat', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     await agencyDashboardPage.clickContractMenu();
     await contractPage.createContract();
 
     // Télécharger le contrat
-    const downloadPromise = page.waitForEvent('download', { timeout: 30000 });
+    const downloadPromise = page.waitForEvent('download', { timeout: 60_000 });
     await contractPage.downloadContract();
     const download = await downloadPromise;
 
@@ -63,7 +63,7 @@ test.describe('E2E 05: Signature Contrat', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     await agencyDashboardPage.clickContractMenu();
     await contractPage.createContract();
@@ -89,7 +89,7 @@ test.describe('E2E 05: Signature Contrat', () => {
       process.env.AGENCY_PASSWORD || 'Agency123!'
     );
 
-    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30000 }).catch(() => {});
+    await page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
 
     // Naviguer vers les contrats
     await agencyDashboardPage.clickContractMenu();

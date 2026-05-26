@@ -88,7 +88,7 @@ test.describe('E2E 06: Facturation + Paiement Client', () => {
     await page.locator('input[name="email"]').fill(process.env.CLIENT_EMAIL || 'client@bluevaloris.test');
     await page.locator('input[name="password"]').fill(process.env.CLIENT_PASSWORD || 'Client123!');
     await page.locator('button[type="submit"]').click();
-    await page.waitForLoadState('load', { timeout: 15_000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     // Naviguer vers les factures/paiements
     await page.goto('/fr/factures');

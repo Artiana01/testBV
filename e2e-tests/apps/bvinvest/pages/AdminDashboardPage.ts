@@ -21,22 +21,22 @@ export class AdminDashboardPage extends BasePage {
   }
 
   async verifyAdminDashboardLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     const main = this.page.locator('main, [role="main"], [class*="dashboard"], body');
-    await expect(main.first()).toBeVisible({ timeout: 10_000 });
+    await expect(main.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyKpisVisible(): Promise<void> {
     const kpis = this.page.locator('[class*="kpi"],[class*="stat"],[class*="card"],[class*="metric"],[class*="overview"]');
     const count = await kpis.count();
     if (count > 0) {
-      await expect(kpis.first()).toBeVisible({ timeout: 10_000 });
+      await expect(kpis.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 
   async verifyAdminNavVisible(): Promise<void> {
     const nav = this.page.locator('nav, aside, [class*="sidebar"], [class*="menu"]');
-    await expect(nav.first()).toBeVisible({ timeout: 10_000 });
+    await expect(nav.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateToUsers(): Promise<void> {

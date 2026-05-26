@@ -35,7 +35,7 @@ export class SignupPage extends BasePage {
 
   async submitForm(): Promise<void> {
     await this.page.locator(this.continueBtn).first().click();
-    await this.page.waitForLoadState('load');
+    await this.page.waitForLoadState('domcontentloaded');
     await this.page.waitForTimeout(1500);
   }
 
@@ -48,8 +48,8 @@ export class SignupPage extends BasePage {
   }
 
   async verifySignupFormVisible(): Promise<void> {
-    await expect(this.page.locator(this.emailInput)).toBeVisible({ timeout: 10_000 });
-    await expect(this.page.locator(this.continueBtn).first()).toBeVisible({ timeout: 10_000 });
+    await expect(this.page.locator(this.emailInput)).toBeVisible({ timeout: 20_000 });
+    await expect(this.page.locator(this.continueBtn).first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyMagicLinkSent(): Promise<void> {

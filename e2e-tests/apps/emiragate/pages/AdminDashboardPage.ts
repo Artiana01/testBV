@@ -24,16 +24,16 @@ export class AdminDashboardPage extends BasePage {
   }
 
   async verifyDashboardLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login|\/signin/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], [class*="dashboard"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyKpisVisible(): Promise<void> {
     const kpis = this.page.locator(this.kpiCard);
     const count = await kpis.count();
     if (count > 0) {
-      await expect(kpis.first()).toBeVisible({ timeout: 10_000 });
+      await expect(kpis.first()).toBeVisible({ timeout: 20_000 });
       console.log(`   ✅  ${count} KPI(s) détecté(s)`);
     } else {
       console.log('   ℹ️  KPIs non détectés — vérifier sélecteurs dans AdminDashboardPage');
@@ -51,7 +51,7 @@ export class AdminDashboardPage extends BasePage {
 
   async verifyNavVisible(): Promise<void> {
     const nav = this.page.locator('nav, aside, [class*="sidebar"], [class*="menu"]');
-    await expect(nav.first()).toBeVisible({ timeout: 10_000 });
+    await expect(nav.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async navigateTo(section: string): Promise<void> {

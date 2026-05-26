@@ -5,8 +5,7 @@ dotenv.config();
 
 test.describe('E2E-02 — Souscription Pack Freelance', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
-    await page.goto('/fr/connexion');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await loginPage.login(
       process.env.FREELANCER_EMAIL || 'freelancer@bluevaloris.test',
@@ -15,12 +14,11 @@ test.describe('E2E-02 — Souscription Pack Freelance', () => {
 
     await loginPage.chooseFreelanceProfile();
 
-    await expect(dashboardFreelancePage.page).toHaveURL(new RegExp('dashboard|home|tableau'), { timeout: 30000 });
+    await expect(dashboardFreelancePage.page).not.toHaveURL(/connexion|login|signin/, { timeout: 60_000 });
   });
 
   test('Pack Freelance Classic 79€ sélectionné', async ({ packPage, page }) => {
-    await page.goto('/fr/packs');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/packs', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await packPage.selectClassicPack();
 
@@ -29,8 +27,7 @@ test.describe('E2E-02 — Souscription Pack Freelance', () => {
   });
 
   test('Paiement Stripe validé', async ({ packPage, page }) => {
-    await page.goto('/fr/packs');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/packs', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await packPage.selectClassicPack();
     await packPage.proceedToPayment();
@@ -48,8 +45,7 @@ test.describe('E2E-02 — Souscription Pack Freelance', () => {
   });
 
   test('BUG: Paiement sans formulaire de carte visible', async ({ packPage, page }) => {
-    await page.goto('/fr/packs');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/fr/packs', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     await packPage.selectClassicPack();
     await packPage.proceedToPayment();

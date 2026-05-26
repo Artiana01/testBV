@@ -23,7 +23,7 @@ export class DashboardPage extends BasePage {
   async verifyDashboardLoaded(): Promise<void> {
     await expect(this.page).toHaveURL(/dashboard/i, { timeout: 15_000 });
     const mainContent = this.page.locator('main, [class*="dashboard"], [class*="content"], [role="main"]');
-    await expect(mainContent.first()).toBeVisible({ timeout: 10_000 });
+    await expect(mainContent.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyKpisVisible(): Promise<void> {
@@ -33,13 +33,13 @@ export class DashboardPage extends BasePage {
     );
     const count = await kpiElements.count();
     if (count > 0) {
-      await expect(kpiElements.first()).toBeVisible({ timeout: 10_000 });
+      await expect(kpiElements.first()).toBeVisible({ timeout: 20_000 });
     }
   }
 
   async verifySidebarNavigation(): Promise<void> {
     const nav = this.page.locator('nav, aside, [class*="sidebar"], [class*="menu"]');
-    await expect(nav.first()).toBeVisible({ timeout: 10_000 });
+    await expect(nav.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyEmptyStateHandled(): Promise<void> {

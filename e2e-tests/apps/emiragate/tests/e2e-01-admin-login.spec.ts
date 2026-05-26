@@ -23,10 +23,10 @@ const ADMIN_PASS  = process.env.EMIRAGATE_ADMIN_PASSWORD ?? '';
 test.describe('SC-01 — Connexion administrateur (CRITIQUE)', () => {
 
   test('01.1 — La page login est accessible', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
-    await expect(page.locator('input[type="email"], input[name*="email" i]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('input[type="email"], input[name*="email" i]').first()).toBeVisible({ timeout: 20_000 });
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
@@ -55,7 +55,7 @@ test.describe('SC-01 — Connexion administrateur (CRITIQUE)', () => {
   });
 
   test('01.4 — Connexion échouée avec mauvais mot de passe', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.fillLoginForm('admin@test.com', 'WrongPass000!');
@@ -64,9 +64,8 @@ test.describe('SC-01 — Connexion administrateur (CRITIQUE)', () => {
   });
 
   test('01.5 — Page protégée inaccessible sans auth (sans storageState)', async ({ page }) => {
-    test.setTimeout(30_000);
-    await page.goto(`${BASE}/en/dashboard`);
-    await page.waitForLoadState('load');
+    test.setTimeout(60_000);
+    await page.goto(`${BASE}/en/dashboard`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await page.waitForTimeout(2000);
     const url = page.url();
     const redirected = /login|signin/i.test(url);

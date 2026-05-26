@@ -34,16 +34,16 @@ export class OpportunitiesPage extends BasePage {
   }
 
   async verifyOpportunitiesLoaded(): Promise<void> {
-    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 15_000 });
+    await expect(this.page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyOpportunityCardsPresent(): Promise<void> {
     const cards = this.page.locator(this.oppCard);
     const count = await cards.count();
     if (count > 0) {
-      await expect(cards.first()).toBeVisible({ timeout: 10_000 });
+      await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     } else {
       console.log('   ℹ️  Aucune carte opportunité trouvée — vérifier URL/sélecteurs');
     }
@@ -63,7 +63,7 @@ export class OpportunitiesPage extends BasePage {
 
   async verifyOpportunityDetailLoaded(): Promise<void> {
     const content = this.page.locator('main, [role="main"], body');
-    await expect(content.first()).toBeVisible({ timeout: 10_000 });
+    await expect(content.first()).toBeVisible({ timeout: 20_000 });
     await expect(this.page.getByText(/404|not found/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   }
 

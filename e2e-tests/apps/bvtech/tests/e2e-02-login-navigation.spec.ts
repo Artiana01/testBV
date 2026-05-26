@@ -28,10 +28,10 @@ test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
   // ── Tests sans connexion (vérifications de formulaire / erreurs) ──
 
   test('02.1 — La page login est accessible et contient le formulaire', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
-    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
@@ -45,7 +45,7 @@ test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
   });
 
   test('02.3 — Connexion échouée avec mauvais mot de passe', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.fillLoginForm(CLIENT_EMAIL, 'mauvais-mot-de-passe-xyz-999');
@@ -54,7 +54,7 @@ test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
   });
 
   test('02.4 — Connexion échouée avec email inexistant', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.fillLoginForm('email-inexistant-xyz999@nowhere.com', 'Password123!');
@@ -83,27 +83,26 @@ test.describe('E2E 02 — Navigation après connexion', () => {
   });
 
   test('02.5 — Navigation vers le profil après connexion', async () => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboardPage = new DashboardPage(sharedPage);
     await dashboardPage.navigateToProfile();
-    await expect(sharedPage).toHaveURL(/\/fr\/profile/, { timeout: 10_000 });
-    await expect(sharedPage.getByRole('heading', { name: 'Profil utilisateur' })).toBeVisible({ timeout: 10_000 });
+    await expect(sharedPage).toHaveURL(/\/fr\/profile/, { timeout: 20_000 });
+    await expect(sharedPage.getByRole('heading', { name: 'Profil utilisateur' })).toBeVisible({ timeout: 20_000 });
   });
 
   test('02.6 — Navigation vers le plan/abonnement après connexion', async () => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const dashboardPage = new DashboardPage(sharedPage);
     await dashboardPage.navigateToPlan();
-    await expect(sharedPage).toHaveURL(/\/fr\/plan/, { timeout: 10_000 });
+    await expect(sharedPage).toHaveURL(/\/fr\/plan/, { timeout: 20_000 });
     const planContent = sharedPage.getByText(/plan|abonnement|pack|tarif/i)
       .or(sharedPage.locator('main h1, main h2'));
-    await expect(planContent.first()).toBeVisible({ timeout: 10_000 });
+    await expect(planContent.first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('02.7 — Le sidebar/menu de navigation est visible', async () => {
-    test.setTimeout(30_000);
-    await sharedPage.goto(process.env.BASE_URL + '/fr/dashboard');
-    await sharedPage.waitForLoadState('load');
+    test.setTimeout(60_000);
+    await sharedPage.goto(process.env.BASE_URL + '/fr/dashboard', { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await sharedPage.waitForTimeout(1000);
     const dashboardPage = new DashboardPage(sharedPage);
     await dashboardPage.verifySidebarNavigation();

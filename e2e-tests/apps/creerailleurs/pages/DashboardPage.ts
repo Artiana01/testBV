@@ -34,56 +34,55 @@ export class DashboardPage extends BasePage {
   }
 
   async navigateToDashboard() {
-    // Essayer les routes connues de Créer Ailleurs
-    for (const path of ['/espace-client', '/dashboard', '/mon-compte', '/compte']) {
+    for (const path of ['/fr/espace-client', '/fr/dashboard', '/fr/mon-compte', '/espace-client', '/dashboard', '/mon-compte', '/compte']) {
       await this.page.goto(`${this.baseURL}${path}`);
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
       const url = this.page.url();
       if (!url.includes('/connexion') && !url.includes('/login')) return;
     }
   }
 
   async navigateToProfile() {
-    for (const path of ['/espace-client/profil', '/profil', '/profile', '/mon-compte/profil']) {
+    for (const path of ['/fr/espace-client/profil', '/fr/profil', '/fr/profile', '/espace-client/profil', '/profil', '/profile', '/mon-compte/profil']) {
       await this.page.goto(`${this.baseURL}${path}`);
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
       const url = this.page.url();
       if (!url.includes('/connexion') && !url.includes('/login')) return;
     }
   }
 
   async navigateToDocuments() {
-    for (const path of ['/espace-client/documents', '/documents', '/mes-documents', '/manifestes']) {
+    for (const path of ['/fr/espace-client/documents', '/fr/documents', '/fr/mes-documents', '/espace-client/documents', '/documents', '/mes-documents', '/manifestes']) {
       await this.page.goto(`${this.baseURL}${path}`);
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
       const url = this.page.url();
       if (!url.includes('/connexion') && !url.includes('/login')) return;
     }
   }
 
   async navigateToPassword() {
-    for (const path of ['/espace-client/mot-de-passe', '/changer-mot-de-passe', '/change-password', '/profil']) {
+    for (const path of ['/fr/espace-client/mot-de-passe', '/fr/changer-mot-de-passe', '/fr/profil', '/espace-client/mot-de-passe', '/changer-mot-de-passe', '/change-password', '/profil']) {
       await this.page.goto(`${this.baseURL}${path}`);
-      await this.page.waitForLoadState('load');
+      await this.page.waitForLoadState('domcontentloaded');
       const url = this.page.url();
       if (!url.includes('/connexion') && !url.includes('/login')) return;
     }
   }
 
   async verifyDashboardLoaded() {
-    await expect(this.heading).toBeVisible({ timeout: 10_000 });
-    await expect(this.kpi_section).toBeVisible({ timeout: 10_000 });
+    await expect(this.heading).toBeVisible({ timeout: 20_000 });
+    await expect(this.kpi_section).toBeVisible({ timeout: 20_000 });
   }
 
   async updateProfileName(newName: string) {
     await this.name_field.clear();
     await this.name_field.fill(newName);
     await this.save_btn.click();
-    await this.page.waitForLoadState('load').catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async verifySuccessNotification() {
-    await expect(this.success_notif).toBeVisible({ timeout: 10_000 });
+    await expect(this.success_notif).toBeVisible({ timeout: 20_000 });
   }
 
   async changePassword(current: string, newPw: string) {
@@ -95,7 +94,7 @@ export class DashboardPage extends BasePage {
       await this.confirm_pw.fill(newPw);
     }
     await this.save_btn.click();
-    await this.page.waitForLoadState('load').catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
   async logout() {
@@ -110,6 +109,6 @@ export class DashboardPage extends BasePage {
         await this.page.getByText(/déconnexion|logout/i).first().click();
       }
     }
-    await this.page.waitForLoadState('load').catch(() => {});
+    await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 }

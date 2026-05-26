@@ -30,35 +30,44 @@ export class AdminPage extends BasePage {
     super(page);
   }
 
+  private async navigateWithFallback(paths: string[]) {
+    for (const path of paths) {
+      await this.page.goto(`${this.baseURL}${path}`);
+      await this.page.waitForLoadState('domcontentloaded');
+      const url = this.page.url();
+      if (!url.includes('/connexion') && !url.includes('/login')) return;
+    }
+  }
+
   async navigateToAdmin() {
-    await this.goto(`${this.baseURL}/admin`);
+    await this.navigateWithFallback(['/fr/admin', '/admin']);
   }
 
   async navigateToAdminUsers() {
-    await this.goto(`${this.baseURL}/admin/users`);
+    await this.navigateWithFallback(['/fr/admin/users', '/fr/admin/utilisateurs', '/admin/users', '/admin/utilisateurs']);
   }
 
   async navigateToAdminManifestes() {
-    await this.goto(`${this.baseURL}/admin/manifestes`);
+    await this.navigateWithFallback(['/fr/admin/manifestes', '/admin/manifestes']);
   }
 
   async navigateToAdminPacks() {
-    await this.goto(`${this.baseURL}/admin/packs`);
+    await this.navigateWithFallback(['/fr/admin/packs', '/admin/packs']);
   }
 
   async verifyAdminDashboardLoaded() {
-    await expect(this.heading).toBeVisible({ timeout: 10_000 });
+    await expect(this.heading).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyUsersTableLoaded() {
-    await expect(this.users_table).toBeVisible({ timeout: 10_000 });
+    await expect(this.users_table).toBeVisible({ timeout: 20_000 });
   }
 
   async verifyManifestesLoaded() {
-    await expect(this.manifestes_list).toBeVisible({ timeout: 10_000 });
+    await expect(this.manifestes_list).toBeVisible({ timeout: 20_000 });
   }
 
   async verifySuccessNotification() {
-    await expect(this.success_notif).toBeVisible({ timeout: 10_000 });
+    await expect(this.success_notif).toBeVisible({ timeout: 20_000 });
   }
 }

@@ -74,7 +74,7 @@ test.describe('E2E 08: Reversement', () => {
     await page.locator('input[name="email"]').fill(process.env.AGENCY_EMAIL || 'agency@bluevaloris.test');
     await page.locator('input[name="password"]').fill(process.env.AGENCY_PASSWORD || 'Agency123!');
     await page.locator('button[type="submit"]').click();
-    await page.waitForLoadState('load', { timeout: 15_000 }).catch(() => {});
+    await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     // Naviguer vers les reversements
     await page.goto('/fr/reversements');

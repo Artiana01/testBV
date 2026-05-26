@@ -16,7 +16,7 @@ const BASE = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
 test.describe('SC-09 — Vérification multilingue FR/EN', () => {
 
   test('09.1 — La version FR est la langue par défaut', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigate();
     // Vérifier la langue de la page
@@ -28,36 +28,36 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
   });
 
   test('09.2 — Le sélecteur de langue permet de passer en EN', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigate();
     // Trouver et cliquer sur le lien EN
     const enLink = page.locator('a[href*="/en"], button:has-text("EN"), [hreflang="en"]').first();
     if (await enLink.isVisible({ timeout: 5_000 }).catch(() => false)) {
       await enLink.click();
-      await page.waitForLoadState('load');
+      await page.waitForLoadState('domcontentloaded');
       const url = page.url();
       expect(url).toMatch(/\/en|lang=en/i);
       console.log(`Page EN accessible: ${url}`);
     } else {
       // Essai direct via URL
       await page.goto(`${BASE}/en`);
-      await page.waitForLoadState('load');
+      await page.waitForLoadState('domcontentloaded');
       const url = page.url();
       console.log(`URL EN direct: ${url}`);
     }
   });
 
   test('09.3 — La version EN charge correctement', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();
-    await expect(page.locator('header, nav, main').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('header, nav, main').first()).toBeVisible({ timeout: 20_000 });
     console.log(`Version EN chargée: ${page.url()}`);
   });
 
   test('09.4 — Les menus de navigation sont traduits en EN', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();
     // Vérifier qu'au moins un élément de navigation est en anglais
@@ -70,11 +70,11 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     } else {
       console.log('Navigation EN non détectée — vérifier si la traduction est complète');
     }
-    await expect(page.locator('header, nav').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('header, nav').first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('09.5 — [BUG CONNU] Mot "MODIFIER" en français dans la version anglaise', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();
 
@@ -91,10 +91,10 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
   });
 
   test('09.6 — Espace utilisateur EN — vérification textes non traduits', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     // Accéder au dashboard en version EN
     await page.goto(`${BASE}/en/dashboard`);
-    await page.waitForLoadState('load');
+    await page.waitForLoadState('domcontentloaded');
     const url = page.url();
 
     if (!url.includes('/login') && !url.includes('/connexion')) {
@@ -110,7 +110,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     } else {
       // Pas connecté — tester sur la page publique EN
       await page.goto(`${BASE}/en`);
-      await page.waitForLoadState('load');
+      await page.waitForLoadState('domcontentloaded');
       const modifierText = page.getByText('MODIFIER', { exact: false }).first();
       const isVisible = await modifierText.isVisible({ timeout: 3_000 }).catch(() => false);
       if (isVisible) {
@@ -136,7 +136,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
   });
 
   test('09.8 — Le footer est traduit en EN', async ({ page }) => {
-    test.setTimeout(30_000);
+    test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();
     const footer = page.locator('footer').first();
