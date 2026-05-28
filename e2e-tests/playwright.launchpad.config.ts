@@ -35,7 +35,7 @@ export default defineConfig({
   ],
 
   use: {
-    baseURL: process.env.BASE_URL ?? 'https://staging.bleuvaloristech.com',
+    baseURL: process.env.BASE_URL ?? 'https://staging.bluevaloristech.com',
     navigationTimeout: 45_000,
     actionTimeout: 15_000,
     screenshot: 'only-on-failure',
