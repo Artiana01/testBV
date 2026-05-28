@@ -80,13 +80,15 @@ APPS.forEach(({ key, port, label }) => {
 });
 
 // ── Hub central (port 4000) ───────────────────────────────────────────────────
-const hubHtml = () => {
+const hubHtml = (reqHost) => {
+  // Utilise le host de la requête HTTP (fonctionne en prod sans variable d'env)
+  const host = reqHost || PUBLIC_HOST;
   const cards = APPS.map(({ label, port, color, key }) => `
-    <a href="http://${PUBLIC_HOST}:${port}" target="_blank" class="card" style="--c:${color}">
+    <a href="http://${host}:${port}" target="_blank" class="card" style="--c:${color}">
       <div class="dot"></div>
       <div class="info">
         <div class="name">${label}</div>
-        <div class="port">${PUBLIC_HOST}:${port}</div>
+        <div class="port">${host}:${port}</div>
       </div>
       <div class="arrow">→</div>
     </a>`).join('');
@@ -127,8 +129,10 @@ const hubHtml = () => {
 };
 
 const hub = http.createServer((req, res) => {
+  // Extraire le hostname sans le port (ex: "p7y8l...sslip.io" depuis "p7y8l...sslip.io:4000")
+  const reqHost = (req.headers.host || '').split(':')[0] || PUBLIC_HOST;
   res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-  res.end(hubHtml());
+  res.end(hubHtml(reqHost));
 });
 
 hub.on('error', (err) => {
