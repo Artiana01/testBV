@@ -148,7 +148,7 @@ const REGISTRY = {
   },
   launchpad: {
     label:  'Launchpad BV TECH',
-    url:    'https://staging.bleuvaloristech.com',
+    url:    'https://staging.bluevaloristech.com',
     config: 'playwright.launchpad.config.ts',
     color:  '#14b8a6',
     tests: {

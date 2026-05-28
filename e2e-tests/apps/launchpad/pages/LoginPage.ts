@@ -46,7 +46,7 @@ export class LoginPage extends BasePage {
   }
 
   async loginAsAdmin(): Promise<void> {
-    const BASE = process.env.BASE_URL ?? 'https://staging.bleuvaloristech.com';
+    const BASE = process.env.BASE_URL ?? 'https://staging.bluevaloristech.com';
     await this.page.goto(`${BASE}/fr/login`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
     if (!this.page.url().includes('/login')) return;
     await this.fillLoginForm(
