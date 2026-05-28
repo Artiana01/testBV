@@ -28,6 +28,7 @@ const CONFIGS = {
   bvportage:  'playwright.bvportage.config.ts',
   bvportageFreelance: 'playwright.bvportage-freelance.config.ts',
   creerailleurs: 'playwright.creerailleurs.config.ts',
+  launchpad: 'playwright.launchpad.config.ts',
 };
 
 // Tests BV Tech
@@ -113,6 +114,18 @@ const TESTS_BVPORTAGE_FREELANCE = {
   'e2e-09-edge-cases': { file: 'apps/bvportage-freelance/tests/e2e-09-edge-cases.spec.ts',               label: 'E2E-09 — Cas limites & comptes' },
 };
 
+// Tests Launchpad BV TECH
+const TESTS_LAUNCHPAD = {
+  'e2e-01-signup':        { file: 'apps/launchpad/tests/e2e-01-signup-activation.spec.ts',  label: 'E2E-01 — Activation & Inscription (P0)' },
+  'e2e-02-login':         { file: 'apps/launchpad/tests/e2e-02-login-dashboard.spec.ts',    label: 'E2E-02 — Connexion & Dashboard (P0)' },
+  'e2e-03-packs':         { file: 'apps/launchpad/tests/e2e-03-pack-purchase.spec.ts',      label: 'E2E-03 — Achat Pack + Paiement (P0)' },
+  'e2e-04-profile':       { file: 'apps/launchpad/tests/e2e-04-profile.spec.ts',            label: 'E2E-04 — Profil Utilisateur (P1)' },
+  'e2e-05-security':      { file: 'apps/launchpad/tests/e2e-05-security.spec.ts',           label: 'E2E-05 — Sécurité / Mot de passe (P1)' },
+  'e2e-06-notifications': { file: 'apps/launchpad/tests/e2e-06-notifications.spec.ts',      label: 'E2E-06 — Notifications & Emails (P1)' },
+  'e2e-07-messaging':     { file: 'apps/launchpad/tests/e2e-07-messaging.spec.ts',          label: 'E2E-07 — Messagerie Client ↔ Admin (P2)' },
+  'regression':           { file: 'apps/launchpad/tests/regression.spec.ts',               label: 'Régression Complète' },
+};
+
 // Tests Créer Ailleurs
 const TESTS_CREERAILLEURS = {
   'e2e-01-navigation':  { file: 'apps/creerailleurs/tests/e2e-01-navigation.spec.ts',      label: 'SC-01 — Navigation & Accessibilité' },
@@ -179,7 +192,7 @@ function runTests(selectedTests, app) {
     return;
   }
 
-  const appKey = ['bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'creerailleurs'].includes(app) ? app : 'bvtech';
+  const appKey = ['bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'creerailleurs', 'launchpad'].includes(app) ? app : 'bvtech';
   const config = CONFIGS[appKey];
   
   if (!config) {
@@ -187,8 +200,8 @@ function runTests(selectedTests, app) {
     return;
   }
 
-  const testsMap = { bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE, creerailleurs: TESTS_CREERAILLEURS }[appKey] ?? TESTS_BVTECH;
-  const appLabel = { bvbusiness: 'BV Business', bvinvest: 'BV Invest', emiragate: 'Emiragate', bvportage: 'BV Portage', bvportageFreelance: 'BV Portage Freelance', creerailleurs: 'Créer Ailleurs' }[appKey] ?? 'BV Tech';
+  const testsMap = { bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE, creerailleurs: TESTS_CREERAILLEURS, launchpad: TESTS_LAUNCHPAD }[appKey] ?? TESTS_BVTECH;
+  const appLabel = { bvbusiness: 'BV Business', bvinvest: 'BV Invest', emiragate: 'Emiragate', bvportage: 'BV Portage', bvportageFreelance: 'BV Portage Freelance', creerailleurs: 'Créer Ailleurs', launchpad: 'Launchpad BV TECH' }[appKey] ?? 'BV Tech';
 
   // Tuer tout processus précédent
   if (runningProcess) {
@@ -366,7 +379,7 @@ const server = http.createServer((req, res) => {
   // === GET /status : état courant ===
   if (parsed.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE, creerailleurs: TESTS_CREERAILLEURS } }));
+    res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE, creerailleurs: TESTS_CREERAILLEURS, launchpad: TESTS_LAUNCHPAD } }));
     return;
   }
 
@@ -395,6 +408,7 @@ const server = http.createServer((req, res) => {
       if (filter === 'bvinvest')           return /^ui-run-bvinvest-\d/.test(n);
       if (filter === 'emiragate')          return /^ui-run-emiragate-\d/.test(n);
       if (filter === 'creerailleurs')      return /^ui-run-creerailleurs-\d/.test(n);
+      if (filter === 'launchpad')          return /^ui-run-launchpad-\d/.test(n);
       return false;
     }
 
@@ -408,6 +422,7 @@ const server = http.createServer((req, res) => {
       if (filter === 'emiragate'          && n.includes('-emiragate-'))          return true;
       if (filter === 'bvportage'          && n.includes('-bvportage-') && !n.includes('-bvportage-freelance-')) return true;
       if (filter === 'bvportageFreelance' && n.includes('-bvportage-freelance-')) return true;
+      if (filter === 'launchpad'          && n.includes('-launchpad-'))           return true;
       return false;
     }
 
@@ -447,7 +462,7 @@ const server = http.createServer((req, res) => {
   // === DELETE /clear-history?app=... : supprimer l'historique filtré par app ===
   if (req.method === 'DELETE' && parsed.pathname === '/clear-history') {
     const appFilter = parsed.query.app || null;
-    const ALLOWED_APPS = ['bvtech', 'bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'creerailleurs', 'all'];
+    const ALLOWED_APPS = ['bvtech', 'bvbusiness', 'bvinvest', 'emiragate', 'bvportage', 'bvportageFreelance', 'creerailleurs', 'launchpad', 'all'];
 
     if (!appFilter || !ALLOWED_APPS.includes(appFilter)) {
       res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -472,6 +487,7 @@ const server = http.createServer((req, res) => {
       if (filter === 'bvinvest'           && /^ui-run-bvinvest-\d/.test(n))            return true;
       if (filter === 'emiragate'          && /^ui-run-emiragate-\d/.test(n))           return true;
       if (filter === 'creerailleurs'      && /^ui-run-creerailleurs-\d/.test(n))       return true;
+      if (filter === 'launchpad'          && /^ui-run-launchpad-\d/.test(n))           return true;
       // Ancien format (rétro-compat) : nom contenant le pattern d'app
       if (filter === 'bvtech'            && n.includes('-bvtech-') && !n.includes('-bvbusiness-') && !n.includes('-bvinvest-')) return true;
       if (filter === 'bvbusiness'         && n.includes('-bvbusiness-'))         return true;
@@ -479,6 +495,7 @@ const server = http.createServer((req, res) => {
       if (filter === 'emiragate'          && n.includes('-emiragate-'))          return true;
       if (filter === 'bvportage'          && n.includes('-bvportage-') && !n.includes('-bvportage-freelance-')) return true;
       if (filter === 'bvportageFreelance' && n.includes('-bvportage-freelance-')) return true;
+      if (filter === 'launchpad'          && n.includes('-launchpad-'))           return true;
       return false;
     }
 

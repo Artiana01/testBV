@@ -1,7 +1,27 @@
+# Dépendances — jamais dans l'image
 **/node_modules
+
+# Fichiers .env — secrets, jamais dans l'image
 **/.env
-**/apps/bvtech/.env
-**/apps/bvtech/auth
+**/.env.local
+**/.env.production
+
+# Sessions Playwright sauvegardées — régénérées à chaque démarrage
+**/auth/*.json
+**/auth/
+
+# Résultats de tests — trop lourds, inutiles dans l'image
 **/test-results
 **/playwright-report
 **/playwright-report-bvtech
+**/playwright-report-bvbusiness
+**/playwright-report-bvinvest
+**/playwright-report-emiragate
+**/playwright-report-bvportage
+**/playwright-report-bvportage-freelance
+**/playwright-report-creerailleurs
+**/playwright-report-launchpad
+
+# Traces et screenshots — artefacts locaux
+**/trace.zip
+**/*.webm
