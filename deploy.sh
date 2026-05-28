@@ -15,14 +15,6 @@ docker run -d \
   --name e2e-tests-prod \
   --restart unless-stopped \
   -p 4000:4000 \
-  -p 4001:4001 \
-  -p 4002:4002 \
-  -p 4003:4003 \
-  -p 4004:4004 \
-  -p 4005:4005 \
-  -p 4006:4006 \
-  -p 4007:4007 \
-  -p 4008:4008 \
   e2e-tests
 
 echo "✅ Déployé ! Hub → http://$(hostname -I | awk '{print $1}'):4000"
