@@ -16,6 +16,9 @@ playwright-report-emiragate/
 playwright-report-bvportage/
 playwright-report-bvportage-freelance/
 
+# Debug screenshots (générés par global-setup en cas d'échec)
+debug-screenshots/
+
 # Archives and temporary files
 *.zip
 archived-reports/

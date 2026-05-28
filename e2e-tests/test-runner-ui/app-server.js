@@ -146,6 +146,22 @@ const REGISTRY = {
       'e2e-09-multilingue': { file: 'apps/creerailleurs/tests/e2e-09-multilingue.spec.ts',       label: 'SC-09 — Multilingue FR/EN' },
     },
   },
+  launchpad: {
+    label:  'Launchpad BV TECH',
+    url:    'https://staging.bleuvaloristech.com',
+    config: 'playwright.launchpad.config.ts',
+    color:  '#14b8a6',
+    tests: {
+      'e2e-01-signup':       { file: 'apps/launchpad/tests/e2e-01-signup-activation.spec.ts',  label: 'E2E-01 — Activation & Inscription (P0)' },
+      'e2e-02-login':        { file: 'apps/launchpad/tests/e2e-02-login-dashboard.spec.ts',    label: 'E2E-02 — Connexion & Dashboard (P0)' },
+      'e2e-03-packs':        { file: 'apps/launchpad/tests/e2e-03-pack-purchase.spec.ts',      label: 'E2E-03 — Achat Pack + Paiement (P0)' },
+      'e2e-04-profile':      { file: 'apps/launchpad/tests/e2e-04-profile.spec.ts',            label: 'E2E-04 — Profil Utilisateur (P1)' },
+      'e2e-05-security':     { file: 'apps/launchpad/tests/e2e-05-security.spec.ts',           label: 'E2E-05 — Sécurité / Mot de passe (P1)' },
+      'e2e-06-notifications':{ file: 'apps/launchpad/tests/e2e-06-notifications.spec.ts',      label: 'E2E-06 — Notifications & Emails (P1)' },
+      'e2e-07-messaging':    { file: 'apps/launchpad/tests/e2e-07-messaging.spec.ts',          label: 'E2E-07 — Messagerie Client ↔ Admin (P2)' },
+      'regression':          { file: 'apps/launchpad/tests/regression.spec.ts',               label: 'Régression Complète' },
+    },
+  },
 };
 
 const APP    = REGISTRY[APP_KEY];

@@ -43,6 +43,7 @@ const APPS = [
   { key: 'bvportage',          port: 4005, label: 'BV Portage',           color: '#ec4899' },
   { key: 'bvportageFreelance', port: 4006, label: 'BV Portage Freelance', color: '#d946ef' },
   { key: 'creerailleurs',      port: 4007, label: 'Créer Ailleurs',       color: '#f97316' },
+  { key: 'launchpad',          port: 4008, label: 'Launchpad BV TECH',     color: '#14b8a6' },
 ];
 
 const HUB_PORT   = 4000;
