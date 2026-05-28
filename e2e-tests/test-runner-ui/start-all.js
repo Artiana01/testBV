@@ -48,6 +48,10 @@ const APPS = [
 
 const HUB_PORT   = 4000;
 const SERVER_JS  = path.join(__dirname, 'app-server.js');
+
+// En prod : définir PUBLIC_HOST avec l'IP ou le domaine du serveur
+// Ex: PUBLIC_HOST=187.124.95.146 ou PUBLIC_HOST=p7y8lcey15e26zdvoguol9qw.187.124.95.146.sslip.io
+const PUBLIC_HOST = process.env.PUBLIC_HOST || 'localhost';
 const children   = [];
 
 // ── Libérer tous les ports au démarrage ──────────────────────────────────────
@@ -78,11 +82,11 @@ APPS.forEach(({ key, port, label }) => {
 // ── Hub central (port 4000) ───────────────────────────────────────────────────
 const hubHtml = () => {
   const cards = APPS.map(({ label, port, color, key }) => `
-    <a href="http://localhost:${port}" target="_blank" class="card" style="--c:${color}">
+    <a href="http://${PUBLIC_HOST}:${port}" target="_blank" class="card" style="--c:${color}">
       <div class="dot"></div>
       <div class="info">
         <div class="name">${label}</div>
-        <div class="port">localhost:${port}</div>
+        <div class="port">${PUBLIC_HOST}:${port}</div>
       </div>
       <div class="arrow">→</div>
     </a>`).join('');
@@ -135,9 +139,9 @@ hub.on('error', (err) => {
 
 hub.listen(HUB_PORT, () => {
   console.log('\n🎭 Tests E2E — Serveurs démarrés\n');
-  console.log(`   Hub central   → http://localhost:${HUB_PORT}`);
+  console.log(`   Hub central   → http://${PUBLIC_HOST}:${HUB_PORT}`);
   APPS.forEach(({ label, port }) => {
-    console.log(`   ${label.padEnd(22)} → http://localhost:${port}`);
+    console.log(`   ${label.padEnd(22)} → http://${PUBLIC_HOST}:${port}`);
   });
   console.log('');
 });
