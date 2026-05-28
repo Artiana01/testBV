@@ -207,7 +207,7 @@
 <header>
   <div class="logo">🎭 Tests E2E</div>
   <span class="app-badge" id="appBadge">—</span>
-  <a class="hub-link" href="http://localhost:4000" title="Retour au hub">⬅ Hub</a>
+  <a class="hub-link" href="/" title="Retour au hub">⬅ Hub</a>
   <span class="app-url" id="appUrl"></span>
   <span id="statusDot" class="status-dot" title="Déconnecté"></span>
 </header>
@@ -321,7 +321,7 @@
   // ── SSE ────────────────────────────────────────────────────────────────────
   function connectSSE() {
     if (es && es.readyState !== EventSource.CLOSED) es.close();
-    es = new EventSource('/events');
+    es = new EventSource('./events');
     es.onmessage = e => handleEvent(JSON.parse(e.data));
     es.onopen    = ()  => setDot('connected');
     es.onerror   = ()  => { setDot('disconnected'); setTimeout(connectSSE, 3000); };
@@ -458,14 +458,14 @@
     const selected = Array.from(document.querySelectorAll('.test-item input:checked')).map(cb => cb.id.replace('cb_', ''));
     if (selected.length === 0) { alert('⚠️ Veuillez sélectionner au moins un test.'); return; }
     setRunningState(true);
-    await fetch('/run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tests: selected }) });
+    await fetch('./run', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tests: selected }) });
   }
 
   async function stopTests() {
     if (!isRunning) { alert('❌ Aucun test en cours.'); return; }
     setRunningState(false);
     appendLine('warn', '⏹ Arrêt des tests en cours...');
-    await fetch('/stop', { method: 'POST' }).catch(() => {});
+    await fetch('./stop', { method: 'POST' }).catch(() => {});
   }
 
   // ── Tabs ───────────────────────────────────────────────────────────────────
@@ -483,7 +483,7 @@
   async function loadFailures() {
     const panel = document.getElementById('failuresPanel');
     const empty = document.getElementById('failuresEmpty');
-    const folders = await fetch('/failures').then(r => r.json());
+    const folders = await fetch('./failures').then(r => r.json());
     Array.from(panel.children).forEach(c => { if (c.id !== 'failuresEmpty') c.remove(); });
     if (folders.length === 0) { empty.style.display = ''; return; }
     empty.style.display = 'none';
@@ -516,7 +516,7 @@
   function showFile(dir, file, type) {
     const preview = document.getElementById('preview_' + CSS.escape(dir));
     if (!preview) return;
-    const src = `/failure-file?dir=${encodeURIComponent(dir)}&file=${encodeURIComponent(file)}`;
+    const src = `./failure-file?dir=${encodeURIComponent(dir)}&file=${encodeURIComponent(file)}`;
     if (type === 'img')   preview.innerHTML = `<img src="${src}" alt="Screenshot" />`;
     else if (type === 'video') preview.innerHTML = `<video src="${src}" controls autoplay style="max-width:100%"></video>`;
     else fetch(src).then(r=>r.text()).then(t => {
@@ -525,7 +525,7 @@
   }
 
   async function refreshFailureBadge() {
-    const folders = await fetch('/failures').then(r => r.json());
+    const folders = await fetch('./failures').then(r => r.json());
     const badge = document.getElementById('failuresBadge');
     badge.textContent  = folders.length;
     badge.style.display = folders.length > 0 ? '' : 'none';
@@ -541,7 +541,7 @@
   }
   async function confirmClear() {
     closeClearModal();
-    const data = await fetch('/clear-history', { method: 'DELETE' }).then(r => r.json());
+    const data = await fetch('./clear-history', { method: 'DELETE' }).then(r => r.json());
     if (data.ok) {
       showToast(data.deleted === 0 ? `ℹ️ Aucun résultat à supprimer` : `✅ ${data.deleted} dossier(s) supprimé(s)`, 'success');
       setTimeout(() => { refreshFailureBadge(); if (currentTab === 'failures') loadFailures(); }, 300);
