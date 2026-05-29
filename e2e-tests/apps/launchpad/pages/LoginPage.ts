@@ -61,6 +61,20 @@ export class LoginPage extends BasePage {
     await expect(this.page.locator('body')).toBeVisible();
   }
 
+  // Version silencieuse : retourne true si login réussi, false sinon (max 8s)
+  async loginSilent(email: string, password: string): Promise<boolean> {
+    await this.navigateToLogin();
+    if (!this.page.url().includes('/login')) return true;
+    await this.fillLoginForm(email, password);
+    await this.submitLoginForm();
+    try {
+      await this.page.waitForURL(url => !url.includes('/login'), { timeout: 8_000 });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async verifyLoginError(): Promise<void> {
     await this.page.waitForTimeout(2000);
     const url = this.page.url();

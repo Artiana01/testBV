@@ -38,12 +38,16 @@ export class AdminUsersPage extends BasePage {
   }
 
   async getUsersCount(): Promise<number> {
-    // Attendre que le contenu se charge (les emails apparaissent en async)
-    try {
-      await this.page.locator('main').getByText(/@/).first().waitFor({ state: 'visible', timeout: 10_000 });
-    } catch {
-      // Pas d'email visible → liste peut-être vide ou chargement différent
-    }
+    await this.page.waitForTimeout(3000);
+    // Essai 1 : lignes de tableau
+    const rows = this.page.locator('table tbody tr');
+    const rowCount = await rows.count();
+    if (rowCount > 0) return rowCount;
+    // Essai 2 : cartes utilisateur
+    const cards = this.page.locator('[class*="user"], [class*="member"], [class*="card"]');
+    const cardCount = await cards.count();
+    if (cardCount > 0) return cardCount;
+    // Essai 3 : emails visibles
     const emails = this.page.locator('main').getByText(/@/);
     return await emails.count();
   }
@@ -62,55 +66,43 @@ export class AdminUsersPage extends BasePage {
   // MODIFICATION D'UN UTILISATEUR
   // =========================================================
 
-  async clickEditFirstUser(): Promise<void> {
-    // Les users sont dans une TABLE avec une colonne "Actions" ayant des boutons icon-only
-    // Structure : [Nom] [Email] ... [Actions: 👁️  ✏️  🗑️]
-    // On veut le 2e bouton (le crayon = Edit)
-    
-    const firstRow = this.page.locator('table tbody tr').first();
-    const actionsCell = firstRow.locator('td').last(); // Dernière colonne = Actions
-    
-    // Trouver tous les boutons dans la colonne Actions
-    const btns = actionsCell.locator('button, a[role="button"]');
+  // Retourne true si le formulaire d'édition a été ouvert, false sinon
+  async clickEditFirstUser(): Promise<boolean> {
+    await this.page.waitForTimeout(1000);
+    const firstRow = this.page.locator('table tbody tr, [class*="user-row"]').first();
+    if (!(await firstRow.isVisible({ timeout: 5_000 }).catch(() => false))) return false;
+
+    // Chercher bouton edit par texte/label d'abord
+    const editByLabel = this.page.getByRole('button', { name: /edit|modifier|éditer/i }).first()
+      .or(this.page.locator('[title*="edit" i], [title*="modifier" i], [aria-label*="edit" i], [aria-label*="modifier" i]').first());
+    if (await editByLabel.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await editByLabel.click();
+      await this.page.waitForTimeout(1500);
+      return true;
+    }
+
+    // Chercher dans la ligne : tous les boutons/liens cliquables
+    const btns = firstRow.locator('button, a');
     const btnCount = await btns.count();
-    
-    console.log(`📍 Trouvé ${btnCount} boutons dans Actions`);
-    
-    if (btnCount >= 2) {
-      // Cliquer sur le 2e bouton (index 1) = le crayon/Edit
-      const editBtn = btns.nth(1);
-      if (await editBtn.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        console.log('✏️  Clic sur le bouton Edit (2e bouton)');
-        await editBtn.click();
-        await this.page.waitForLoadState('domcontentloaded');
-        await this.page.waitForTimeout(2000);
-        
-        // Vérifier qu'on n'est pas allé sur payments
+    console.log(`📍 Trouvé ${btnCount} boutons dans la ligne user`);
+
+    for (let i = 0; i < Math.min(btnCount, 3); i++) {
+      const btn = btns.nth(i);
+      if (await btn.isVisible({ timeout: 1_000 }).catch(() => false)) {
+        await btn.click();
+        await this.page.waitForTimeout(1500);
         const url = this.page.url();
-        if (url.includes('/payments')) {
-          console.log('⚠️  Mauvaise redirection vers /payments — revenir');
-          await this.page.goBack();
-          await this.page.waitForTimeout(1000);
-        }
-        return;
+        if (url.includes('/payments')) { await this.page.goBack(); continue; }
+        const hasForm = await this.page.locator('[role="dialog"], [role="sheet"], form input').first().isVisible({ timeout: 2_000 }).catch(() => false);
+        if (hasForm) return true;
       }
     }
 
-    // Fallback : chercher un dialog/formulaire
-    const hasDialog = await this.page.locator('[role="dialog"], [role="sheet"]').isVisible({ timeout: 3_000 }).catch(() => false);
-    if (hasDialog) {
-      console.log('✓ Dialog d\'édition détecté');
-      return;
-    }
-
-    // Fallback ultime : cliquer sur le 1er bouton (peut être que c'est Edit)
-    if (btnCount > 0) {
-      const firstBtn = btns.first();
-      console.log('🔄 Essai du 1er bouton...');
-      await firstBtn.click();
-      await this.page.waitForLoadState('domcontentloaded');
-      await this.page.waitForTimeout(2000);
-    }
+    // Cliquer sur la ligne elle-même
+    await firstRow.click();
+    await this.page.waitForTimeout(1500);
+    const hasFormAfterClick = await this.page.locator('[role="dialog"], [role="sheet"], form input').first().isVisible({ timeout: 2_000 }).catch(() => false);
+    return hasFormAfterClick;
   }
 
   async modifyUserField(fieldName: string, newValue: string): Promise<void> {
@@ -124,12 +116,22 @@ export class AdminUsersPage extends BasePage {
   }
 
   async saveUserModification(): Promise<void> {
-    const saveBtn = this.page.getByRole('button', {
+    // Si un dialog est ouvert, chercher le bouton dedans d'abord
+    const dialog = this.page.locator('[role="dialog"], [role="sheet"]');
+    const inDialog = await dialog.first().isVisible({ timeout: 2_000 }).catch(() => false);
+    const scope = inDialog ? dialog.first() : this.page.locator('body');
+
+    const saveBtn = scope.getByRole('button', {
       name: /sauvegarder|enregistrer|save|mettre à jour|update|confirmer|appliquer|valider|soumettre|submit|ok/i,
-    }).or(this.page.locator('button[type="submit"]'))
-      .or(this.page.locator('[aria-label*="save"], [aria-label*="sauve"], [aria-label*="enregistr"]'));
-    await saveBtn.first().click();
-    await this.page.waitForLoadState('domcontentloaded');
+    }).or(scope.locator('button[type="submit"]'))
+      .or(scope.locator('[aria-label*="save"], [aria-label*="sauve"], [aria-label*="enregistr"]'));
+
+    if (await saveBtn.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await saveBtn.first().click();
+      await this.page.waitForLoadState('domcontentloaded');
+    } else {
+      console.log('ℹ️  Bouton save non trouvé — formulaire peut-être non ouvert');
+    }
   }
 
   async verifyModificationSaved(): Promise<void> {

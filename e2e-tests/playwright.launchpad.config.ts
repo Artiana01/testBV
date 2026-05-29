@@ -11,8 +11,12 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import * as fs from 'fs';
 
 dotenv.config({ path: path.resolve(__dirname, 'apps/launchpad/.env') });
+
+const clientSessionPath = path.resolve(__dirname, 'apps/launchpad/auth/client.json');
+const clientStorageState = fs.existsSync(clientSessionPath) ? clientSessionPath : undefined;
 
 export default defineConfig({
   testDir: './apps/launchpad/tests',
@@ -79,7 +83,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        storageState: './apps/launchpad/auth/client.json',
+        ...(clientStorageState ? { storageState: clientStorageState } : {}),
       },
     },
 

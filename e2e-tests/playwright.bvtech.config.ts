@@ -17,8 +17,13 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import * as fs from 'fs';
 
 dotenv.config({ path: path.resolve(__dirname, 'apps/bvtech/.env') });
+
+// client.json n'existe que si TEST_EMAIL est configuré — on le rend optionnel
+const clientSessionPath = path.resolve(__dirname, 'apps/bvtech/auth/client.json');
+const clientStorageState = fs.existsSync(clientSessionPath) ? clientSessionPath : undefined;
 
 export default defineConfig({
   // Répertoire de tests BV Tech uniquement
@@ -109,8 +114,8 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        // Session client pré-connectée (créer le compte manuellement si absent)
-        storageState: './apps/bvtech/auth/client.json',
+        // Session client pré-connectée si disponible, sinon login dans le test
+        ...(clientStorageState ? { storageState: clientStorageState } : {}),
       },
     },
 
