@@ -14,8 +14,8 @@ test.describe('E2E 05: Signature Contrat', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
@@ -38,8 +38,8 @@ test.describe('E2E 05: Signature Contrat', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
@@ -61,8 +61,8 @@ test.describe('E2E 05: Signature Contrat', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
@@ -88,8 +88,8 @@ test.describe('E2E 05: Signature Contrat', () => {
     // Se connecter via LoginPage (sélecteurs corrects)
     await loginPage.navigate('/login');
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});

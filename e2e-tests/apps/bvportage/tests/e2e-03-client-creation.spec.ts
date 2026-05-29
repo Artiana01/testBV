@@ -10,8 +10,8 @@ test.describe('E2E 03: Création Client + Projet', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
@@ -47,8 +47,8 @@ test.describe('E2E 03: Création Client + Projet', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
@@ -73,8 +73,8 @@ test.describe('E2E 03: Création Client + Projet', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
@@ -116,7 +116,7 @@ test.describe('E2E 03: Création Client + Projet', () => {
     await page.waitForLoadState('domcontentloaded');
 
     // Vérifier que le client créé est visible
-    const agencyEmail = process.env.AGENCY_EMAIL || 'agency@bluevaloris.test';
+    const agencyEmail = process.env.AGENCY_EMAIL || 'admin@bluevaloris.test';
     await expect(page.locator(`text="${agencyEmail}"`)).toBeVisible({ timeout: 10000 });
   });
 });

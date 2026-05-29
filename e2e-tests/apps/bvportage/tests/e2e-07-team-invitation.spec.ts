@@ -10,8 +10,8 @@ test.describe('E2E 07: Invitation membre équipe', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
@@ -73,8 +73,8 @@ test.describe('E2E 07: Invitation membre équipe', () => {
     await loginPage.navigate('/login');
 
     await loginPage.login(
-      process.env.AGENCY_EMAIL || 'agency@bluevaloris.test',
-      process.env.AGENCY_PASSWORD || 'Agency123!'
+      process.env.AGENCY_EMAIL || 'admin@bluevaloris.test',
+      process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
     test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
