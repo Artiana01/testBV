@@ -20,6 +20,10 @@ export class LoginPage extends BasePage {
   }
 
   async login(email: string, password: string) {
+    // Si le formulaire de login n'est pas présent, ne rien faire (échouera proprement)
+    if (!(await this.emailInput.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      return;
+    }
     await this.emailInput.click();
     await this.emailInput.fill(email);
     // Fallback pressSequentially si fill ignoré par React
@@ -32,8 +36,20 @@ export class LoginPage extends BasePage {
     await this.passwordInput.fill(password);
     await this.loginButton.click();
     // Attendre la navigation hors de la page de connexion
-    await this.page.waitForURL(url => !url.includes('/connexion'), { timeout: 60_000 }).catch(() => {});
+    await this.page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
     await this.page.waitForLoadState('domcontentloaded').catch(() => {});
+  }
+
+  // Retourne true si la connexion a réussi (on n'est plus sur la page de connexion)
+  async isLoggedIn(): Promise<boolean> {
+    const url = this.page.url();
+    return !/\/connexion|\/login|\/signin/i.test(url);
+  }
+
+  // Connexion + vérification : retourne true si succès, false sinon
+  async loginAndCheck(email: string, password: string): Promise<boolean> {
+    await this.login(email, password);
+    return this.isLoggedIn();
   }
 
   async verifyLoginError() {

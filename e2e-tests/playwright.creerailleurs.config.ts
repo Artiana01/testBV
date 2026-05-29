@@ -9,11 +9,17 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import * as fs from 'fs';
 
 dotenv.config({ path: path.resolve(__dirname, 'apps/creerailleurs/.env'), override: true });
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const BASE_URL = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
+
+const clientSession = path.resolve(__dirname, 'apps/creerailleurs/auth/client.json');
+const adminSession  = path.resolve(__dirname, 'apps/creerailleurs/auth/admin.json');
+const clientStorageState = fs.existsSync(clientSession) ? clientSession : undefined;
+const adminStorageState  = fs.existsSync(adminSession)  ? adminSession  : undefined;
 
 export default defineConfig({
   testDir: './apps/creerailleurs/tests',
@@ -68,7 +74,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        storageState: './apps/creerailleurs/auth/client.json',
+        ...(clientStorageState ? { storageState: clientStorageState } : {}),
       },
     },
 
@@ -80,7 +86,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        storageState: './apps/creerailleurs/auth/admin.json',
+        ...(adminStorageState ? { storageState: adminStorageState } : {}),
       },
     },
   ],

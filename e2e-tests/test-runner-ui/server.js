@@ -15,9 +15,10 @@ const url = require('url');
 
 const TEST_RESULTS_DIR = path.join(__dirname, '..', 'test-results');
 
-const PORT = process.env.PORT || 4000;
-const HTML_FILE = path.join(__dirname, 'index.html');
-const ROOT_DIR = path.join(__dirname, '..');
+const PORT         = process.env.PORT || 4000;
+const HTML_FILE    = path.join(__dirname, 'index.html');
+const APP_HTML_FILE = path.join(__dirname, 'app.html');
+const ROOT_DIR     = path.join(__dirname, '..');
 
 // Configs Playwright disponibles
 const CONFIGS = {
@@ -138,6 +139,64 @@ const TESTS_CREERAILLEURS = {
   'e2e-08-admin':       { file: 'apps/creerailleurs/tests/e2e-08-admin.spec.ts',            label: 'SC-08 — Dashboard Admin' },
   'e2e-09-multilingue': { file: 'apps/creerailleurs/tests/e2e-09-multilingue.spec.ts',      label: 'SC-09 — Multilingue FR/EN' },
 };
+
+// ── Registry des apps (pour le hub et le rendu de app.html) ──────────────────
+const APP_REGISTRY = {
+  bvtech:             { label: 'BV Tech',              url: 'https://dev.bluevaloristech.com',          color: '#6366f1', tests: TESTS_BVTECH },
+  bvbusiness:         { label: 'BV Business',           url: 'https://staging.bluevalorisbusiness.com',  color: '#0ea5e9', tests: TESTS_BVBUSINESS },
+  bvinvest:           { label: 'BV Invest',             url: 'https://dev.bluevalorisinvest.com',        color: '#10b981', tests: TESTS_BVINVEST },
+  emiragate:          { label: 'Emiragate',             url: 'https://dev.bluevalorisinstall.com',       color: '#f59e0b', tests: TESTS_EMIRAGATE },
+  bvportage:          { label: 'BV Portage',            url: 'https://dev.bluevalorisportage.com',      color: '#ec4899', tests: TESTS_BVPORTAGE },
+  bvportageFreelance: { label: 'BV Portage Freelance',  url: 'https://dev.bluevalorisportage.com',      color: '#d946ef', tests: TESTS_BVPORTAGE_FREELANCE },
+  creerailleurs:      { label: 'Créer Ailleurs',        url: 'https://www.creerailleurs.com',            color: '#f97316', tests: TESTS_CREERAILLEURS },
+  launchpad:          { label: 'Launchpad BV TECH',     url: 'https://staging.bluevaloristech.com',      color: '#14b8a6', tests: TESTS_LAUNCHPAD },
+};
+
+function generateHubHTML() {
+  const cards = Object.entries(APP_REGISTRY).map(([key, app]) => `
+    <a href="/?app=${key}" class="card" style="--c:${app.color}">
+      <div class="dot"></div>
+      <div class="info">
+        <div class="name">${app.label}</div>
+        <div class="url">${app.url.replace('https://', '')}</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>`).join('');
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Tests E2E — Hub</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px 20px}
+    h1{font-size:24px;font-weight:700;display:flex;align-items:center;gap:12px}
+    h1 span{font-size:28px}
+    .subtitle{font-size:13px;color:#64748b;margin-top:4px;text-align:center}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;width:100%;max-width:960px}
+    .card{display:flex;align-items:center;gap:14px;padding:18px 20px;background:#1a1d27;border:1px solid #2e3349;border-left:4px solid var(--c);border-radius:10px;text-decoration:none;color:#e2e8f0;transition:all .15s}
+    .card:hover{background:#22263a;border-color:var(--c);transform:translateX(3px)}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex-shrink:0;box-shadow:0 0 8px var(--c)}
+    .info{flex:1;min-width:0}
+    .name{font-weight:600;font-size:15px}
+    .url{font-size:11px;color:#64748b;margin-top:3px;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .arrow{color:#64748b;font-size:18px;transition:color .15s;flex-shrink:0}
+    .card:hover .arrow{color:var(--c)}
+    .footer{font-size:11px;color:#334155;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div>
+    <h1><span>🎭</span> Tests E2E — Hub</h1>
+    <p class="subtitle">Cliquez sur une app pour ouvrir son interface de test dédiée</p>
+  </div>
+  <div class="grid">${cards}</div>
+  <div class="footer">Toutes les apps tournent sur le même serveur — aucune interférence possible</div>
+</body>
+</html>`;
+}
 
 // Clients SSE actifs
 let sseClients = [];
@@ -574,17 +633,27 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // === GET / : page HTML ===
+  // === GET / : hub ou interface app ===
   if (parsed.pathname === '/' || parsed.pathname === '/index.html') {
-    fs.readFile(HTML_FILE, (err, data) => {
-      if (err) {
-        res.writeHead(500);
-        res.end('Erreur : index.html introuvable');
-        return;
-      }
+    const appKey = parsed.query.app;
+    const appCfg = appKey && APP_REGISTRY[appKey];
+
+    if (appCfg) {
+      // Servir app.html avec la config de l'app injectée
+      fs.readFile(APP_HTML_FILE, 'utf8', (err, html) => {
+        if (err) { res.writeHead(500); res.end('app.html introuvable'); return; }
+        const injected = html.replace(
+          '/* __APP_CONFIG__ */',
+          `const APP_CONFIG = ${JSON.stringify({ appKey, label: appCfg.label, url: appCfg.url, color: appCfg.color, tests: appCfg.tests, port: PORT })};`
+        );
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(injected);
+      });
+    } else {
+      // Servir le hub
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-      res.end(data);
-    });
+      res.end(generateHubHTML());
+    }
     return;
   }
 
