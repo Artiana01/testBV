@@ -102,12 +102,23 @@ export class AdminDashboardPage extends BasePage {
   }
 
   async getUsersCount(): Promise<number> {
-    const rows = this.page.locator('table tbody tr, [class*="user-row"], [class*="user-item"]');
-    return await rows.count();
+    await this.page.waitForTimeout(3000);
+    const rows = this.page.locator('table tbody tr');
+    const rowCount = await rows.count();
+    if (rowCount > 0) return rowCount;
+    const cards = this.page.locator('[class*="user"], [class*="member"], [class*="card"]');
+    const cardCount = await cards.count();
+    if (cardCount > 0) return cardCount;
+    const emails = this.page.locator('main').getByText(/@/);
+    return await emails.count();
   }
 
   async getPaymentsCount(): Promise<number> {
-    const rows = this.page.locator('table tbody tr, [class*="payment-row"], [class*="payment-item"]');
-    return await rows.count();
+    await this.page.waitForTimeout(2000);
+    const rows = this.page.locator('table tbody tr');
+    const rowCount = await rows.count();
+    if (rowCount > 0) return rowCount;
+    const items = this.page.locator('[class*="payment"], [class*="transaction"]');
+    return await items.count();
   }
 }

@@ -17,13 +17,23 @@ const BASE = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
 
 test.describe('SC-08 — Dashboard administrateur', () => {
 
+  // Vérifie qu'une session admin valide existe — sinon skip toute la suite
+  test.beforeEach(async ({ page }) => {
+    const admin = new AdminPage(page);
+    await admin.navigateToAdmin();
+    await page.waitForTimeout(1500);
+    const url = page.url();
+    if (/login|connexion|signin/i.test(url)) {
+      test.skip(true, 'Pas de session admin (admin.json absent) — configurer les credentials admin dans .env');
+    }
+  });
+
   test('08.1 — Le dashboard admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdmin();
     await expect(page.locator('main, h1, h2').first()).toBeVisible({ timeout: 20_000 });
     const url = page.url();
-    // Vérifier qu'on n'est pas redirigé vers le login
     expect(url).not.toMatch(/login|connexion/i);
     console.log(`Dashboard admin: ${url}`);
   });

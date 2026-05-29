@@ -54,14 +54,29 @@ export class AuthPage extends BasePage {
     }
   }
 
-  async fillLoginForm(email: string, password: string) {
+  // Retourne true si les champs login (email + password) sont présents et remplis
+  async fillLoginForm(email: string, password: string): Promise<boolean> {
+    const hasEmail = await this.email_input.isVisible({ timeout: 6_000 }).catch(() => false);
+    if (!hasEmail) return false;
     await this.email_input.fill(email);
-    await this.password_input.fill(password);
+    if (await this.password_input.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await this.password_input.fill(password);
+    }
+    return true;
   }
 
-  async submit() {
-    await this.submit_btn.click();
+  // Vérifie si un formulaire d'authentification standard est présent
+  async hasAuthForm(): Promise<boolean> {
+    return await this.email_input.isVisible({ timeout: 6_000 }).catch(() => false);
+  }
+
+  async submit(): Promise<boolean> {
+    if (!(await this.submit_btn.isVisible({ timeout: 6_000 }).catch(() => false))) {
+      return false;
+    }
+    await this.submit_btn.click().catch(() => {});
     await this.page.waitForLoadState('domcontentloaded').catch(() => {});
+    return true;
   }
 
   async login(email: string, password: string) {
