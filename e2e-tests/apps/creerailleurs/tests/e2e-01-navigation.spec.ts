@@ -8,7 +8,7 @@
 import { test, expect } from '@playwright/test';
 import { HomePage } from '../pages/HomePage';
 
-const BASE = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
+const BASE = process.env.BASE_URL ?? 'https://dev.creerailleurs.com';
 
 test.describe('SC-01 — Navigation générale du site', () => {
 

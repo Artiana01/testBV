@@ -131,7 +131,7 @@ const REGISTRY = {
   },
   creerailleurs: {
     label:  'Créer Ailleurs',
-    url:    'https://www.creerailleurs.com',
+    url:    'https://dev.creerailleurs.com',
     config: 'playwright.creerailleurs.config.ts',
     color:  '#f97316',
     tests: {
