@@ -14,7 +14,7 @@ import { test, expect } from '@playwright/test';
 import { ManifestePage } from '../pages/ManifestePage';
 import { AuthPage } from '../pages/AuthPage';
 
-const BASE          = process.env.BASE_URL      ?? 'https://www.creerailleurs.com';
+const BASE          = process.env.BASE_URL      ?? 'https://dev.creerailleurs.com';
 const TEST_EMAIL    = process.env.TEST_EMAIL    ?? '';
 const TEST_PASSWORD = process.env.TEST_PASSWORD ?? '';
 const STRIPE_CARD   = process.env.STRIPE_CARD   ?? '4242424242424242';

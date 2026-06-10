@@ -13,9 +13,9 @@ import { loginAndSave, ensureAuthDir, isSessionFresh } from '../../shared/login-
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const BASE_URL     = process.env.BASE_URL      ?? 'https://www.creerailleurs.com';
-const ADMIN_EMAIL  = process.env.ADMIN_EMAIL   ?? '';
-const ADMIN_PASS   = process.env.ADMIN_PASSWORD ?? '';
+const BASE_URL     = process.env.BASE_URL      ?? 'https://dev.creerailleurs.com';
+const ADMIN_EMAIL  = process.env.ADMIN_EMAIL   ?? 'webmaster@bluevaloris.com';
+const ADMIN_PASS   = process.env.ADMIN_PASSWORD ?? '123456789Ca!';
 const CLIENT_EMAIL = process.env.TEST_EMAIL    ?? '';
 const CLIENT_PASS  = process.env.TEST_PASSWORD ?? '';
 

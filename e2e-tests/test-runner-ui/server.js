@@ -148,7 +148,7 @@ const APP_REGISTRY = {
   emiragate:          { label: 'Emiragate',             url: 'https://dev.bluevalorisinstall.com',       color: '#f59e0b', tests: TESTS_EMIRAGATE },
   bvportage:          { label: 'BV Portage',            url: 'https://dev.bluevalorisportage.com',      color: '#ec4899', tests: TESTS_BVPORTAGE },
   bvportageFreelance: { label: 'BV Portage Freelance',  url: 'https://dev.bluevalorisportage.com',      color: '#d946ef', tests: TESTS_BVPORTAGE_FREELANCE },
-  creerailleurs:      { label: 'Créer Ailleurs',        url: 'https://www.creerailleurs.com',            color: '#f97316', tests: TESTS_CREERAILLEURS },
+  creerailleurs:      { label: 'Créer Ailleurs',        url: 'https://dev.creerailleurs.com',            color: '#f97316', tests: TESTS_CREERAILLEURS },
   launchpad:          { label: 'Launchpad BV TECH',     url: 'https://staging.bluevaloristech.com',      color: '#14b8a6', tests: TESTS_LAUNCHPAD },
 };
 

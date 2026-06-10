@@ -6,7 +6,7 @@ export class BasePage {
 
   constructor(page: Page) {
     this.page = page;
-    this.baseURL = process.env.BASE_URL || 'https://www.creerailleurs.com';
+    this.baseURL = process.env.BASE_URL || 'https://dev.creerailleurs.com';
   }
 
   async goto(path: string = '') {
