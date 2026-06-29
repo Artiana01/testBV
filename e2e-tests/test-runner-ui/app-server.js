@@ -9,7 +9,14 @@ const http = require('http');
 const fs   = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
-const url  = require('url');
+
+function parseRequestUrl(requestUrl) {
+  const parsed = new URL(requestUrl, 'http://127.0.0.1');
+  return {
+    pathname: parsed.pathname,
+    query: Object.fromEntries(parsed.searchParams.entries()),
+  };
+}
 
 // ── Historisation PostgreSQL ───────────────────────────────────────────────────
 const { connect: dbConnect } = require('../database/db');
@@ -395,7 +402,7 @@ function clearHistory() {
 
 // ── HTTP server ───────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
-  const parsed = url.parse(req.url, true);
+  const parsed = parseRequestUrl(req.url);
 
   // SSE
   if (parsed.pathname === '/events') {
