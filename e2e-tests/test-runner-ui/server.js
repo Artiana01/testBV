@@ -10,7 +10,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const url = require('url');
 
 // ── Historisation PostgreSQL ───────────────────────────────────────────────────
@@ -277,7 +277,7 @@ function runTests(selectedTests, app) {
   // Tuer tout processus précédent
   if (runningProcess) {
     try {
-      runningProcess.kill('SIGKILL');
+      process.kill(-runningProcess.pid, 'SIGKILL');
     } catch (e) {
       console.log('Impossible de tuer le processus précédent:', e.message);
     }
@@ -336,6 +336,7 @@ function runTests(selectedTests, app) {
   runningProcess = spawn('npx', args, {
     cwd: ROOT_DIR,
     shell: true,
+    detached: true,
     env: { ...process.env, FORCE_COLOR: '0' },
   });
 
@@ -389,6 +390,9 @@ function runTests(selectedTests, app) {
   });
 
   runningProcess.on('close', (code) => {
+    // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
+    try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
+
     // Si l'arrêt a été demandé manuellement, ne pas envoyer de notification 'done'
     // (on l'a déjà envoyée dans stopTests)
     if (testsStopped) {
@@ -479,14 +483,16 @@ const server = http.createServer(async (req, res) => {
         runningProcess.stdout?.removeAllListeners();
         runningProcess.stderr?.removeAllListeners();
         
-        // Tuer le processus avec force
-        runningProcess.kill('SIGKILL');
+        // Kill entire process group (detached:true makes sh the group leader)
+        process.kill(-runningProcess.pid, 'SIGKILL');
+        // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
+        try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
         isRunning = false;
-        
+
         // Nettoyer la référence après un timeout court
         setTimeout(() => {
           if (runningProcess) {
-            try { runningProcess.kill('SIGKILL'); } catch (_) {}
+            try { process.kill(-runningProcess.pid, 'SIGKILL'); } catch (_) {}
             runningProcess = null;
           }
         }, 500);
