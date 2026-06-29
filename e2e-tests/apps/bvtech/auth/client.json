@@ -1,42 +1,12 @@
 {
   "cookies": [
     {
-      "name": "KEYCLOAK_3P_COOKIE_SAMESITE",
-      "value": "supported",
-      "domain": "keycloak.bluevaloris.com",
-      "path": "/realms/bluevaloris/protocol/openid-connect/3p-cookies",
-      "expires": 1779271625.736374,
-      "httpOnly": false,
-      "secure": true,
-      "sameSite": "None"
-    },
-    {
       "name": "NEXT_LOCALE",
       "value": "fr",
       "domain": "dev.bluevaloristech.com",
       "path": "/",
       "expires": -1,
       "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "session_user",
-      "value": "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyIjp7ImlkIjo4LCJuYW1lIjoiUGVyc2lzdCBwLTM4MDg3NCBwLTQ1NzAxMyBwLTkzMTUzMiBwLTkwNTg4MyBwLTc1MTMwOSBwLTc2ODQ4NiBwLTEwMjY4OCBwLTU0MDA5NiBwLTA0NDgzMyBwLTkyNjg0NyBwLTA4MDkxMyBwLTM5MjczMiBwLTk5NDkyMSBwLTIwNDg0OSBwLTQ3NDM2NCBwLTQyNDIzOSBwLTk2NzY0NSIsImVtYWlsIjoiZGlhcnlAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWRfYXQiOiIyMDI2LTA0LTIxVDE3OjE0OjAwLjAwMDAwMFoiLCJjcmVhdGVkX2F0IjoiMjAyNi0wNC0yMVQxNzoxNDo0NS4wMDAwMDBaIiwidXBkYXRlZF9hdCI6IjIwMjYtMDUtMTNUMTM6NDI6MTUuMDAwMDAwWiIsInR3b19mYWN0b3Jfc2VjcmV0IjpudWxsLCJ0d29fZmFjdG9yX3JlY292ZXJ5X2NvZGVzIjpudWxsLCJ0d29fZmFjdG9yX2NvbmZpcm1lZF9hdCI6bnVsbCwicm9sZSI6IlJPTEVfVVNFUiIsIm51bWJlclBob25lIjpudWxsLCJhZGRyZXNzIjpudWxsLCJjb21wYW55IjpudWxsLCJnb29nbGVfaWQiOm51bGwsImF2YXRhciI6bnVsbCwibG9naW5fYXR0ZW1wdHMiOjM0LCJibG9ja2VkX2F0IjpudWxsLCJkZWxldGVkX2F0IjpudWxsLCJpc19hbm9ueW1pemVkIjpmYWxzZSwiYW5vbnltaXplZF9uYW1lIjpudWxsLCJhbm9ueW1pemVkX2VtYWlsIjpudWxsLCJpc19lbXBsb3llZSI6ZmFsc2UsImF2YXRhcl91cmwiOm51bGx9LCJleHBpcmVzIjoiMjAyNi0wNS0yMFQxMTowNjowNy41NzVaIiwiaWF0IjoxNzc5MjcxNTY3LCJleHAiOjE3NzkyNzUxNjd9.qHn3yJMbn3Qk40vZwCxtGsrddbxWsig0HlUv0vp5868",
-      "domain": "dev.bluevaloristech.com",
-      "path": "/",
-      "expires": 1779275167.193897,
-      "httpOnly": true,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
-      "name": "token",
-      "value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpLWRldi5ibHVldmFsb3Jpc3RlY2guY29tL2FwaS9sb2dpbiIsImlhdCI6MTc3OTI3MTU2NywiZXhwIjoxNzc5Mjc1MTY3LCJuYmYiOjE3NzkyNzE1NjcsImp0aSI6Im5tZVRUV2NTcUp1Q3Vqb2MiLCJzdWIiOiI4IiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyIsInJvbGUiOiJST0xFX1VTRVIifQ.JD30H1SrDGKSMIaK5-ZkI32tTMb0czXvzf5LUTfSPZ4",
-      "domain": "dev.bluevaloristech.com",
-      "path": "/",
-      "expires": 1779275167.194048,
-      "httpOnly": true,
       "secure": false,
       "sameSite": "Lax"
     }
