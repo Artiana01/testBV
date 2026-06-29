@@ -13,6 +13,12 @@ const path = require('path');
 const { spawn } = require('child_process');
 const url = require('url');
 
+// ── Historisation PostgreSQL ───────────────────────────────────────────────────
+const { connect: dbConnect } = require('../database/db');
+const history = require('../database/history');
+dbConnect().then(ok => {
+  if (ok) console.log('[Hub] DB PostgreSQL connectée ✓');
+}).catch(() => {});
 const TEST_RESULTS_DIR = path.join(__dirname, '..', 'test-results');
 
 const PORT         = process.env.PORT || 4000;
@@ -185,6 +191,8 @@ function generateHubHTML() {
     .arrow{color:#64748b;font-size:18px;transition:color .15s;flex-shrink:0}
     .card:hover .arrow{color:var(--c)}
     .footer{font-size:11px;color:#334155;margin-top:8px}
+    .hist-link{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;border:1px solid #2e3349;background:#1a1d27;color:#818cf8;font-size:13px;font-weight:600;text-decoration:none;transition:all .15s;margin-top:4px}
+    .hist-link:hover{border-color:#6366f1;background:#22263a;transform:translateY(-2px);box-shadow:0 4px 20px rgba(99,102,241,.2)}
   </style>
 </head>
 <body>
@@ -193,6 +201,7 @@ function generateHubHTML() {
     <p class="subtitle">Cliquez sur une app pour ouvrir son interface de test dédiée</p>
   </div>
   <div class="grid">${cards}</div>
+  <a class="hist-link" href="/history-page">📊 Historique des campagnes →</a>
   <div class="footer">Toutes les apps tournent sur le même serveur — aucune interférence possible</div>
 </body>
 </html>`;
@@ -206,6 +215,9 @@ let runningProcess = null;
 let isRunning = false;
 let lastApp = 'bvtech';
 let testsStopped = false;  // Flag pour tracker si l'arrêt a été demandé
+let currentRunId  = null;  // ID PostgreSQL du run en cours
+let runStats      = { passed: 0, failed: 0, skipped: 0, durationMs: null };
+let runStartedAt  = null;
 
 function sendToAllClients(data) {
   const payload = `data: ${JSON.stringify(data)}\n\n`;
@@ -274,8 +286,22 @@ function runTests(selectedTests, app) {
 
   isRunning = true;
   lastApp = appKey;
-  testsStopped = false;  // Réinitialiser le flag
+  testsStopped = false;
+  runStats     = { passed: 0, failed: 0, skipped: 0, durationMs: null };
+  runStartedAt = Date.now();
   sendToAllClients({ type: 'start', message: `🚀 Démarrage des tests ${appLabel}...` });
+
+  // Collecter les fichiers sélectionnés
+  const selectedFiles = [];
+  if (selectedTests && selectedTests.length > 0 && !selectedTests.includes('all')) {
+    selectedTests.forEach(key => {
+      const t = testsMap[key];
+      if (t && t.file) selectedFiles.push(t.file);
+    });
+  }
+
+  // Démarrer le run en base
+  history.startRun(appKey, appLabel, selectedFiles).then(id => { currentRunId = id; });
 
   const outputDir = makeRunOutputDir(appKey);
   const args = [
@@ -304,6 +330,8 @@ function runTests(selectedTests, app) {
   // Playwright utilisera testDir du config
 
   sendToAllClients({ type: 'cmd', message: `npx ${args.join(' ')}` });
+  history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${appLabel}...`);
+  history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
   runningProcess = spawn('npx', args, {
     cwd: ROOT_DIR,
@@ -315,8 +343,35 @@ function runTests(selectedTests, app) {
     const lines = data.toString().split('\n');
     lines.forEach(line => {
       if (!line.trim()) return;
-      const type = classifyLine(line);
-      sendToAllClients({ type, message: stripAnsi(line) });
+      const type  = classifyLine(line);
+      const clean = stripAnsi(line);
+      sendToAllClients({ type, message: clean });
+
+      // ── Persistance des logs significatifs ─────────────────────────────
+      if (['pass','fail','warn','summary','done'].includes(type)) {
+        history.saveLog(currentRunId, type, clean);
+      }
+
+      // ── Parser les résultats individuels ───────────────────────────────
+      if (type === 'pass' || type === 'fail') {
+        const parsed = history.parseTestLine(clean);
+        if (parsed) {
+          if (parsed.status === 'passed') runStats.passed++;
+          else if (parsed.status === 'failed') runStats.failed++;
+          history.saveTestResult(currentRunId, parsed);
+        }
+      }
+
+      // ── Mettre à jour les stats depuis la ligne résumé finale ─────────
+      if (type === 'summary') {
+        const summ = history.parseSummaryLine(clean);
+        if (summ) {
+          if (summ.passed  !== null) runStats.passed  = summ.passed;
+          if (summ.failed  !== null) runStats.failed  = summ.failed;
+          if (summ.skipped !== null) runStats.skipped = summ.skipped;
+          if (summ.durationMs) runStats.durationMs    = summ.durationMs;
+        }
+      }
     });
   });
 
@@ -324,8 +379,12 @@ function runTests(selectedTests, app) {
     const lines = data.toString().split('\n');
     lines.forEach(line => {
       if (!line.trim()) return;
-      const type = classifyLine(line);
-      sendToAllClients({ type, message: stripAnsi(line) });
+      const type  = classifyLine(line);
+      const clean = stripAnsi(line);
+      sendToAllClients({ type, message: clean });
+      if (['pass','fail','warn','summary'].includes(type)) {
+        history.saveLog(currentRunId, type, clean);
+      }
     });
   });
 
@@ -333,12 +392,20 @@ function runTests(selectedTests, app) {
     // Si l'arrêt a été demandé manuellement, ne pas envoyer de notification 'done'
     // (on l'a déjà envoyée dans stopTests)
     if (testsStopped) {
+      history.finishRun(currentRunId, null, runStats);
+      currentRunId = null;
       isRunning = false;
       runningProcess = null;
       testsStopped = false;
       return;
     }
     
+    const doneMsg = code === 0 ? '✅ Tous les tests ont réussi !' : `❌ Des tests ont échoué (code: ${code})`;
+    if (!runStats.durationMs) runStats.durationMs = Date.now() - runStartedAt;
+    history.saveLog(currentRunId, 'done', doneMsg);
+    history.finishRun(currentRunId, code, runStats);
+    currentRunId = null;
+
     isRunning = false;
     runningProcess = null;
     const success = code === 0;
@@ -353,13 +420,15 @@ function runTests(selectedTests, app) {
   });
 
   runningProcess.on('error', (err) => {
+    history.finishRun(currentRunId, -1, runStats);
+    currentRunId = null;
     isRunning = false;
     runningProcess = null;
     sendToAllClients({ type: 'error', message: `Erreur de démarrage : ${err.message}` });
   });
 }
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const parsed = url.parse(req.url, true);
 
   // === SSE : connexion temps réel ===
@@ -439,6 +508,46 @@ const server = http.createServer((req, res) => {
   if (parsed.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ running: isRunning, tests: { bvtech: TESTS_BVTECH, bvbusiness: TESTS_BVBUSINESS, bvinvest: TESTS_BVINVEST, emiragate: TESTS_EMIRAGATE, bvportage: TESTS_BVPORTAGE, bvportageFreelance: TESTS_BVPORTAGE_FREELANCE, creerailleurs: TESTS_CREERAILLEURS, launchpad: TESTS_LAUNCHPAD } }));
+    return;
+  }
+
+  // === GET /history : liste paginée de tous les runs (filtres optionnels) ===
+  if (parsed.pathname === '/history' && req.method === 'GET') {
+    const limit  = parseInt(parsed.query.limit  || '30');
+    const offset = parseInt(parsed.query.offset || '0');
+    const app    = parsed.query.app    || null;
+    const status = parsed.query.status || null;
+    const data   = await history.getRuns({ app, status, limit, offset });
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify(data));
+    return;
+  }
+
+  // === GET /history/:id : détail d'un run ===
+  const matchDetail = parsed.pathname.match(/^\/history\/(\d+)$/);
+  if (matchDetail && req.method === 'GET') {
+    const data = await history.getRunById(parseInt(matchDetail[1]));
+    if (!data) { res.writeHead(404); res.end('Not found'); return; }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+    return;
+  }
+
+  // === DELETE /history/:id : suppression d'un run ===
+  const matchDel = parsed.pathname.match(/^\/history\/(\d+)$/);
+  if (matchDel && req.method === 'DELETE') {
+    const ok = await history.deleteRun(parseInt(matchDel[1]));
+    res.writeHead(ok ? 200 : 404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok }));
+    return;
+  }
+
+  // === GET /history-stats : statistiques globales ou par app ===
+  if (parsed.pathname === '/history-stats') {
+    const app  = parsed.query.app || null;
+    const data = await history.getStats(app);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
     return;
   }
 
@@ -654,6 +763,17 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(generateHubHTML());
     }
+    return;
+  }
+
+  // === GET /history-page : interface historique ===
+  if (parsed.pathname === '/history-page' || parsed.pathname === '/history.html') {
+    const histFile = path.join(__dirname, 'history.html');
+    fs.readFile(histFile, 'utf8', (err, html) => {
+      if (err) { res.writeHead(500); res.end('history.html introuvable'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
+    });
     return;
   }
 

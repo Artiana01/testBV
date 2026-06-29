@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historique des Tests E2E</title>
+  <meta name="description" content="Historique complet des campagnes de tests E2E Playwright — résultats, métriques et régressions." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #080b12;
+      --surface:   #0f1420;
+      --surface2:  #161d2e;
+      --surface3:  #1c253a;
+      --border:    #1e2d47;
+      --border2:   #243352;
+      --pass:      #22c55e;
+      --fail:      #ef4444;
+      --warn:      #f59e0b;
+      --skip:      #64748b;
+      --info:      #94a3b8;
+      --text:      #e2e8f0;
+      --text-dim:  #64748b;
+      --text-muted:#334155;
+      --accent:    #6366f1;
+      --accent2:   #818cf8;
+      --radius:    12px;
+      --radius-sm: 8px;
+      --glow:      rgba(99,102,241,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Noise texture overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    /* ── Header ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(8,11,18,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 16px; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .logo-icon { font-size: 22px; }
+    .logo-sep { color: var(--border2); font-size: 20px; margin: 0 4px; }
+    .logo-sub { color: var(--text-dim); font-weight: 500; font-size: 14px; }
+    .header-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+    .btn-back {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-dim); font-size: 12px; font-weight: 500;
+      cursor: pointer; text-decoration: none; transition: all .15s;
+    }
+    .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Main layout ── */
+    main {
+      flex: 1; padding: 32px;
+      max-width: 1440px; margin: 0 auto; width: 100%;
+      position: relative; z-index: 1;
+    }
+
+    /* ── Section headings ── */
+    .section-title {
+      font-size: 11px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-dim);
+      margin-bottom: 14px;
+    }
+
+    /* ── KPI Cards ── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px; margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 22px;
+      position: relative; overflow: hidden;
+      transition: border-color .2s, transform .2s;
+    }
+    .kpi-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .kpi-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(99,102,241,.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .kpi-label { font-size: 11px; color: var(--text-dim); margin-bottom: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+    .kpi-value { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+    .kpi-sub   { font-size: 11px; color: var(--text-dim); margin-top: 6px; }
+    .kpi-card.accent .kpi-value { color: var(--accent2); }
+    .kpi-card.pass .kpi-value   { color: var(--pass); }
+    .kpi-card.fail .kpi-value   { color: var(--fail); }
+    .kpi-card.warn .kpi-value   { color: var(--warn); }
+
+    /* ── Chart section ── */
+    .chart-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      margin-bottom: 28px;
+    }
+    .chart-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .chart-title { font-size: 14px; font-weight: 600; }
+    #trendChart { width: 100%; height: 160px; display: block; }
+
+    /* ── Filters bar ── */
+    .filters-bar {
+      display: flex; align-items: center; gap: 10px;
+      flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .filter-select {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); padding: 8px 12px; border-radius: var(--radius-sm);
+      font-size: 12px; font-family: inherit; cursor: pointer;
+      transition: border-color .15s; outline: none;
+    }
+    .filter-select:hover, .filter-select:focus { border-color: var(--accent); }
+    .pill-filter {
+      display: flex; gap: 6px;
+    }
+    .pill {
+      font-size: 12px; padding: 7px 14px; border-radius: 20px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-dim); cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .pill:hover { border-color: var(--border2); color: var(--text); }
+    .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .pill.pass-pill.active { background: rgba(34,197,94,.15); border-color: var(--pass); color: var(--pass); }
+    .pill.fail-pill.active { background: rgba(239,68,68,.12); border-color: var(--fail); color: var(--fail); }
+    .filter-spacer { flex: 1; }
+    .result-count { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+
+    /* ── Runs table ── */
+    .runs-container {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .runs-table { width: 100%; border-collapse: collapse; }
+    .runs-table thead tr {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .runs-table th {
+      padding: 11px 16px; text-align: left;
+      font-size: 11px; font-weight: 600; color: var(--text-dim);
+      text-transform: uppercase; letter-spacing: .06em;
+      white-space: nowrap;
+    }
+    .runs-table th:last-child { text-align: right; }
+    .runs-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .12s;
+      cursor: pointer;
+    }
+    .runs-table tbody tr:last-child { border-bottom: none; }
+    .runs-table tbody tr:hover { background: var(--surface2); }
+    .runs-table td { padding: 13px 16px; font-size: 13px; vertical-align: middle; }
+    .runs-table td:last-child { text-align: right; }
+
+    /* ── Run row details ── */
+    .run-app-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+      background: rgba(99,102,241,.1); color: var(--accent2);
+    }
+    .run-app-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    }
+    .status-badge.passed  { background: rgba(34,197,94,.12);  color: var(--pass);  }
+    .status-badge.failed  { background: rgba(239,68,68,.12);  color: var(--fail);  }
+    .status-badge.running { background: rgba(245,158,11,.12); color: var(--warn);  }
+    .status-badge.stopped { background: rgba(100,116,139,.12);color: var(--skip);  }
+
+    .test-bars {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    }
+    .bar-pass { color: var(--pass); font-weight: 600; }
+    .bar-fail { color: var(--fail); font-weight: 600; }
+    .bar-total { color: var(--text-dim); }
+    .mini-bar {
+      width: 60px; height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden;
+    }
+    .mini-bar-fill { height: 100%; border-radius: 2px; background: var(--pass); transition: width .3s; }
+    .mini-bar-fill.has-fail { background: linear-gradient(90deg, var(--pass), var(--fail)); }
+
+    .run-date { font-size: 12px; color: var(--text-dim); }
+    .run-duration { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); }
+
+    .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
+    .btn-icon {
+      padding: 5px 10px; border-radius: 6px; border: 1px solid transparent;
+      font-size: 12px; cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .btn-detail { background: rgba(99,102,241,.12); color: var(--accent2); border-color: rgba(99,102,241,.2); }
+    .btn-detail:hover { background: rgba(99,102,241,.22); }
+    .btn-del { background: rgba(239,68,68,.08); color: var(--fail); border-color: rgba(239,68,68,.15); }
+    .btn-del:hover { background: rgba(239,68,68,.18); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 80px 20px; gap: 16px;
+      color: var(--text-dim);
+    }
+    .empty-icon { font-size: 52px; opacity: .3; }
+    .empty-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .empty-sub { font-size: 13px; text-align: center; max-width: 340px; line-height: 1.6; }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .page-info { font-size: 12px; color: var(--text-dim); }
+    .page-btns { display: flex; gap: 8px; }
+    .btn-page {
+      padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text-dim);
+      font-size: 12px; cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .btn-page:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+    .btn-page:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Detail drawer ── */
+    .drawer-overlay {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+    }
+    .drawer-overlay.active { display: block; }
+    .drawer {
+      position: fixed; right: 0; top: 0; bottom: 0; z-index: 201;
+      width: min(680px, 95vw);
+      background: var(--surface); border-left: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      transform: translateX(100%); transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .drawer.open { transform: translateX(0); }
+    .drawer-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 12px; flex-shrink: 0;
+    }
+    .drawer-close {
+      margin-left: auto; padding: 6px 10px; border-radius: 6px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--text-dim); font-size: 16px; cursor: pointer; flex-shrink: 0;
+      transition: all .15s;
+    }
+    .drawer-close:hover { border-color: var(--fail); color: var(--fail); }
+    .drawer-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .drawer-sub { font-size: 12px; color: var(--text-dim); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+    .drawer-section-title {
+      font-size: 11px; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--text-dim); margin: 20px 0 10px; font-weight: 600;
+    }
+    .drawer-section-title:first-child { margin-top: 0; }
+
+    /* ── Test result list in drawer ── */
+    .test-result-list { display: flex; flex-direction: column; gap: 4px; }
+    .test-result-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      background: var(--surface2); border: 1px solid var(--border);
+      font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    }
+    .test-result-icon { font-size: 14px; flex-shrink: 0; }
+    .test-result-name { flex: 1; word-break: break-all; color: var(--text); }
+    .test-result-dur { color: var(--text-dim); white-space: nowrap; }
+
+    /* ── Logs in drawer ── */
+    .log-block {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px; max-height: 300px; overflow-y: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.8;
+    }
+    .log-line.pass    { color: var(--pass); }
+    .log-line.fail    { color: var(--fail); }
+    .log-line.warn    { color: var(--warn); }
+    .log-line.summary { color: var(--text); font-weight: 600; }
+    .log-line.cmd     { color: var(--accent2); font-style: italic; }
+    .log-line.start   { color: var(--info); }
+    .log-line.done    { color: var(--text); font-weight: 700; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 12px 18px;
+      font-size: 13px; font-weight: 500; color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      transform: translateY(80px); opacity: 0;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .25s;
+      pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 3px solid var(--pass); }
+    .toast.error   { border-left: 3px solid var(--fail); }
+
+    /* ── Skeleton loader ── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface2) 25%, var(--surface3) 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 4px;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .skeleton-row td { padding: 16px; }
+
+    /* ── By-app summary ── */
+    .app-stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px; margin-bottom: 28px;
+    }
+    .app-stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+      transition: border-color .15s;
+    }
+    .app-stat-card:hover { border-color: var(--border2); }
+    .app-stat-header { display: flex; align-items: center; gap: 8px; }
+    .app-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .app-name { font-size: 12px; font-weight: 600; }
+    .app-runs  { font-size: 11px; color: var(--text-dim); margin-left: auto; }
+    .app-rate-bar { height: 4px; background: var(--surface3); border-radius: 2px; overflow: hidden; }
+    .app-rate-fill { height: 100%; border-radius: 2px; transition: width .6s; }
+    .app-rate-label { font-size: 11px; color: var(--text-dim); }
+    .app-rate-pct { font-size: 13px; font-weight: 700; }
+
+    @media (max-width: 768px) {
+      main { padding: 16px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      header { padding: 0 16px; }
+      .drawer { width: 100vw; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-icon">🎭</span>
+    <span>Tests E2E</span>
+    <span class="logo-sep">/</span>
+    <span class="logo-sub">Historique</span>
+  </div>
+  <div class="header-actions">
+    <a class="btn-back" href="/" id="backLink">← Hub</a>
+  </div>
+</header>
+
+<main>
+  <!-- KPIs -->
+  <div class="section-title">Métriques globales</div>
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card accent">
+      <div class="kpi-label">Total Campagnes</div>
+      <div class="kpi-value" id="kpiTotal">—</div>
+      <div class="kpi-sub">toutes apps confondues</div>
+    </div>
+    <div class="kpi-card pass">
+      <div class="kpi-label">Taux de réussite</div>
+      <div class="kpi-value" id="kpiPassRate">—</div>
+      <div class="kpi-sub" id="kpiPassSub">—</div>
+    </div>
+    <div class="kpi-card fail">
+      <div class="kpi-label">Campagnes échouées</div>
+      <div class="kpi-value" id="kpiFailed">—</div>
+      <div class="kpi-sub" id="kpiFailSub">—</div>
+    </div>
+    <div class="kpi-card warn">
+      <div class="kpi-label">Durée moyenne</div>
+      <div class="kpi-value" id="kpiAvgDur">—</div>
+      <div class="kpi-sub">par campagne</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Tests passés</div>
+      <div class="kpi-value" id="kpiTestsPassed" style="color:var(--pass)">—</div>
+      <div class="kpi-sub">total cumulé</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Tests échoués</div>
+      <div class="kpi-value" id="kpiTestsFailed" style="color:var(--fail)">—</div>
+      <div class="kpi-sub">total cumulé</div>
+    </div>
+  </div>
+
+  <!-- Trend chart -->
+  <div class="chart-section">
+    <div class="chart-header">
+      <div class="chart-title">📈 Évolution du taux de réussite — 30 derniers jours</div>
+      <div id="chartLegend" style="font-size:11px;color:var(--text-dim)"></div>
+    </div>
+    <canvas id="trendChart"></canvas>
+  </div>
+
+  <!-- By-app stats -->
+  <div class="section-title">Réussite par application</div>
+  <div class="app-stats-grid" id="appStatsGrid">
+    <!-- filled by JS -->
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="pill-filter">
+      <button class="pill active" data-status="all"     onclick="setStatusFilter('all')">Tous</button>
+      <button class="pill pass-pill" data-status="passed" onclick="setStatusFilter('passed')">✓ Réussis</button>
+      <button class="pill fail-pill" data-status="failed" onclick="setStatusFilter('failed')">✗ Échoués</button>
+      <button class="pill" data-status="stopped" onclick="setStatusFilter('stopped')">⛔ Arrêtés</button>
+    </div>
+    <select class="filter-select" id="appFilter" onchange="setAppFilter(this.value)">
+      <option value="all">Toutes les apps</option>
+      <option value="bvtech">BV Tech</option>
+      <option value="bvbusiness">BV Business</option>
+      <option value="bvinvest">BV Invest</option>
+      <option value="emiragate">Emiragate</option>
+      <option value="bvportage">BV Portage</option>
+      <option value="bvportageFreelance">BV Portage Freelance</option>
+      <option value="creerailleurs">Créer Ailleurs</option>
+      <option value="launchpad">Launchpad</option>
+    </select>
+    <div class="filter-spacer"></div>
+    <span class="result-count" id="resultCount"></span>
+    <button class="btn-back" onclick="exportCSV()" style="border-color:var(--border2)">⬇ CSV</button>
+  </div>
+
+  <!-- Runs table -->
+  <div class="runs-container">
+    <table class="runs-table" id="runsTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Application</th>
+          <th>Statut</th>
+          <th>Tests</th>
+          <th>Démarré le</th>
+          <th>Durée</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="runsBody">
+        <tr class="skeleton-row"><td colspan="7"><div class="skeleton" style="height:18px;width:60%"></div></td></tr>
+        <tr class="skeleton-row"><td colspan="7"><div class="skeleton" style="height:18px;width:80%"></div></td></tr>
+        <tr class="skeleton-row"><td colspan="7"><div class="skeleton" style="height:18px;width:50%"></div></td></tr>
+      </tbody>
+    </table>
+    <div class="pagination" id="pagination" style="display:none">
+      <span class="page-info" id="pageInfo"></span>
+      <div class="page-btns">
+        <button class="btn-page" id="btnPrev" onclick="changePage(-1)">← Précédent</button>
+        <button class="btn-page" id="btnNext" onclick="changePage(1)">Suivant →</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Detail drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-title" id="drawerTitle">Détail du run</div>
+      <div class="drawer-sub" id="drawerSub"></div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+    <!-- filled dynamically -->
+  </div>
+</div>
+
+<div class="toast" id="toastMsg"></div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const APP_COLORS = {
+  bvtech:             '#6366f1',
+  bvbusiness:         '#0ea5e9',
+  bvinvest:           '#10b981',
+  emiragate:          '#f59e0b',
+  bvportage:          '#ec4899',
+  bvportageFreelance: '#d946ef',
+  creerailleurs:      '#f97316',
+  launchpad:          '#14b8a6',
+};
+
+const APP_LABELS = {
+  bvtech:             'BV Tech',
+  bvbusiness:         'BV Business',
+  bvinvest:           'BV Invest',
+  emiragate:          'Emiragate',
+  bvportage:          'BV Portage',
+  bvportageFreelance: 'BV Portage Freelance',
+  creerailleurs:      'Créer Ailleurs',
+  launchpad:          'Launchpad',
+};
+
+// ── State ────────────────────────────────────────────────────────────────────
+let currentPage   = 0;
+let currentStatus = 'all';
+let currentApp    = 'all';
+const PAGE_SIZE   = 20;
+let totalRuns     = 0;
+let allRuns       = [];
+let statsData     = null;
+
+// ── Detect which server we're on ─────────────────────────────────────────────
+// history.html peut être servi depuis le hub (/) ou depuis une app (/app/...)
+const BASE_URL = '';
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+loadStats();
+loadRuns();
+
+// ── API calls ────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const app = currentApp !== 'all' ? `?app=${currentApp}` : '';
+    const data = await fetch(`${BASE_URL}/history-stats${app}`).then(r => r.json());
+    statsData = data;
+    renderKPIs(data);
+    renderAppStats(data.byApp);
+    renderTrendChart(data.trend);
+  } catch (e) {
+    console.error('loadStats:', e);
+  }
+}
+
+async function loadRuns() {
+  const tbody = document.getElementById('runsBody');
+  tbody.innerHTML = `<tr class="skeleton-row"><td colspan="7"><div class="skeleton" style="height:18px;width:80%"></div></td></tr>`.repeat(5);
+
+  const params = new URLSearchParams({
+    limit: PAGE_SIZE,
+    offset: currentPage * PAGE_SIZE,
+  });
+  if (currentStatus !== 'all') params.set('status', currentStatus);
+  if (currentApp    !== 'all') params.set('app',    currentApp);
+
+  try {
+    const data = await fetch(`${BASE_URL}/history?${params}`).then(r => r.json());
+    totalRuns = data.total || 0;
+    allRuns   = data.runs  || [];
+    renderRuns(allRuns);
+    renderPagination();
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--fail)">❌ Impossible de charger l'historique. Vérifiez la connexion à la base de données.</td></tr>`;
+  }
+}
+
+// ── KPIs ─────────────────────────────────────────────────────────────────────
+function renderKPIs(data) {
+  document.getElementById('kpiTotal').textContent      = data.totalRuns ?? '—';
+  document.getElementById('kpiPassRate').textContent   = data.passRate != null ? `${data.passRate}%` : '—';
+  document.getElementById('kpiPassSub').textContent    = `${data.totalPassedTests ?? 0} réussis / ${(data.totalPassedTests || 0) + (data.totalFailedTests || 0)}`;
+  document.getElementById('kpiFailed').textContent     = data.failedRuns ?? '—';
+  document.getElementById('kpiFailSub').textContent    = `${data.stoppedRuns ?? 0} arrêtée(s)`;
+  document.getElementById('kpiAvgDur').textContent     = data.avgDurationMs ? fmtDuration(data.avgDurationMs) : '—';
+  document.getElementById('kpiTestsPassed').textContent= fmtNum(data.totalPassedTests ?? 0);
+  document.getElementById('kpiTestsFailed').textContent= fmtNum(data.totalFailedTests ?? 0);
+}
+
+// ── App stats ─────────────────────────────────────────────────────────────────
+function renderAppStats(byApp) {
+  const grid = document.getElementById('appStatsGrid');
+  if (!byApp || byApp.length === 0) { grid.style.display = 'none'; return; }
+  grid.innerHTML = byApp.map(a => {
+    const color   = APP_COLORS[a.app_key] || '#6366f1';
+    const rate    = parseFloat(a.pass_rate) || 0;
+    const rateColor = rate >= 80 ? 'var(--pass)' : rate >= 50 ? 'var(--warn)' : 'var(--fail)';
+    return `
+    <div class="app-stat-card">
+      <div class="app-stat-header">
+        <div class="app-dot" style="background:${color}"></div>
+        <div class="app-name">${escHtml(a.app_label)}</div>
+        <div class="app-runs">${a.runs} runs</div>
+      </div>
+      <div class="app-rate-bar">
+        <div class="app-rate-fill" style="width:${rate}%;background:${rateColor}"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="app-rate-label">✓ ${a.passed} / ✗ ${a.failed}</div>
+        <div class="app-rate-pct" style="color:${rateColor}">${rate}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Trend chart (Canvas) ──────────────────────────────────────────────────────
+function renderTrendChart(trend) {
+  const canvas = document.getElementById('trendChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  // Group by day → pass rate
+  const dayMap = {};
+  (trend || []).forEach(row => {
+    const day = row.day ? row.day.slice(0, 10) : '?';
+    if (!dayMap[day]) dayMap[day] = { total: 0, passed: 0 };
+    dayMap[day].total  += parseInt(row.total)  || 0;
+    dayMap[day].passed += parseInt(row.passed) || 0;
+  });
+
+  const days  = Object.keys(dayMap).sort();
+  const rates = days.map(d => dayMap[d].total > 0 ? Math.round(100 * dayMap[d].passed / dayMap[d].total) : null);
+
+  if (days.length === 0) {
+    ctx.fillStyle = '#334155';
+    ctx.font = '13px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    canvas.height = 160;
+    ctx.fillText('Aucune donnée de tendance disponible', canvas.width / 2, 80);
+    return;
+  }
+
+  // Sizing
+  const dpr = window.devicePixelRatio || 1;
+  const W   = canvas.parentElement.clientWidth - 48;
+  const H   = 160;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+
+  const padL = 32, padR = 12, padT = 14, padB = 32;
+  const cw = W - padL - padR;
+  const ch = H - padT - padB;
+
+  // Grid lines
+  ctx.strokeStyle = '#1e2d47';
+  ctx.lineWidth = 1;
+  [0, 25, 50, 75, 100].forEach(v => {
+    const y = padT + ch - (v / 100) * ch;
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+    ctx.fillStyle = '#334155';
+    ctx.font = '9px Inter, monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(`${v}%`, padL - 4, y + 3);
+  });
+
+  // Area fill
+  const pts = days.map((_, i) => ({
+    x: padL + (i / Math.max(days.length - 1, 1)) * cw,
+    y: padT + ch - ((rates[i] ?? 0) / 100) * ch,
+    v: rates[i],
+  }));
+
+  const grad = ctx.createLinearGradient(0, padT, 0, padT + ch);
+  grad.addColorStop(0, 'rgba(99,102,241,0.25)');
+  grad.addColorStop(1, 'rgba(99,102,241,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, padT + ch);
+  pts.forEach(p => ctx.lineTo(p.x, p.v !== null ? p.y : padT + ch));
+  ctx.lineTo(pts[pts.length - 1].x, padT + ch);
+  ctx.closePath(); ctx.fill();
+
+  // Line
+  ctx.strokeStyle = '#6366f1';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.beginPath();
+  pts.forEach((p, i) => {
+    if (p.v === null) return;
+    i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
+  });
+  ctx.stroke();
+
+  // Dots
+  pts.forEach(p => {
+    if (p.v === null) return;
+    const color = p.v >= 80 ? '#22c55e' : p.v >= 50 ? '#f59e0b' : '#ef4444';
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#0f1420';
+    ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+  });
+
+  // X axis labels (every N days to avoid clutter)
+  ctx.fillStyle = '#475569';
+  ctx.font = '9px Inter, monospace';
+  ctx.textAlign = 'center';
+  const step = Math.ceil(days.length / 10);
+  days.forEach((d, i) => {
+    if (i % step !== 0 && i !== days.length - 1) return;
+    const x = padL + (i / Math.max(days.length - 1, 1)) * cw;
+    ctx.fillText(d.slice(5), x, H - 6); // MM-DD
+  });
+
+  document.getElementById('chartLegend').textContent = `${days[0] || ''} → ${days[days.length - 1] || ''}`;
+}
+
+// ── Runs table ────────────────────────────────────────────────────────────────
+function renderRuns(runs) {
+  const tbody = document.getElementById('runsBody');
+  document.getElementById('resultCount').textContent = `${totalRuns} campagne${totalRuns !== 1 ? 's' : ''}`;
+
+  if (runs.length === 0) {
+    tbody.innerHTML = `
+      <tr><td colspan="7">
+        <div class="empty-state">
+          <div class="empty-icon">🗃️</div>
+          <div class="empty-title">Aucun historique trouvé</div>
+          <div class="empty-sub">Lancez des tests depuis le tableau de bord pour voir l'historique ici.</div>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = runs.map(run => {
+    const color     = APP_COLORS[run.app_key] || '#6366f1';
+    const label     = run.app_label || APP_LABELS[run.app_key] || run.app_key;
+    const pct       = run.total_tests > 0 ? Math.round(100 * run.passed / run.total_tests) : 0;
+    const hasFail   = run.failed > 0;
+    const statusCls = run.status;
+    const icon      = { passed: '✅', failed: '❌', stopped: '⛔', running: '🔄' }[run.status] || '?';
+    const dateStr   = formatDate(run.started_at);
+    const durStr    = run.duration_ms ? fmtDuration(run.duration_ms) : '—';
+
+    return `<tr onclick="openDrawer(${run.id})" id="run_${run.id}">
+      <td style="color:var(--text-dim);font-size:12px;font-family:'JetBrains Mono',monospace">#${run.id}</td>
+      <td>
+        <span class="run-app-badge" style="background:color-mix(in srgb,${color} 15%,transparent);color:${color};border:1px solid color-mix(in srgb,${color} 25%,transparent)">
+          <span class="run-app-dot" style="background:${color}"></span>
+          ${escHtml(label)}
+        </span>
+      </td>
+      <td>
+        <span class="status-badge ${statusCls}">${icon} ${run.status}</span>
+      </td>
+      <td>
+        <div class="test-bars">
+          <span class="bar-pass">✓${run.passed}</span>
+          ${hasFail ? `<span class="bar-fail">✗${run.failed}</span>` : ''}
+          <span class="bar-total">/${run.total_tests}</span>
+          <div class="mini-bar">
+            <div class="mini-bar-fill ${hasFail ? 'has-fail' : ''}" style="width:${pct}%"></div>
+          </div>
+        </div>
+      </td>
+      <td><span class="run-date">${dateStr}</span></td>
+      <td><span class="run-duration">${durStr}</span></td>
+      <td>
+        <div class="action-btns" onclick="event.stopPropagation()">
+          <button class="btn-icon btn-detail" onclick="openDrawer(${run.id})">🔍 Détail</button>
+          <button class="btn-icon btn-del" onclick="deleteRun(${run.id})">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+function renderPagination() {
+  const total = totalRuns;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const pag   = document.getElementById('pagination');
+  if (total <= PAGE_SIZE) { pag.style.display = 'none'; return; }
+  pag.style.display = '';
+  const from = currentPage * PAGE_SIZE + 1;
+  const to   = Math.min(from + PAGE_SIZE - 1, total);
+  document.getElementById('pageInfo').textContent = `${from}–${to} sur ${total}`;
+  document.getElementById('btnPrev').disabled = currentPage === 0;
+  document.getElementById('btnNext').disabled = currentPage >= pages - 1;
+}
+
+function changePage(dir) {
+  currentPage += dir;
+  loadRuns();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── Filters ───────────────────────────────────────────────────────────────────
+function setStatusFilter(status) {
+  currentStatus = status;
+  currentPage = 0;
+  document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.status === status));
+  loadRuns();
+}
+function setAppFilter(app) {
+  currentApp = app;
+  currentPage = 0;
+  loadStats();
+  loadRuns();
+}
+
+// ── Detail drawer ─────────────────────────────────────────────────────────────
+async function openDrawer(runId) {
+  document.getElementById('drawerOverlay').classList.add('active');
+  const drawer = document.getElementById('drawer');
+  drawer.classList.add('open');
+  document.getElementById('drawerBody').innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-dim)">Chargement...</div>`;
+
+  try {
+    const data = await fetch(`${BASE_URL}/history/${runId}`).then(r => r.json());
+    if (!data) { document.getElementById('drawerBody').innerHTML = '<p>Run introuvable.</p>'; return; }
+
+    const { run, results, logs } = data;
+    const color    = APP_COLORS[run.app_key] || '#6366f1';
+    const icon     = { passed: '✅', failed: '❌', stopped: '⛔', running: '🔄' }[run.status] || '?';
+    const durStr   = run.duration_ms ? fmtDuration(run.duration_ms) : '—';
+    const files    = run.test_files ? JSON.parse(JSON.stringify(run.test_files)) : [];
+
+    document.getElementById('drawerTitle').innerHTML = `
+      <span style="color:${color}">${icon}</span> Run #${run.id}
+      <span style="font-size:12px;font-weight:400;color:var(--text-dim);margin-left:8px">${run.app_label}</span>`;
+    document.getElementById('drawerSub').textContent = `${formatDate(run.started_at)} · ${durStr}`;
+
+    // Passed/failed summary bar
+    const pct = run.total_tests > 0 ? Math.round(100 * run.passed / run.total_tests) : 0;
+    const summaryBar = `
+      <div style="display:flex;gap:16px;align-items:center;background:var(--surface2);padding:14px 16px;border-radius:8px;margin-bottom:2px">
+        <div style="flex:1">
+          <div style="height:6px;background:var(--surface3);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${run.failed > 0 ? 'var(--fail)' : 'var(--pass)'};border-radius:3px;transition:width .5s"></div>
+          </div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--pass)">✓ ${run.passed}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--fail)">✗ ${run.failed}</div>
+        <div style="font-size:12px;color:var(--text-dim)">/${run.total_tests} tests</div>
+      </div>`;
+
+    // Test results
+    const passed  = results.filter(r => r.status === 'passed');
+    const failed  = results.filter(r => r.status === 'failed');
+
+    const renderTestList = (list, icon, color) => list.length === 0 ? '' : `
+      <div class="test-result-list">
+        ${list.map(t => `
+          <div class="test-result-item">
+            <span class="test-result-icon">${icon}</span>
+            <span class="test-result-name" style="color:${color}">${escHtml(t.test_name)}</span>
+            <span class="test-result-dur">${t.duration_ms ? fmtDuration(t.duration_ms) : ''}</span>
+          </div>`).join('')}
+      </div>`;
+
+    // Logs
+    const logHtml = logs.length === 0 ? '<p style="color:var(--text-dim);font-size:12px">Aucun log enregistré.</p>' : `
+      <div class="log-block">
+        ${logs.map(l => `<div class="log-line ${l.level}">${escHtml(l.message)}</div>`).join('\n')}
+      </div>`;
+
+    // Files
+    const filesHtml = Array.isArray(files) && files.length > 0 ? `
+      <div class="drawer-section-title">Fichiers exécutés</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">
+        ${files.map(f => `<code style="font-size:10px;background:var(--surface2);padding:3px 8px;border-radius:4px;border:1px solid var(--border);color:var(--info)">${escHtml(f)}</code>`).join('')}
+      </div>` : '';
+
+    document.getElementById('drawerBody').innerHTML = `
+      ${summaryBar}
+      ${filesHtml}
+      ${failed.length > 0 ? `<div class="drawer-section-title" style="color:var(--fail)">✗ Tests échoués (${failed.length})</div>${renderTestList(failed, '✗', 'var(--fail)')}` : ''}
+      ${passed.length > 0 ? `<div class="drawer-section-title">✓ Tests réussis (${passed.length})</div>${renderTestList(passed, '✓', 'var(--pass)')}` : ''}
+      <div class="drawer-section-title">Logs de la campagne</div>
+      ${logHtml}
+    `;
+  } catch (e) {
+    document.getElementById('drawerBody').innerHTML = `<p style="color:var(--fail)">Erreur de chargement : ${e.message}</p>`;
+  }
+}
+
+function closeDrawer() {
+  document.getElementById('drawerOverlay').classList.remove('active');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+// ── Delete run ────────────────────────────────────────────────────────────────
+async function deleteRun(runId) {
+  if (!confirm(`Supprimer définitivement le run #${runId} et tous ses résultats ?`)) return;
+  try {
+    const res = await fetch(`${BASE_URL}/history/${runId}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (data.ok) {
+      showToast(`✅ Run #${runId} supprimé`, 'success');
+      closeDrawer();
+      loadRuns();
+      loadStats();
+    } else {
+      showToast('❌ Suppression échouée', 'error');
+    }
+  } catch (e) {
+    showToast('❌ Erreur réseau', 'error');
+  }
+}
+
+// ── CSV Export ────────────────────────────────────────────────────────────────
+function exportCSV() {
+  if (allRuns.length === 0) { showToast('Aucune donnée à exporter', 'error'); return; }
+  const headers = ['ID','Application','Statut','Total','Passés','Échoués','Ignorés','Durée (ms)','Démarré le','Terminé le'];
+  const rows = allRuns.map(r => [
+    r.id, r.app_label, r.status,
+    r.total_tests, r.passed, r.failed, r.skipped,
+    r.duration_ms || '',
+    r.started_at  ? new Date(r.started_at).toLocaleString('fr-FR')  : '',
+    r.finished_at ? new Date(r.finished_at).toLocaleString('fr-FR') : '',
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `e2e-history-${Date.now()}.csv` });
+  a.click();
+  showToast('✅ Export CSV téléchargé', 'success');
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmtDuration(ms) {
+  if (!ms) return '—';
+  if (ms < 1000) return `${ms}ms`;
+  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+  const m = Math.floor(ms / 60000);
+  const s = Math.round((ms % 60000) / 1000);
+  return `${m}m${s}s`;
+}
+function fmtNum(n) {
+  return Number(n).toLocaleString('fr-FR');
+}
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showToast(message, type = 'success') {
+  const t = document.getElementById('toastMsg');
+  t.textContent = message;
+  t.className = `toast ${type}`;
+  void t.offsetWidth;
+  t.classList.add('show');
+  clearTimeout(t._hide);
+  t._hide = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── Keyboard shortcuts ────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDrawer();
+});
+
+// ── Resize chart on window resize ─────────────────────────────────────────────
+window.addEventListener('resize', () => {
+  if (statsData) renderTrendChart(statsData.trend);
+});
+</script>
+</body>
+</html>

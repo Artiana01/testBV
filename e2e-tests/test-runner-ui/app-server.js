@@ -11,6 +11,14 @@ const path = require('path');
 const { spawn } = require('child_process');
 const url  = require('url');
 
+// ── Historisation PostgreSQL ───────────────────────────────────────────────────
+const { connect: dbConnect } = require('../database/db');
+const history = require('../database/history');
+// Initialise la connexion DB au démarrage (non-bloquant)
+dbConnect().then(ok => {
+  if (ok) console.log(`[${process.env.APP_KEY || '?'}] DB connectée ✓`);
+}).catch(() => {});
+
 // ── Config injectée par start-all.js ──────────────────────────────────────────
 const APP_KEY  = process.env.APP_KEY;
 const PORT     = parseInt(process.env.PORT, 10);
@@ -179,6 +187,9 @@ let sseClients     = [];
 let runningProcess = null;
 let isRunning      = false;
 let testsStopped   = false;
+let currentRunId   = null;   // ID PostgreSQL du run en cours
+let runStats       = { passed: 0, failed: 0, skipped: 0, durationMs: null };
+let runStartedAt   = null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function send(data) {
@@ -223,9 +234,23 @@ function runTests(selectedKeys) {
 
   isRunning    = true;
   testsStopped = false;
+  runStats     = { passed: 0, failed: 0, skipped: 0, durationMs: null };
+  runStartedAt = Date.now();
 
   const slug      = appKeyToSlug(APP_KEY);
   const outputDir = path.join('test-results', `ui-run-${slug}-${Date.now()}`);
+
+  // Collecter les fichiers sélectionnés pour la persistance
+  const selectedFiles = [];
+  if (selectedKeys && selectedKeys.length > 0 && !selectedKeys.includes('all')) {
+    selectedKeys.forEach(key => {
+      const t = APP.tests[key];
+      if (t && t.file) selectedFiles.push(t.file);
+    });
+  }
+
+  // Démarrer le run en base
+  history.startRun(APP_KEY, APP.label, selectedFiles).then(id => { currentRunId = id; });
 
   const args = ['playwright', 'test', '--config', APP.config, '--reporter=list', '--output', outputDir];
 
@@ -238,6 +263,8 @@ function runTests(selectedKeys) {
 
   send({ type: 'start',  message: `🚀 Démarrage des tests ${APP.label}...` });
   send({ type: 'cmd',    message: `npx ${args.join(' ')}` });
+  history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${APP.label}...`);
+  history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
   runningProcess = spawn('npx', args, {
     cwd: ROOT_DIR,
@@ -248,7 +275,35 @@ function runTests(selectedKeys) {
   const onData = (data) => {
     data.toString().split('\n').forEach(line => {
       if (!line.trim()) return;
-      send({ type: classifyLine(line), message: stripAnsi(line) });
+      const type = classifyLine(line);
+      const clean = stripAnsi(line);
+      send({ type, message: clean });
+
+      // ── Persistance des logs significatifs ──────────────────────────────
+      if (['pass','fail','warn','summary','done'].includes(type)) {
+        history.saveLog(currentRunId, type, clean);
+      }
+
+      // ── Parser les résultats individuels ────────────────────────────────
+      if (type === 'pass' || type === 'fail') {
+        const parsed = history.parseTestLine(clean);
+        if (parsed) {
+          if (parsed.status === 'passed') runStats.passed++;
+          else if (parsed.status === 'failed') runStats.failed++;
+          history.saveTestResult(currentRunId, parsed);
+        }
+      }
+
+      // ── Mettre à jour les stats depuis la ligne résumé finale ───────────
+      if (type === 'summary') {
+        const summ = history.parseSummaryLine(clean);
+        if (summ) {
+          if (summ.passed  !== null) runStats.passed  = summ.passed;
+          if (summ.failed  !== null) runStats.failed  = summ.failed;
+          if (summ.skipped !== null) runStats.skipped = summ.skipped;
+          if (summ.durationMs) runStats.durationMs    = summ.durationMs;
+        }
+      }
     });
   };
 
@@ -256,7 +311,17 @@ function runTests(selectedKeys) {
   runningProcess.stderr.on('data', onData);
 
   runningProcess.on('close', (code) => {
-    if (testsStopped) { isRunning = false; runningProcess = null; testsStopped = false; return; }
+    if (testsStopped) {
+      history.finishRun(currentRunId, null, runStats);
+      currentRunId = null;
+      isRunning = false; runningProcess = null; testsStopped = false;
+      return;
+    }
+    const doneMsg = code === 0 ? '✅ Tous les tests ont réussi !' : `❌ Des tests ont échoué (code: ${code})`;
+    if (!runStats.durationMs) runStats.durationMs = Date.now() - runStartedAt;
+    history.saveLog(currentRunId, 'done', doneMsg);
+    history.finishRun(currentRunId, code, runStats);
+    currentRunId = null;
     isRunning = false;
     runningProcess = null;
     const ok = code === 0;
@@ -264,6 +329,8 @@ function runTests(selectedKeys) {
   });
 
   runningProcess.on('error', (err) => {
+    history.finishRun(currentRunId, -1, runStats);
+    currentRunId = null;
     isRunning = false; runningProcess = null;
     send({ type: 'error', message: `Erreur de démarrage : ${err.message}` });
   });
@@ -276,6 +343,7 @@ function stopTests() {
   runningProcess.stderr?.removeAllListeners();
   try { runningProcess.kill('SIGKILL'); } catch (_) {}
   isRunning = false;
+  history.saveLog(currentRunId, 'done', '⛔ Tests arrêtés par l\'utilisateur.');
   setTimeout(() => { if (runningProcess) { try { runningProcess.kill('SIGKILL'); } catch (_) {} runningProcess = null; } }, 500);
   send({ type: 'warn', message: '⛔ Tests arrêtés par l\'utilisateur.' });
   send({ type: 'done', success: false, message: 'Tests arrêtés.' });
@@ -326,7 +394,7 @@ function clearHistory() {
 }
 
 // ── HTTP server ───────────────────────────────────────────────────────────────
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   const parsed = url.parse(req.url, true);
 
   // SSE
@@ -364,6 +432,44 @@ const server = http.createServer((req, res) => {
   if (parsed.pathname === '/status') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ appKey: APP_KEY, label: APP.label, url: APP.url, color: APP.color, running: isRunning, tests: APP.tests }));
+    return;
+  }
+
+  // GET /history — liste paginée des runs de cette app
+  if (parsed.pathname === '/history' && req.method === 'GET') {
+    const limit  = parseInt(parsed.query.limit  || '20');
+    const offset = parseInt(parsed.query.offset || '0');
+    const status = parsed.query.status || null;
+    const data   = await history.getRuns({ app: APP_KEY, status, limit, offset });
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify(data));
+    return;
+  }
+
+  // GET /history/:id — détail d'un run
+  const matchDetail = parsed.pathname.match(/^\/history\/(\d+)$/);
+  if (matchDetail && req.method === 'GET') {
+    const data = await history.getRunById(parseInt(matchDetail[1]));
+    if (!data) { res.writeHead(404); res.end('Not found'); return; }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+    return;
+  }
+
+  // DELETE /history/:id — suppression d'un run
+  const matchDel = parsed.pathname.match(/^\/history\/(\d+)$/);
+  if (matchDel && req.method === 'DELETE') {
+    const ok = await history.deleteRun(parseInt(matchDel[1]));
+    res.writeHead(ok ? 200 : 404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok }));
+    return;
+  }
+
+  // GET /history-stats — statistiques de l'app
+  if (parsed.pathname === '/history-stats') {
+    const data = await history.getStats(APP_KEY);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
     return;
   }
 
@@ -407,6 +513,17 @@ const server = http.createServer((req, res) => {
       );
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(injected);
+    });
+    return;
+  }
+
+  // === GET /history-page : interface historique ===
+  if (parsed.pathname === '/history-page' || parsed.pathname === '/history.html') {
+    const histFile = path.join(__dirname, 'history.html');
+    fs.readFile(histFile, 'utf8', (err, html) => {
+      if (err) { res.writeHead(500); res.end('history.html introuvable'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
     });
     return;
   }

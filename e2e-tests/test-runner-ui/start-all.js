@@ -16,6 +16,14 @@ const { spawn, execSync } = require('child_process');
 const http                = require('http');
 const fs                  = require('fs');
 const path                = require('path');
+const url                 = require('url');
+
+// ── Historisation PostgreSQL ───────────────────────────────────────────────────
+const { connect: dbConnect } = require('../database/db');
+const history = require('../database/history');
+dbConnect().then(ok => {
+  if (ok) console.log('[Hub Proxy] DB PostgreSQL connectée ✓');
+}).catch(() => {});
 
 // ── Apps ────────────────────────────────────────────────────────────────────
 const APPS = [
@@ -135,13 +143,65 @@ function proxyRequest(req, res, targetPort, targetPath) {
   req.pipe(proxyReq, { end: true });
 }
 
-const proxy = http.createServer((req, res) => {
-  const reqPath = req.url || '/';
+const proxy = http.createServer(async (req, res) => {
+  const parsed = url.parse(req.url, true);
+  const reqPath = parsed.pathname || '/';
 
   // Racine → Hub
-  if (reqPath === '/' || reqPath === '') {
+  if (reqPath === '/' || reqPath === '/index.html') {
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     return res.end(generateHubHTML());
+  }
+
+  // === GET /history-page : interface historique globale ===
+  if (reqPath === '/history-page' || reqPath === '/history.html') {
+    const histFile = path.join(__dirname, 'history.html');
+    fs.readFile(histFile, 'utf8', (err, html) => {
+      if (err) { res.writeHead(500); res.end('history.html introuvable'); return; }
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
+    });
+    return;
+  }
+
+  // === GET /history : liste paginée globale ===
+  if (reqPath === '/history' && req.method === 'GET') {
+    const limit  = parseInt(parsed.query.limit  || '30');
+    const offset = parseInt(parsed.query.offset || '0');
+    const app    = parsed.query.app    || null;
+    const status = parsed.query.status || null;
+    const data   = await history.getRuns({ app, status, limit, offset });
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+    res.end(JSON.stringify(data));
+    return;
+  }
+
+  // === GET /history/:id : détail d'un run ===
+  const matchDetail = reqPath.match(/^\/history\/(\d+)$/);
+  if (matchDetail && req.method === 'GET') {
+    const data = await history.getRunById(parseInt(matchDetail[1]));
+    if (!data) { res.writeHead(404); res.end('Not found'); return; }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+    return;
+  }
+
+  // === DELETE /history/:id : suppression d'un run ===
+  const matchDel = reqPath.match(/^\/history\/(\d+)$/);
+  if (matchDel && req.method === 'DELETE') {
+    const ok = await history.deleteRun(parseInt(matchDel[1]));
+    res.writeHead(ok ? 200 : 404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok }));
+    return;
+  }
+
+  // === GET /history-stats : statistiques globales ===
+  if (reqPath === '/history-stats') {
+    const app  = parsed.query.app || null;
+    const data = await history.getStats(app);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(data));
+    return;
   }
 
   // /{appKey} ou /{appKey}/* → proxy vers le bon port

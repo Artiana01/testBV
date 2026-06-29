@@ -5,13 +5,13 @@
   "scripts": {
     "start": "node test-runner-ui/start-all.js",
     "start:legacy": "node test-runner-ui/server.js",
-    "start:bvtech":             "node test-runner-ui/launch.js bvtech 4001",
-    "start:bvbusiness":         "node test-runner-ui/launch.js bvbusiness 4002",
-    "start:bvinvest":           "node test-runner-ui/launch.js bvinvest 4003",
-    "start:emiragate":          "node test-runner-ui/launch.js emiragate 4004",
-    "start:bvportage":          "node test-runner-ui/launch.js bvportage 4005",
+    "start:bvtech": "node test-runner-ui/launch.js bvtech 4001",
+    "start:bvbusiness": "node test-runner-ui/launch.js bvbusiness 4002",
+    "start:bvinvest": "node test-runner-ui/launch.js bvinvest 4003",
+    "start:emiragate": "node test-runner-ui/launch.js emiragate 4004",
+    "start:bvportage": "node test-runner-ui/launch.js bvportage 4005",
     "start:bvportageFreelance": "node test-runner-ui/launch.js bvportageFreelance 4006",
-    "start:creerailleurs":      "node test-runner-ui/launch.js creerailleurs 4007",
+    "start:creerailleurs": "node test-runner-ui/launch.js creerailleurs 4007",
     "postinstall": "npx playwright install chromium --with-deps",
     "test": "playwright test",
     "test:app-template": "playwright test apps/app-template/tests/",
@@ -84,7 +84,7 @@
     "test:creerailleurs:admin": "playwright test --config=playwright.creerailleurs.config.ts apps/creerailleurs/tests/e2e-08-admin.spec.ts",
     "test:creerailleurs:i18n": "playwright test --config=playwright.creerailleurs.config.ts apps/creerailleurs/tests/e2e-09-multilingue.spec.ts",
     "test:creerailleurs:report": "playwright show-report playwright-report-creerailleurs",
-    "start:launchpad":           "node test-runner-ui/launch.js launchpad 4008",
+    "start:launchpad": "node test-runner-ui/launch.js launchpad 4008",
     "test:launchpad": "playwright test --config=playwright.launchpad.config.ts",
     "test:launchpad:signup": "playwright test --config=playwright.launchpad.config.ts apps/launchpad/tests/e2e-01-signup-activation.spec.ts",
     "test:launchpad:login": "playwright test --config=playwright.launchpad.config.ts apps/launchpad/tests/e2e-02-login-dashboard.spec.ts",
@@ -103,7 +103,10 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
-    "typescript": "^5.4.5",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "pg": "^8.22.0"
   }
 }
