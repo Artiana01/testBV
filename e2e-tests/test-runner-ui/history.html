@@ -550,7 +550,18 @@ loadRuns();
 async function loadStats() {
   try {
     const app = currentApp !== 'all' ? `?app=${currentApp}` : '';
-    const data = await fetch(`${BASE_URL}/history-stats${app}`).then(r => r.json());
+    const res = await fetch(`${BASE_URL}/history-stats${app}`);
+    if (!res.ok) {
+      console.warn('loadStats: HTTP', res.status);
+      return;
+    }
+    let data;
+    try {
+      data = await res.json();
+    } catch (parseErr) {
+      console.warn('loadStats: invalid JSON', parseErr);
+      return;
+    }
     statsData = data;
     renderKPIs(data);
     renderAppStats(data.byApp);
@@ -572,7 +583,26 @@ async function loadRuns() {
   if (currentApp    !== 'all') params.set('app',    currentApp);
 
   try {
-    const data = await fetch(`${BASE_URL}/history?${params}`).then(r => r.json());
+    const res = await fetch(`${BASE_URL}/history?${params}`);
+    if (!res.ok) {
+      console.warn('loadRuns: HTTP', res.status);
+      totalRuns = 0;
+      allRuns = [];
+      renderRuns(allRuns);
+      renderPagination();
+      return;
+    }
+    let data;
+    try {
+      data = await res.json();
+    } catch (parseErr) {
+      console.warn('loadRuns: invalid JSON', parseErr);
+      totalRuns = 0;
+      allRuns = [];
+      renderRuns(allRuns);
+      renderPagination();
+      return;
+    }
     totalRuns = data.total || 0;
     allRuns   = data.runs  || [];
     renderRuns(allRuns);
