@@ -18,7 +18,7 @@ require('dotenv').config();
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes('railway')
-    ? { rejectUnauthorized: false }
+    ? { rejectUnauthorized: true }
     : false,
   max: 5,
   idleTimeoutMillis: 30000,
