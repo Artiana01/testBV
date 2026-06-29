@@ -397,7 +397,10 @@ function runTests(selectedTests, app) {
   });
 
   runningProcess.on('close', (code) => {
-    // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
+    // Kill surviving process group members (e.g. playwright workers that outlive the runner)
+    // so their zombie chrome children get reparented to tini and reaped
+    try { process.kill(-runningProcess.pid, 'SIGKILL'); } catch (_) {}
+    // ponytail: pkill safety net for chrome that escaped the process group
     try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
 
     // Si l'arrêt a été demandé manuellement, ne pas envoyer de notification 'done'
