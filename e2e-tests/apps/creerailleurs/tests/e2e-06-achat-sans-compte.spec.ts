@@ -8,7 +8,7 @@
 import { test, expect } from '@playwright/test';
 import { ManifestePage } from '../pages/ManifestePage';
 
-const BASE        = process.env.BASE_URL    ?? 'https://www.creerailleurs.com';
+const BASE        = process.env.BASE_URL    ?? 'https://dev.creerailleurs.com';
 const STRIPE_CARD = process.env.STRIPE_CARD ?? '4242424242424242';
 const STRIPE_EXP  = process.env.STRIPE_EXPIRY ?? '12/26';
 const STRIPE_CVC  = process.env.STRIPE_CVC  ?? '123';

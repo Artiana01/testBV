@@ -12,7 +12,7 @@
 import { test, expect } from '@playwright/test';
 import { AuthPage } from '../pages/AuthPage';
 
-const BASE = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
+const BASE = process.env.BASE_URL ?? 'https://dev.creerailleurs.com';
 
 test.describe('SC-03 — Création de compte utilisateur', () => {
 

@@ -14,7 +14,7 @@ import * as fs from 'fs';
 dotenv.config({ path: path.resolve(__dirname, 'apps/creerailleurs/.env'), override: true });
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const BASE_URL = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
+const BASE_URL = process.env.BASE_URL ?? 'https://dev.creerailleurs.com';
 
 const clientSession = path.resolve(__dirname, 'apps/creerailleurs/auth/client.json');
 const adminSession  = path.resolve(__dirname, 'apps/creerailleurs/auth/admin.json');

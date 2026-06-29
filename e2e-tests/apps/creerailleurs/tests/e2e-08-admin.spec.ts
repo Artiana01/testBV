@@ -13,7 +13,7 @@
 import { test, expect } from '@playwright/test';
 import { AdminPage } from '../pages/AdminPage';
 
-const BASE = process.env.BASE_URL ?? 'https://www.creerailleurs.com';
+const BASE = process.env.BASE_URL ?? 'https://dev.creerailleurs.com';
 
 test.describe('SC-08 — Dashboard administrateur', () => {
 
