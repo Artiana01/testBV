@@ -10,15 +10,19 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
+const { spawn, execSync } = require('child_process');
+
 // url.parse remplacé par WHATWG URL API (évite DEP0169)
 
 // ── Historisation PostgreSQL ───────────────────────────────────────────────────
 const { connect: dbConnect } = require('../database/db');
 const history = require('../database/history');
-dbConnect().then(ok => {
-  if (ok) console.log('[Hub] DB PostgreSQL connectée ✓');
-}).catch(() => {});
+
+dbConnect()
+  .then(ok => {
+    if (ok) console.log('[Hub] DB PostgreSQL connectée ✓');
+  })
+  .catch(() => {});
 const TEST_RESULTS_DIR = path.join(__dirname, '..', 'test-results');
 
 const PORT         = process.env.PORT || 4000;
@@ -277,7 +281,7 @@ function runTests(selectedTests, app) {
   // Tuer tout processus précédent
   if (runningProcess) {
     try {
-      runningProcess.kill('SIGKILL');
+      process.kill(-runningProcess.pid, 'SIGKILL');
     } catch (e) {
       console.log('Impossible de tuer le processus précédent:', e.message);
     }
@@ -337,7 +341,12 @@ function runTests(selectedTests, app) {
   const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
   runningProcess = spawn(npxCmd, args, {
     cwd: ROOT_DIR,
-    shell: false,
+runningProcess = spawn(npxCmd, args, {
+  cwd: ROOT_DIR,
+  shell: false,
+  detached: true,
+  env: { ...process.env, FORCE_COLOR: '0' },
+});
     env: { ...process.env, FORCE_COLOR: '0' },
   });
 
@@ -391,6 +400,9 @@ function runTests(selectedTests, app) {
   });
 
   runningProcess.on('close', (code) => {
+    // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
+    try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
+
     // Si l'arrêt a été demandé manuellement, ne pas envoyer de notification 'done'
     // (on l'a déjà envoyée dans stopTests)
     if (testsStopped) {
@@ -482,14 +494,16 @@ const server = http.createServer(async (req, res) => {
         runningProcess.stdout?.removeAllListeners();
         runningProcess.stderr?.removeAllListeners();
         
-        // Tuer le processus avec force
-        runningProcess.kill('SIGKILL');
+        // Kill entire process group (detached:true makes sh the group leader)
+        process.kill(-runningProcess.pid, 'SIGKILL');
+        // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
+        try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
         isRunning = false;
-        
+
         // Nettoyer la référence après un timeout court
         setTimeout(() => {
           if (runningProcess) {
-            try { runningProcess.kill('SIGKILL'); } catch (_) {}
+            try { process.kill(-runningProcess.pid, 'SIGKILL'); } catch (_) {}
             runningProcess = null;
           }
         }, 500);
