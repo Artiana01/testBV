@@ -9,7 +9,7 @@ const http = require('http');
 const fs   = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
-const url  = require('url');
+// url.parse remplacé par WHATWG URL API (évite DEP0169)
 
 // ── Historisation PostgreSQL ───────────────────────────────────────────────────
 const { connect: dbConnect } = require('../database/db');
@@ -266,9 +266,11 @@ function runTests(selectedKeys) {
   history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${APP.label}...`);
   history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
-  runningProcess = spawn('npx', args, {
+  // shell:false + npx.cmd sur Windows évite DEP0190
+  const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  runningProcess = spawn(npxCmd, args, {
     cwd: ROOT_DIR,
-    shell: true,
+    shell: false,
     env: { ...process.env, FORCE_COLOR: '0' },
   });
 
@@ -395,7 +397,8 @@ function clearHistory() {
 
 // ── HTTP server ───────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
-  const parsed = url.parse(req.url, true);
+  const reqUrl  = new URL(req.url, `http://localhost:${PORT}`);
+  const parsed  = { pathname: reqUrl.pathname, query: Object.fromEntries(reqUrl.searchParams) };
 
   // SSE
   if (parsed.pathname === '/events') {
