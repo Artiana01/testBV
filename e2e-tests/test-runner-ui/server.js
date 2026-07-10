@@ -509,7 +509,12 @@ function runTests(selectedTests, app) {
     // Ne pas perdre un bloc de détail d'échec resté ouvert (process arrêté/tué en cours de dump)
     finalizeFailBlock();
 
-    // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
+    // Kill surviving process group members (e.g. playwright workers that outlive the runner)
+    // so their zombie chrome children get reparented to tini and reaped — via killProcessTree()
+    // pour rester cross-platform (voir sa définition plus haut).
+    killProcessTree(runningProcess);
+
+    // ponytail: pkill safety net for chrome that escaped the process group
     // (POSIX uniquement — sous Windows, "pkill" peut exister via un autre outil installé
     // sur le PATH et tuerait alors n'importe quel Chrome/Chromium ouvert sur la machine)
     if (!IS_WINDOWS) {
