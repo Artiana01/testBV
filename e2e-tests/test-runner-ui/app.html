@@ -162,6 +162,21 @@
     .log-line.done.success .msg { color: var(--pass); font-weight: 700; font-size: 13px; }
     .log-line.done.fail    .msg { color: var(--fail); font-weight: 700; font-size: 13px; }
 
+    /* ── Carte d'échec lisible (regroupe le dump technique Playwright) ── */
+    .log-line.fail-card { display: block; background: rgba(239,68,68,.06); border: 1px solid rgba(239,68,68,.25); border-radius: 8px; margin: 6px 0; padding: 0; }
+    .fail-card-header { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; cursor: pointer; }
+    .fail-card-header:hover { background: rgba(239,68,68,.08); }
+    .fail-card-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .fail-card-text { flex: 1; min-width: 0; }
+    .fail-card-title { font-weight: 600; color: var(--fail); font-size: 12.5px; word-break: break-word; }
+    .fail-card-reason { color: var(--text); font-size: 12px; margin-top: 3px; opacity: .9; }
+    .fail-card-chevron { color: var(--text-dim); font-size: 11px; transition: transform .15s; flex-shrink: 0; }
+    .fail-card-chevron.rot { transform: rotate(180deg); }
+    .fail-card-raw { display: none; border-top: 1px solid rgba(239,68,68,.2); padding: 10px 12px; max-height: 320px; overflow: auto; }
+    .fail-card-raw.open { display: block; }
+    .fail-card-raw pre { font-family: 'Cascadia Code','Fira Code','Consolas',monospace; font-size: 11px; color: var(--text-dim); white-space: pre-wrap; word-break: break-word; }
+    .fail-card-toggle-label { font-size: 10.5px; color: var(--text-dim); margin-left: auto; flex-shrink: 0; }
+
     .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-dim); gap: 12px; }
     .empty-state .icon { font-size: 46px; opacity: .35; }
     .empty-state p { font-size: 14px; }
@@ -375,9 +390,41 @@
         appendLine('fail', '⚠ ' + data.message);
         setRunningState(false);
         break;
+      case 'fail-detail':
+        renderFailCard(data.title, data.reason, data.raw);
+        break;
       default:
         appendLine('info', data.message);
     }
+  }
+
+  // ── Carte d'échec lisible ──────────────────────────────────────────────────
+  function renderFailCard(title, reason, raw) {
+    document.getElementById('emptyState').style.display = 'none';
+    const rawId = 'raw_' + Math.random().toString(36).slice(2);
+    const card = document.createElement('div');
+    card.className    = 'log-line fail fail-card';
+    card.dataset.type  = 'fail';
+    card.innerHTML = `
+      <div class="fail-card-header" onclick="toggleFailCard(this, '${rawId}')">
+        <span class="fail-card-icon">❌</span>
+        <div class="fail-card-text">
+          <div class="fail-card-title">${escapeHtml(title || 'Test échoué')}</div>
+          <div class="fail-card-reason">${escapeHtml(reason || '')}</div>
+        </div>
+        <span class="fail-card-toggle-label">Détail technique</span>
+        <span class="fail-card-chevron">▾</span>
+      </div>
+      <div class="fail-card-raw" id="${rawId}"><pre>${escapeHtml(raw || '')}</pre></div>`;
+    document.getElementById('output').appendChild(card);
+    logLines.push({ type: 'fail', message: `${title} — ${reason}`, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) });
+    applyFilter();
+    if (autoScroll) card.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  }
+
+  function toggleFailCard(headerEl, rawId) {
+    document.getElementById(rawId).classList.toggle('open');
+    headerEl.querySelector('.fail-card-chevron').classList.toggle('rot');
   }
 
   // ── Output ─────────────────────────────────────────────────────────────────

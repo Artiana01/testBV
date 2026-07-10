@@ -315,6 +315,21 @@
     .log-line.start   { color: var(--info); }
     .log-line.done    { color: var(--text); font-weight: 700; }
 
+    /* ── Carte d'échec lisible (regroupe le dump technique Playwright) ── */
+    .fail-card { background: rgba(239,68,68,.06); border: 1px solid rgba(239,68,68,.25); border-radius: 8px; margin: 6px 0; overflow: hidden; }
+    .fail-card-header { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; cursor: pointer; }
+    .fail-card-header:hover { background: rgba(239,68,68,.08); }
+    .fail-card-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+    .fail-card-text { flex: 1; min-width: 0; }
+    .fail-card-title { font-weight: 600; color: var(--fail); font-size: 12.5px; word-break: break-word; }
+    .fail-card-reason { color: var(--text); font-size: 12px; margin-top: 3px; opacity: .9; }
+    .fail-card-chevron { color: var(--text-dim); font-size: 11px; transition: transform .15s; flex-shrink: 0; }
+    .fail-card-chevron.rot { transform: rotate(180deg); }
+    .fail-card-toggle-label { font-size: 10.5px; color: var(--text-dim); margin-left: auto; flex-shrink: 0; }
+    .fail-card-raw { display: none; border-top: 1px solid rgba(239,68,68,.2); padding: 10px 12px; max-height: 320px; overflow: auto; }
+    .fail-card-raw.open { display: block; }
+    .fail-card-raw pre { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); white-space: pre-wrap; word-break: break-word; }
+
     /* ── Toast ── */
     .toast {
       position: fixed; bottom: 24px; right: 24px; z-index: 9999;
@@ -899,10 +914,11 @@ async function openDrawer(runId) {
           </div>`).join('')}
       </div>`;
 
-    // Logs
+    // Logs — les blocs d'échec détaillés (JSON {kind:'fail-detail',...}) sont
+    // ré-affichés en carte lisible avec un bouton pour dérouler le log technique complet.
     const logHtml = logs.length === 0 ? '<p style="color:var(--text-dim);font-size:12px">Aucun log enregistré.</p>' : `
       <div class="log-block">
-        ${logs.map(l => `<div class="log-line ${l.level}">${escHtml(l.message)}</div>`).join('\n')}
+        ${logs.map(l => renderLogEntry(l)).join('\n')}
       </div>`;
 
     // Files
@@ -923,6 +939,40 @@ async function openDrawer(runId) {
   } catch (e) {
     document.getElementById('drawerBody').innerHTML = `<p style="color:var(--fail)">Erreur de chargement : ${e.message}</p>`;
   }
+}
+
+// Affiche une ligne de log — reconnaît les blocs d'échec sérialisés en JSON
+// (level='fail', message='{"kind":"fail-detail",...}') et les rend en carte
+// repliable ; sinon, rendu texte brut identique à avant (rétro-compatibilité
+// avec les runs enregistrés avant cette évolution).
+function renderLogEntry(l) {
+  if (l.level === 'fail') {
+    try {
+      const parsed = JSON.parse(l.message);
+      if (parsed && parsed.kind === 'fail-detail') {
+        const rawId = 'hraw_' + Math.random().toString(36).slice(2);
+        return `
+          <div class="fail-card">
+            <div class="fail-card-header" onclick="toggleFailCard(this, '${rawId}')">
+              <span class="fail-card-icon">❌</span>
+              <div class="fail-card-text">
+                <div class="fail-card-title">${escHtml(parsed.title || 'Test échoué')}</div>
+                <div class="fail-card-reason">${escHtml(parsed.reason || '')}</div>
+              </div>
+              <span class="fail-card-toggle-label">Voir le log complet</span>
+              <span class="fail-card-chevron">▾</span>
+            </div>
+            <div class="fail-card-raw" id="${rawId}"><pre>${escHtml(parsed.raw || '')}</pre></div>
+          </div>`;
+      }
+    } catch (_) { /* pas du JSON → ligne de log classique */ }
+  }
+  return `<div class="log-line ${l.level}">${escHtml(l.message)}</div>`;
+}
+
+function toggleFailCard(headerEl, rawId) {
+  document.getElementById(rawId).classList.toggle('open');
+  headerEl.querySelector('.fail-card-chevron').classList.toggle('rot');
 }
 
 function closeDrawer() {

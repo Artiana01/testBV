@@ -244,7 +244,7 @@ function classifyLine(line) {
   // Lignes résumé final : "65 passed (6.7m)", "3 failed" → 'summary' pour que les KPIs se mettent à jour
   if (/^\d+\s+passed/.test(clean) || /^\d+\s+failed/.test(clean)) return 'summary';
   if (/✓|✅/.test(clean)) return 'pass';
-  if (/✗|×|❌/.test(clean)) return 'fail';
+  if (/[✗✘×❌]/.test(clean)) return 'fail';
   if (/^Running \d+ test|^Finished|workers|suite/i.test(clean)) return 'summary';
   if (/passed.*failed|failed.*passed|\d+ (passed|failed|skipped)/i.test(clean)) return 'summary';
   if (/Error:|⚠|warn|WARN|rate limit|limite/i.test(clean)) return 'warn';
@@ -253,9 +253,99 @@ function classifyLine(line) {
   return 'info';
 }
 
+// ── Arrêt du processus (+ ses enfants) — comportement différent par OS ────────
+// Sous Linux/macOS (prod, Docker) : detached:true fait de "sh" le leader du
+// groupe de processus, donc process.kill(-pid) tue tout le groupe d'un coup.
+// Sous Windows, cette astuce n'existe pas et detached:true a un autre effet
+// de bord : il ouvre une fenêtre de terminal séparée pour le process enfant.
+// On désactive donc detached sous Windows et on tue l'arborescence via
+// `taskkill /t` (kill du process + tous ses enfants) à la place.
+const IS_WINDOWS = process.platform === 'win32';
+
+function killProcessTree(proc) {
+  if (!proc || !proc.pid) return;
+  try {
+    if (IS_WINDOWS) {
+      execSync(`taskkill /pid ${proc.pid} /t /f`, { stdio: 'ignore' });
+    } else {
+      process.kill(-proc.pid, 'SIGKILL');
+    }
+  } catch (_) { /* déjà terminé ou introuvable */ }
+}
+
 function appKeyToSlug(appKey) {
   // Convertir camelCase en kebab-case : bvportageFreelance → bvportage-freelance
   return appKey.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+// ── Regroupement des blocs de détail d'échec Playwright ────────────────────────
+// Le reporter "list" imprime, après le résumé, un bloc verbeux par test échoué :
+//   1) [project] › fichier.spec.ts:12:3 › Suite › Nom du test
+//   Error: expect(locator).toBeVisible() failed
+//   Locator: ...
+//   Call log: ...
+//   attachment #1: screenshot ...
+// On regroupe ces lignes en un seul événement lisible plutôt que de les envoyer
+// une par une (illisible pour un public non technique).
+let failBlockBuffer = null; // { header: string, lines: string[] } | null
+
+function isFailBlockStart(line) {
+  return /^\d+\)\s+\[/.test(line.trim());
+}
+
+function isFailBlockEnd(line) {
+  return /^\d+\s+(passed|failed|skipped)\b/.test(line.trim());
+}
+
+function failBlockTitle(header) {
+  const parts = header.split('›').map(s => s.trim()).filter(Boolean);
+  return parts[parts.length - 1] || header.trim();
+}
+
+function humanizeFailureReason(lines) {
+  const joined = lines.join('\n');
+  const timeoutMatch = joined.match(/Timeout:\s*(\d+)\s*ms/i);
+  const timeoutSec = timeoutMatch ? Math.round(parseInt(timeoutMatch[1], 10) / 1000) : null;
+  const suffix = timeoutSec ? ` (délai de ${timeoutSec}s dépassé)` : '';
+
+  if (/toBeVisible\(\)\s*failed/.test(joined) && /not found/i.test(joined)) {
+    return `L'élément attendu n'est jamais apparu à l'écran${suffix}.`;
+  }
+  if (/toHaveURL/.test(joined)) {
+    return `La page ne s'est pas redirigée vers l'URL attendue${suffix}.`;
+  }
+  if (/toHaveValue/.test(joined)) {
+    return `Le champ ne contient pas la valeur attendue.`;
+  }
+  if (/toHaveText|toContainText/.test(joined)) {
+    return `Le texte attendu n'a pas été trouvé sur la page${suffix}.`;
+  }
+  if (/toBeEnabled/.test(joined)) {
+    return `Le bouton ou le champ est resté désactivé (grisé).`;
+  }
+  if (/Test timeout of|Timeout.*exceeded/i.test(joined)) {
+    return `Le test a dépassé le délai maximum autorisé${suffix}.`;
+  }
+  const errorLine = lines.find(l => /^\s*Error:/.test(l));
+  if (errorLine) return errorLine.replace(/^\s*Error:\s*/, '').trim();
+  return 'Le test a échoué — voir le détail technique.';
+}
+
+function finalizeFailBlock() {
+  if (!failBlockBuffer) return;
+  const { header, lines } = failBlockBuffer;
+  failBlockBuffer = null;
+
+  const title  = failBlockTitle(header);
+  const reason = humanizeFailureReason(lines);
+  const raw    = lines.join('\n');
+
+  sendToAllClients({ type: 'fail-detail', title, reason, raw });
+
+  // Persisté sous le niveau 'fail' déjà autorisé par le schéma (pas de migration nécessaire),
+  // sous forme d'un JSON reconnu par l'UI d'historique pour être ré-affiché en carte.
+  const payload = JSON.stringify({ kind: 'fail-detail', title, reason, raw: raw.slice(0, 1600) });
+  history.saveLog(currentRunId, 'fail', payload);
 }
 
 function makeRunOutputDir(appKey) {
@@ -283,11 +373,7 @@ function runTests(selectedTests, app) {
 
   // Tuer tout processus précédent
   if (runningProcess) {
-    try {
-      process.kill(-runningProcess.pid, 'SIGKILL');
-    } catch (e) {
-      console.log('Impossible de tuer le processus précédent:', e.message);
-    }
+    killProcessTree(runningProcess);
     runningProcess = null;
   }
 
@@ -296,6 +382,7 @@ function runTests(selectedTests, app) {
   testsStopped = false;
   runStats     = { passed: 0, failed: 0, skipped: 0, durationMs: null };
   runStartedAt = Date.now();
+  failBlockBuffer = null;
   sendToAllClients({ type: 'start', message: `🚀 Démarrage des tests ${appLabel}...` });
 
   // Collecter les fichiers sélectionnés
@@ -343,7 +430,7 @@ function runTests(selectedTests, app) {
   runningProcess = spawn('npx', args, {
     cwd: ROOT_DIR,
     shell: true,
-    detached: true,
+    detached: !IS_WINDOWS,
     env: { ...process.env, FORCE_COLOR: '0' },
   });
 
@@ -351,8 +438,30 @@ function runTests(selectedTests, app) {
     const lines = data.toString().split('\n');
     lines.forEach(line => {
       if (!line.trim()) return;
-      const type  = classifyLine(line);
-      const clean = stripAnsi(line);
+      const clean   = stripAnsi(line);
+      const trimmed = clean.trim();
+
+      // ── Regroupement du bloc de détail d'échec (dump verbeux Playwright) ──
+      if (failBlockBuffer) {
+        if (isFailBlockStart(trimmed)) {
+          finalizeFailBlock();
+          failBlockBuffer = { header: clean, lines: [] };
+          return;
+        }
+        if (isFailBlockEnd(trimmed)) {
+          finalizeFailBlock();
+          // cette ligne (résumé "N passed/failed/skipped") continue son
+          // traitement normal ci-dessous
+        } else {
+          failBlockBuffer.lines.push(clean);
+          return;
+        }
+      } else if (isFailBlockStart(trimmed)) {
+        failBlockBuffer = { header: clean, lines: [] };
+        return;
+      }
+
+      const type = classifyLine(line);
       sendToAllClients({ type, message: clean });
 
       // ── Persistance des logs significatifs ─────────────────────────────
@@ -397,8 +506,15 @@ function runTests(selectedTests, app) {
   });
 
   runningProcess.on('close', (code) => {
+    // Ne pas perdre un bloc de détail d'échec resté ouvert (process arrêté/tué en cours de dump)
+    finalizeFailBlock();
+
     // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
-    try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
+    // (POSIX uniquement — sous Windows, "pkill" peut exister via un autre outil installé
+    // sur le PATH et tuerait alors n'importe quel Chrome/Chromium ouvert sur la machine)
+    if (!IS_WINDOWS) {
+      try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
+    }
 
     // Si l'arrêt a été demandé manuellement, ne pas envoyer de notification 'done'
     // (on l'a déjà envoyée dans stopTests)
@@ -490,16 +606,18 @@ const server = http.createServer(async (req, res) => {
         runningProcess.stdout?.removeAllListeners();
         runningProcess.stderr?.removeAllListeners();
         
-        // Kill entire process group (detached:true makes sh the group leader)
-        process.kill(-runningProcess.pid, 'SIGKILL');
+        // Tuer le process (+ ses enfants) — voir killProcessTree()
+        killProcessTree(runningProcess);
         // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
-        try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
+        if (!IS_WINDOWS) {
+          try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
+        }
         isRunning = false;
 
         // Nettoyer la référence après un timeout court
         setTimeout(() => {
           if (runningProcess) {
-            try { process.kill(-runningProcess.pid, 'SIGKILL'); } catch (_) {}
+            killProcessTree(runningProcess);
             runningProcess = null;
           }
         }, 500);
