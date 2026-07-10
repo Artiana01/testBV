@@ -11,7 +11,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { spawn, execSync } = require('child_process');
-
+// url.parse remplacé par WHATWG URL API (évite DEP0169)
 function parseRequestUrl(requestUrl) {
   const parsed = new URL(requestUrl, 'http://127.0.0.1');
   return {
@@ -427,9 +427,11 @@ function runTests(selectedTests, app) {
   history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${appLabel}...`);
   history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
-  runningProcess = spawn('npx', args, {
+  // shell:false + npx.cmd sur Windows évite DEP0190
+  const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  runningProcess = spawn(npxCmd, args, {
     cwd: ROOT_DIR,
-    shell: true,
+    shell: false,
     detached: !IS_WINDOWS,
     env: { ...process.env, FORCE_COLOR: '0' },
   });
