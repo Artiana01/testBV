@@ -45,7 +45,7 @@ pipeline {
             steps {
                 echo 'Déclenchement du build et déploiement via Coolify...'
                 withCredentials([string(credentialsId: 'COOLIFY_TOKEN', variable: 'COOLIFY_API_TOKEN')]) {
-                    sh 'curl -s -w "\nHTTP Status: %{http_code}\n" -H "Authorization: Bearer $COOLIFY_API_TOKEN" -X GET "$COOLIFY_WEBHOOK"'
+                    sh 'curl -s -w "\nHTTP Status: %{http_code}\n" -H "Authorization: Bearer $COOLIFY_API_TOKEN" -X POST "$COOLIFY_WEBHOOK"'
                 }
             }
         }
