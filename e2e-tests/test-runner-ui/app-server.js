@@ -177,6 +177,31 @@ const REGISTRY = {
       'regression':          { file: 'apps/launchpad/tests/regression.spec.ts',               label: 'Régression Complète' },
     },
   },
+  buildnivo: {
+    label:  'BuildNivo',
+    url:    'https://dev.buildnivo.com',
+    config: 'playwright.buildnivo.config.ts',
+    color:  '#2563eb',
+    tests: {
+      'e2e-01-auth':          { file: 'apps/buildnivo/tests/e2e-01-auth.spec.ts',          label: '01 — Authentification & compte' },
+      'e2e-02-roles-login':   { file: 'apps/buildnivo/tests/e2e-02-roles-login.spec.ts',   label: '02 — Connexion des 13 rôles métier' },
+      'e2e-03-chantiers':     { file: 'apps/buildnivo/tests/e2e-03-chantiers.spec.ts',     label: '03 — Chantiers, zones & lots' },
+      'e2e-04-pointage':      { file: 'apps/buildnivo/tests/e2e-04-pointage.spec.ts',      label: '05 — Pointage & présences' },
+      'e2e-05-taches':        { file: 'apps/buildnivo/tests/e2e-05-taches.spec.ts',        label: '06 — Tâches (Kanban)' },
+      'e2e-06-journal':       { file: 'apps/buildnivo/tests/e2e-06-journal.spec.ts',       label: '07 — Journal de chantier' },
+      'e2e-07-photos':        { file: 'apps/buildnivo/tests/e2e-07-photos.spec.ts',        label: '08 — Photos & problèmes' },
+      'e2e-08-reserves':      { file: 'apps/buildnivo/tests/e2e-08-reserves.spec.ts',      label: '09 — Réserves' },
+      'e2e-09-visas':         { file: 'apps/buildnivo/tests/e2e-09-visas.spec.ts',         label: '10 — Visas de plans' },
+      'e2e-10-reunions':      { file: 'apps/buildnivo/tests/e2e-10-reunions.spec.ts',      label: '11 — Réunions & comptes rendus' },
+      'e2e-11-achats':        { file: 'apps/buildnivo/tests/e2e-11-achats.spec.ts',        label: '12 — Achats & fournisseurs' },
+      'e2e-12-finances':      { file: 'apps/buildnivo/tests/e2e-12-finances.spec.ts',      label: '13 — Finances & lots financiers' },
+      'e2e-13-documents':     { file: 'apps/buildnivo/tests/e2e-13-documents.spec.ts',     label: '14 — Documents (GED)' },
+      'e2e-14-messages':      { file: 'apps/buildnivo/tests/e2e-14-messages.spec.ts',      label: '15 — Messagerie & copilote IA' },
+      'e2e-15-notifications': { file: 'apps/buildnivo/tests/e2e-15-notifications.spec.ts', label: '16 — Notifications' },
+      'e2e-16-rbac':          { file: 'apps/buildnivo/tests/e2e-16-rbac.spec.ts',          label: '02 — RBAC (accès refusé)' },
+      'regression':           { file: 'apps/buildnivo/tests/regression.spec.ts',           label: 'Régression Complète' },
+    },
+  },
 };
 
 const APP    = REGISTRY[APP_KEY];
@@ -227,6 +252,76 @@ function appKeyToSlug(k) {
   return k.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
+// ── Regroupement des blocs de détail d'échec Playwright ────────────────────────
+// Le reporter "list" imprime, après le résumé, un bloc verbeux par test échoué :
+//   1) [project] › fichier.spec.ts:12:3 › Suite › Nom du test
+//   Error: expect(locator).toBeVisible() failed
+//   Locator: ...
+//   Call log: ...
+//   attachment #1: screenshot ...
+// On regroupe ces lignes en un seul événement lisible plutôt que de les envoyer
+// une par une (illisible pour un public non technique).
+let failBlockBuffer = null; // { header: string, lines: string[] } | null
+
+function isFailBlockStart(line) {
+  return /^\d+\)\s+\[/.test(line.trim());
+}
+
+function isFailBlockEnd(line) {
+  return /^\d+\s+(passed|failed|skipped)\b/.test(line.trim());
+}
+
+function failBlockTitle(header) {
+  const parts = header.split('›').map(s => s.trim()).filter(Boolean);
+  return parts[parts.length - 1] || header.trim();
+}
+
+function humanizeFailureReason(lines) {
+  const joined = lines.join('\n');
+  const timeoutMatch = joined.match(/Timeout:\s*(\d+)\s*ms/i);
+  const timeoutSec = timeoutMatch ? Math.round(parseInt(timeoutMatch[1], 10) / 1000) : null;
+  const suffix = timeoutSec ? ` (délai de ${timeoutSec}s dépassé)` : '';
+
+  if (/toBeVisible\(\)\s*failed/.test(joined) && /not found/i.test(joined)) {
+    return `L'élément attendu n'est jamais apparu à l'écran${suffix}.`;
+  }
+  if (/toHaveURL/.test(joined)) {
+    return `La page ne s'est pas redirigée vers l'URL attendue${suffix}.`;
+  }
+  if (/toHaveValue/.test(joined)) {
+    return `Le champ ne contient pas la valeur attendue.`;
+  }
+  if (/toHaveText|toContainText/.test(joined)) {
+    return `Le texte attendu n'a pas été trouvé sur la page${suffix}.`;
+  }
+  if (/toBeEnabled/.test(joined)) {
+    return `Le bouton ou le champ est resté désactivé (grisé).`;
+  }
+  if (/Test timeout of|Timeout.*exceeded/i.test(joined)) {
+    return `Le test a dépassé le délai maximum autorisé${suffix}.`;
+  }
+  const errorLine = lines.find(l => /^\s*Error:/.test(l));
+  if (errorLine) return errorLine.replace(/^\s*Error:\s*/, '').trim();
+  return 'Le test a échoué — voir le détail technique.';
+}
+
+function finalizeFailBlock() {
+  if (!failBlockBuffer) return;
+  const { header, lines } = failBlockBuffer;
+  failBlockBuffer = null;
+
+  const title  = failBlockTitle(header);
+  const reason = humanizeFailureReason(lines);
+  const raw    = lines.join('\n');
+
+  send({ type: 'fail-detail', title, reason, raw });
+
+  // Persisté sous le niveau 'fail' déjà autorisé par le schéma (pas de migration nécessaire),
+  // sous forme d'un JSON reconnu par l'UI d'historique pour être ré-affiché en carte.
+  const payload = JSON.stringify({ kind: 'fail-detail', title, reason, raw: raw.slice(0, 1600) });
+  history.saveLog(currentRunId, 'fail', payload);
+}
+
 // ── Runner ────────────────────────────────────────────────────────────────────
 function runTests(selectedKeys) {
   if (isRunning) {
@@ -243,6 +338,7 @@ function runTests(selectedKeys) {
   testsStopped = false;
   runStats     = { passed: 0, failed: 0, skipped: 0, durationMs: null };
   runStartedAt = Date.now();
+  failBlockBuffer = null;
 
   const slug      = appKeyToSlug(APP_KEY);
   const outputDir = path.join('test-results', `ui-run-${slug}-${Date.now()}`);
@@ -273,19 +369,44 @@ function runTests(selectedKeys) {
   history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${APP.label}...`);
   history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
-  // shell:false + npx.cmd sur Windows évite DEP0190
-  const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  // Sous Windows, spawn('npx.cmd', ..., {shell:false}) plante avec EINVAL — un .cmd
+  // ne peut être lancé sans passer par un shell. Sous Linux/prod, shell:false + npx
+  // (sans .cmd) fonctionne nativement et évite l'avertissement de dépréciation DEP0190.
+  const isWindows = process.platform === 'win32';
+  const npxCmd = isWindows ? 'npx.cmd' : 'npx';
   runningProcess = spawn(npxCmd, args, {
     cwd: ROOT_DIR,
-    shell: false,
+    shell: isWindows,
     env: { ...process.env, FORCE_COLOR: '0' },
   });
 
   const onData = (data) => {
     data.toString().split('\n').forEach(line => {
       if (!line.trim()) return;
+      const clean   = stripAnsi(line);
+      const trimmed = clean.trim();
+
+      // ── Regroupement du bloc de détail d'échec (dump verbeux Playwright) ──
+      if (failBlockBuffer) {
+        if (isFailBlockStart(trimmed)) {
+          finalizeFailBlock();
+          failBlockBuffer = { header: clean, lines: [] };
+          return;
+        }
+        if (isFailBlockEnd(trimmed)) {
+          finalizeFailBlock();
+          // cette ligne (résumé "N passed/failed/skipped") continue son
+          // traitement normal ci-dessous
+        } else {
+          failBlockBuffer.lines.push(clean);
+          return;
+        }
+      } else if (isFailBlockStart(trimmed)) {
+        failBlockBuffer = { header: clean, lines: [] };
+        return;
+      }
+
       const type = classifyLine(line);
-      const clean = stripAnsi(line);
       send({ type, message: clean });
 
       // ── Persistance des logs significatifs ──────────────────────────────
@@ -320,6 +441,9 @@ function runTests(selectedKeys) {
   runningProcess.stderr.on('data', onData);
 
   runningProcess.on('close', (code) => {
+    // Ne pas perdre un bloc de détail d'échec resté ouvert (process arrêté/tué en cours de dump)
+    finalizeFailBlock();
+
     if (testsStopped) {
       history.finishRun(currentRunId, null, runStats);
       currentRunId = null;

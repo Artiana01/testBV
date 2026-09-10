@@ -34,6 +34,7 @@ dbConnect().then(ok => {
 
 // ── Apps ────────────────────────────────────────────────────────────────────
 const APPS = [
+  { key: 'buildnivo',          port: 4009, label: 'BuildNivo',            color: '#2563eb', url: 'dev.buildnivo.com' },
   { key: 'bvtech',             port: 4001, label: 'BV Tech',              color: '#6366f1', url: 'dev.bluevaloristech.com' },
   { key: 'bvbusiness',         port: 4002, label: 'BV Business',          color: '#0ea5e9', url: 'staging.bluevalorisbusiness.com' },
   { key: 'bvinvest',           port: 4003, label: 'BV Invest',            color: '#10b981', url: 'dev.bluevalorisinvest.com' },

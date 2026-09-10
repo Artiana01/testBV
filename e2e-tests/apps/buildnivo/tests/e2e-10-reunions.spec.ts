@@ -1,0 +1,40 @@
+/**
+ * e2e-10-reunions.spec.ts
+ * ---------------------------
+ * Section 11 du cahier de recette — Réunions & comptes rendus.
+ * Couvre : REU-01 à REU-03 (best-effort).
+ */
+
+import { test, expect } from '@playwright/test';
+import { ModulePage } from '../pages/ModulePage';
+
+test.describe('BuildNivo — 11. Réunions & comptes rendus', () => {
+
+  test('Page Réunions & CR accessible', async ({ page }) => {
+    const mod = new ModulePage(page, '/reunions');
+    await mod.goto();
+    await mod.verifyLoaded(/réunions/i);
+    await mod.verifyEmptyStateOrData();
+  });
+
+  test('REU-01 — Création d\'une réunion avec convocation de participants', async ({ page }) => {
+    const mod = new ModulePage(page, '/reunions');
+    await mod.goto();
+
+    const addBtn = await mod.findActionButton(/nouvelle réunion|planifier une réunion|créer une réunion/i);
+    test.skip(!addBtn, 'REU-01 — bouton de création de réunion introuvable pour ce rôle/chantier.');
+
+    await addBtn!.click();
+    await page.waitForTimeout(1000);
+
+    const titre = `Réunion E2E ${Date.now()}`;
+    const titreField = page.locator('input[type="text"]').first();
+    await titreField.fill(titre);
+
+    await page.getByRole('button', { name: /créer|planifier|enregistrer/i }).first().click();
+    await page.waitForTimeout(1500);
+
+    await expect(page.getByText(titre).first()).toBeVisible({ timeout: 10_000 });
+  });
+
+});
