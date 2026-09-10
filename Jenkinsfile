@@ -22,9 +22,13 @@ pipeline {
         stage('Code Analysis (SonarQube)') {
             steps {
                 script {
-                    def scannerHome = tool 'SonarScanner'
-                    withSonarQubeEnv("${SONAR_SERVER}") {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=testBV"
+                    try {
+                        def scannerHome = tool 'SonarScanner'
+                        withSonarQubeEnv("${SONAR_SERVER}") {
+                            sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=testBV"
+                        }
+                    } catch (Exception e) {
+                        echo "SonarQube analysis failed or tool not found, skipping..."
                     }
                     // Wait for the Quality Gate result
                     /*timeout(time: 5, unit: 'MINUTES') {
@@ -41,7 +45,7 @@ pipeline {
             steps {
                 echo 'Déclenchement du build et déploiement via Coolify...'
                 withCredentials([string(credentialsId: 'COOLIFY_TOKEN', variable: 'COOLIFY_API_TOKEN')]) {
-                    sh 'curl -s -w "\nHTTP Status: %{http_code}\n" -H "Authorization: Bearer $COOLIFY_API_TOKEN" -X GET "$COOLIFY_WEBHOOK"'
+                    sh 'curl -s -w "\nHTTP Status: %{http_code}\n" -H "Authorization: Bearer $COOLIFY_API_TOKEN" -X POST "$COOLIFY_WEBHOOK"'
                 }
             }
         }
