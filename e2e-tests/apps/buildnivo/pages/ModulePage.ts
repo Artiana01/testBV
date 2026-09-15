@@ -63,7 +63,9 @@ export class ModulePage extends AppShellPage {
     const empty = this.getEmptyState();
     const hasEmpty = await empty.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!hasEmpty) {
-      await expect(this.page.locator('main, [role="main"], body')).toBeVisible();
+      // 'main, [role=main], body' matche <body> ET <main> à la fois → strict mode violation.
+      // .first() suffit puisqu'on veut juste s'assurer qu'une zone de contenu est rendue.
+      await expect(this.page.locator('main, [role="main"], body').first()).toBeVisible();
     }
   }
 }

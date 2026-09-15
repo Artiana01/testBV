@@ -49,7 +49,10 @@ export class ChantiersPage extends AppShellPage {
   }
 
   async verifyChantierVisible(nom: string): Promise<void> {
-    await expect(this.page.getByText(nom).first()).toBeVisible({ timeout: 15_000 });
+    // Après création, le nom apparaît aussi comme <option> (masquée) dans le switcher de
+    // chantier de l'en-tête — getVisibleText() ignore cette correspondance cachée et cible
+    // la vraie carte affichée dans la liste.
+    await expect(this.getVisibleText(nom).first()).toBeVisible({ timeout: 15_000 });
   }
 
   async verifyModalStillOpen(): Promise<void> {

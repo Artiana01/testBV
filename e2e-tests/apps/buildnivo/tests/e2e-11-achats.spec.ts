@@ -21,6 +21,10 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
     const mod = new ModulePage(page, '/achats');
     await mod.goto();
 
+    // Le tour guidé peut se (re)déclencher avec un délai APRÈS que les données réelles de la
+    // page aient fini de charger (observé jusqu'à ~40s pour Achats) — le double dismiss de
+    // gotoModule() peut donc être passé trop tôt. On revérifie juste avant le clic.
+    await mod.dismissOnboardingTour();
     await page.getByText('Nouvelle commande', { exact: true }).first().click();
     await mod.dismissOnboardingTour();
     await page.waitForTimeout(1000);
@@ -65,6 +69,7 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
     const mod = new ModulePage(page, '/achats');
     await mod.goto();
 
+    await mod.dismissOnboardingTour();
     await page.getByText('Nouvelle commande', { exact: true }).first().click();
     await mod.dismissOnboardingTour();
     await page.waitForTimeout(1000);
@@ -88,6 +93,7 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
     const mod = new ModulePage(page, '/achats');
     await mod.goto();
 
+    await mod.dismissOnboardingTour();
     await page.getByText('Nouveau fournisseur', { exact: true }).first().click();
     await mod.dismissOnboardingTour();
     await page.waitForTimeout(1000);

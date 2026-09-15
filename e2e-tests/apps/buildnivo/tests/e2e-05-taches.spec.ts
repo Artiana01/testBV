@@ -18,8 +18,11 @@ test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
     await mod.goto();
     await mod.verifyLoaded(/tâches/i);
 
+    // Un filtre "Statut" (<select>) a été ajouté à cette page depuis la dernière recette —
+    // ses <option> partagent le même libellé que les colonnes et sont "hidden" pour
+    // Playwright, donc getVisibleText() (pas getByText brut) pour cibler la vraie colonne.
     for (const colonne of ['À faire', 'En cours', 'À valider', 'Bloquée', 'Terminée']) {
-      await expect(page.getByText(colonne, { exact: true }).first()).toBeVisible({ timeout: 10_000 });
+      await expect(mod.getVisibleText(colonne, true).first()).toBeVisible({ timeout: 10_000 });
     }
   });
 
@@ -27,12 +30,12 @@ test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
     const mod = new ModulePage(page, '/taches');
     await mod.goto();
 
-    await page.getByText('Liste', { exact: true }).first().click();
+    await mod.getVisibleText('Liste', true).first().click();
     await page.waitForTimeout(800);
-    await page.getByText('Tableau', { exact: true }).first().click();
+    await mod.getVisibleText('Tableau', true).first().click();
     await page.waitForTimeout(800);
 
-    await expect(page.getByText('À faire', { exact: true }).first()).toBeVisible();
+    await expect(mod.getVisibleText('À faire', true).first()).toBeVisible();
   });
 
   test('Filtre par corps d\'état et par zone disponible', async ({ page }) => {

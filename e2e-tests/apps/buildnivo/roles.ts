@@ -29,7 +29,9 @@ export function getRoles(): BuildNivoRole[] {
     {
       key: 'conducteur',
       label: 'Conducteur de travaux',
-      login: process.env.CONDUCTEUR_EMAIL ?? 'raivosoa@condicuteur.test',
+      // NB: l'email fourni initialement ("condicuteur.test") contenait une coquille —
+      // le compte réel sur le chantier de démo est raivosoa@conduteur.test.
+      login: process.env.CONDUCTEUR_EMAIL ?? 'raivosoa@conduteur.test',
       password: process.env.CONDUCTEUR_PASSWORD ?? 'Raivo123!!',
       session: 'conducteur.json',
     },
@@ -106,9 +108,25 @@ export function getRoles(): BuildNivoRole[] {
     {
       key: 'intervenant-simple',
       label: 'Intervenant sans droit particulier',
-      login: process.env.INTERVENANT_SIMPLE_EMAIL ?? 'feneva@simple.test',
+      // NB: l'email fourni initialement ("feneva@...") contenait une coquille —
+      // le compte réel sur le chantier de démo est faneva@simple.test (rôle "Paysagiste").
+      login: process.env.INTERVENANT_SIMPLE_EMAIL ?? 'faneva@simple.test',
       password: process.env.INTERVENANT_SIMPLE_PASSWORD ?? 'Faneva123!!',
       session: 'intervenant-simple.json',
+    },
+    {
+      key: 'controle-financier',
+      label: 'Contrôle financier',
+      login: process.env.CONTROLE_FINANCIER_EMAIL ?? 'alexis@test.test',
+      password: process.env.CONTROLE_FINANCIER_PASSWORD ?? 'Alexis123!!',
+      session: 'controle-financier.json',
+    },
+    {
+      key: 'architecte',
+      label: 'Architecte',
+      login: process.env.ARCHITECTE_EMAIL ?? 'alice@architecte.test',
+      password: process.env.ARCHITECTE_PASSWORD ?? 'Alice123!!',
+      session: 'architecte.json',
     },
   ];
 }

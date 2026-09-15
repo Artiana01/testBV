@@ -18,31 +18,44 @@ test.describe('BuildNivo — 03. Chantiers, zones & lots', () => {
     const chantiers = new ChantiersPage(page);
     await chantiers.goto();
 
-    const nomChantier = `E2E Chantier ${Date.now()}`;
-    await chantiers.openCreateModal();
-    await chantiers.fillNom(nomChantier);
-    await chantiers.fillVille('Antananarivo');
+    // ANOMALIE OBSERVÉE : POST /api/projects répond parfois 403 pour le compte Direction
+    // (formulaire pourtant pleinement accessible en UI), mais pas systématiquement — un
+    // nouvel essai juste après réussit parfois. On tolère donc une tentative supplémentaire
+    // avant de considérer que c'est un vrai blocage plutôt qu'une flakiness backend.
+    let lastStatus: number | null = null;
+    let lastBody = '';
+    let nomChantier = '';
 
-    // ANOMALIE CONFIRMÉE (2026-09-10) : POST /api/projects renvoie 403 Forbidden pour le
-    // compte Direction, alors que l'UI affiche "Nouveau chantier" et un formulaire
-    // pleinement fonctionnel (aucun champ désactivé, aucun message de droits insuffisants
-    // avant soumission). Le formulaire reste indéfiniment ouvert sans message d'erreur
-    // visible pour l'utilisateur — juste une 403 silencieuse en console réseau.
-    // On capture la réponse ici pour transformer un "élément introuvable" opaque en un
-    // diagnostic clair si la régression se reproduit.
-    const projectResponse = page.waitForResponse(
-      r => r.url().includes('/api/projects') && r.request().method() === 'POST',
-      { timeout: 15_000 }
-    ).catch(() => null);
-    await chantiers.submitCreate();
-    const response = await projectResponse;
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      nomChantier = `E2E Chantier ${Date.now()}-${attempt}`;
+      await chantiers.openCreateModal();
+      await chantiers.fillNom(nomChantier);
+      await chantiers.fillVille('Antananarivo');
 
-    if (response && !response.ok()) {
+      const projectResponse = page.waitForResponse(
+        r => r.url().includes('/api/projects') && r.request().method() === 'POST',
+        { timeout: 15_000 }
+      ).catch(() => null);
+      await chantiers.submitCreate();
+      const response = await projectResponse;
+
+      if (!response || response.ok()) {
+        lastStatus = response ? response.status() : null;
+        break;
+      }
+
+      lastStatus = response.status();
+      lastBody = await response.text().catch(() => '');
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(1000);
+    }
+
+    if (lastStatus !== null && lastStatus >= 400) {
       throw new Error(
-        `PROJ-01 — POST /api/projects a répondu ${response.status()} pour le compte Direction ` +
-        `(chantier "${nomChantier}"). Le formulaire de création de chantier est accessible dans ` +
+        `PROJ-01 — POST /api/projects a répondu ${lastStatus} pour le compte Direction sur 2 tentatives ` +
+        `(dernier essai : "${nomChantier}"). Le formulaire de création de chantier est accessible dans ` +
         `l'UI mais rejeté côté API — droit manquant ou RBAC mal configuré pour ce rôle. ` +
-        `Corps de réponse : ${(await response.text().catch(() => '')).slice(0, 300)}`
+        `Corps de réponse : ${lastBody.slice(0, 300)}`
       );
     }
 

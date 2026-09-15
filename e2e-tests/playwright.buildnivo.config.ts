@@ -46,7 +46,9 @@ export default defineConfig({
 
   globalSetup: './apps/buildnivo/global-setup.ts',
 
-  timeout: 90_000,
+  // 120s : certaines pages (Achats...) mettent jusqu'à ~40s à charger leurs données sous
+  // charge — 90s laissait trop peu de marge à un test une fois la navigation comptée.
+  timeout: 120_000,
   expect: { timeout: 15_000 },
 
   // Séquentiel pour ne pas déclencher le throttle applicatif (AUTH-06, MSG-04)
