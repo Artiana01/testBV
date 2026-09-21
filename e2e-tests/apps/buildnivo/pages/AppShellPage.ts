@@ -11,6 +11,7 @@
 
 import { Page, expect } from '@playwright/test';
 import { BasePage } from '../../../shared/pages/BasePage';
+import { LoginPage } from './LoginPage';
 
 export class AppShellPage extends BasePage {
 
@@ -65,6 +66,21 @@ export class AppShellPage extends BasePage {
     // utilisable — d'où des timeouts de navigation à 45-90s sans rapport avec un vrai bug.
     // 'domcontentloaded' + attente du rendu réel (skeleton → contenu) est plus fiable.
     await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+
+    // La session "direction.json" (créée une fois en global-setup) est réutilisée pendant
+    // toute la durée des sections 03-16 + régression — 20 à 35 minutes de tests
+    // séquentiels selon la charge de l'environnement. Observé de façon reproductible :
+    // au-delà d'une certaine durée, le token de session BuildNivo expire et TOUTE
+    // navigation suivante redirige vers /connexion, faisant échouer en cascade tous les
+    // tests restants pour une raison qui n'a rien à voir avec eux. On se reconnecte donc
+    // à la volée avec le même compte plutôt que de laisser filer cette cascade. Tous les
+    // appelants de gotoModule() (ModulePage, régression) utilisent exclusivement la
+    // session Direction — pas de risque d'élever les privilèges d'un autre rôle ici.
+    if (this.page.url().includes('/connexion')) {
+      await this.reauthenticateAsDirection();
+      await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    }
+
     await this.dismissOnboardingTour();
     await this.waitForSkeletonToClear();
     // Le tour peut se (re)déclencher avec un délai variable une fois le contenu réel monté
@@ -74,10 +90,22 @@ export class AppShellPage extends BasePage {
     await this.watchForOnboardingTour();
   }
 
+  private async reauthenticateAsDirection(): Promise<void> {
+    const email = process.env.DIRECTION_EMAIL ?? 'harenakely@test.test';
+    const password = process.env.DIRECTION_PASSWORD ?? 'Harena@123!!';
+    const login = new LoginPage(this.page);
+    await login.login(email, password);
+    await expect(this.page).not.toHaveURL(/\/connexion/, { timeout: 45_000 }).catch(() => {});
+  }
+
   /**
-   * Attend que le squelette de chargement (placeholders gris pulsants affichés le temps
-   * de l'hydratation React) laisse place au contenu réel. Best-effort : si l'app ne
-   * marque pas ses squelettes avec [class*="animate-pulse"], cette attente est un no-op.
+   * Attend que l'indicateur de chargement (squelette gris pulsant pendant l'hydratation
+   * React, ou libellé/spinner générique "Chargement" selon la page) laisse place au
+   * contenu réel. Best-effort : si aucun des deux n'est présent, cette attente est un
+   * no-op. Les deux formes sont vérifiées — une page qui n'utilise que "Chargement"
+   * (pas de squelette animate-pulse) faisait sinon sortir cette fonction immédiatement
+   * sans avoir réellement attendu (observé sur /controle/acces : squelette absent mais
+   * page encore sur "Chargement" quand les vérifications suivantes s'exécutaient).
    */
   async waitForSkeletonToClear(timeoutMs = 45_000): Promise<void> {
     // Petit délai avant de vérifier : juste après domcontentloaded, React n'a pas encore
@@ -87,6 +115,8 @@ export class AppShellPage extends BasePage {
     await this.page.waitForTimeout(600);
     const skeleton = this.page.locator('[class*="animate-pulse"]').first();
     await skeleton.waitFor({ state: 'hidden', timeout: timeoutMs }).catch(() => {});
+    const spinner = this.page.getByText(/^chargement/i).first();
+    await spinner.waitFor({ state: 'hidden', timeout: timeoutMs }).catch(() => {});
   }
 
   /**

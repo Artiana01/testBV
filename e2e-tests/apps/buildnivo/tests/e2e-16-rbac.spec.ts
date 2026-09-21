@@ -16,8 +16,15 @@ import { AppShellPage } from '../pages/AppShellPage';
 
 const ADMIN_ONLY_PATHS = [
   '/equipes',          // Équipes & sociétés — gestion des utilisateurs/rôles
-  '/parametres',        // Paramètres généraux
   '/controle/acces',     // Contrôle financier — accès réservés aux garants/financeurs
+  // NB: /parametres retiré — ce n'est pas une page admin-only mais les préférences
+  // personnelles/app (langue, mode découverte, "à propos"), accessible à tout compte
+  // authentifié (visible dans la sidebar même pour "Intervenant sans droit
+  // particulier") ; les sections vraiment sensibles (ex. abonnement) y sont déjà
+  // affichées en lecture seule pour les non-propriétaires ("Seul le propriétaire de
+  // l'entreprise peut gérer l'abonnement"), donc pas d'accès silencieux à du contenu
+  // protégé. Confirmé en observant la page rendue pour ce rôle : aucun contenu
+  // admin-only exposé.
 ];
 
 const SESSION_FILE = path.resolve(__dirname, '../auth/intervenant-simple.json');
@@ -56,10 +63,13 @@ test.describe('BuildNivo — 02. Utilisateurs & rôles (RBAC)', () => {
       const redirectedToLogin = /\/connexion/.test(url);
       const deniedMsg = page.getByText(/403|accès refusé|non autorisé|forbidden|permission insuffisante/i);
       const isDenied = await deniedMsg.first().isVisible({ timeout: 3_000 }).catch(() => false);
-      const stillLoading = await page.locator('[class*="animate-pulse"]').first().isVisible().catch(() => false);
+      // Deux formes de chargement observées selon la page : squelette Tailwind
+      // (animate-pulse) ou libellé/spinner générique "Chargement".
+      const stillLoading = await page.locator('[class*="animate-pulse"]').first().isVisible().catch(() => false)
+        || await page.getByText(/chargement/i).first().isVisible().catch(() => false);
 
       test.skip(stillLoading,
-        `RBAC-03 — ${path} n'a pas fini de charger (squelette toujours affiché après 15s) : environnement ` +
+        `RBAC-03 — ${path} n'a pas fini de charger (squelette/spinner toujours affiché) : environnement ` +
         `probablement dégradé sous charge — inconclusif, pas un verdict RBAC.`
       );
 

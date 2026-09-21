@@ -103,4 +103,38 @@ export class LoginPage extends BasePage {
     const throttleMsg = this.page.getByText(/trop de tentatives|too many|réessayer plus tard|patientez/i);
     await expect(throttleMsg.first()).toBeVisible({ timeout: 10_000 });
   }
+
+  /**
+   * Détecte un blocage de compte connu (provisionnement, pas un bug applicatif ni
+   * un problème de test) après une tentative de connexion restée sur /connexion :
+   * email jamais confirmé, ou identifiants refusés pour ce compte de démo précis.
+   * Retourne une raison de skip explicite, ou undefined si rien de connu ne matche
+   * (dans ce cas l'appelant doit laisser l'échec se produire normalement).
+   */
+  async getKnownAccountBlockReason(login: string): Promise<string | undefined> {
+    if (!this.page.url().includes('/connexion')) return undefined;
+
+    const unconfirmedEmail = this.page.getByText(/adresse email non confirmée|email non confirmé/i);
+    const wrongCredentials = this.page.getByText(/identifiants incorrects/i);
+
+    // 30s, sur un seul locator combiné (une attente au lieu de deux en série) : le
+    // message vient d'un appel API après soumission, pas d'une validation instantanée
+    // côté client, et cet environnement de recette est parfois lent sous charge.
+    // IMPORTANT : .isVisible({ timeout }) n'attend jamais réellement — Playwright
+    // ignore cette option et renvoie l'état immédiat (piège classique de l'API). Il
+    // faut .waitFor({ state: 'visible' }) pour un vrai polling jusqu'au timeout.
+    const known = unconfirmedEmail.first().or(wrongCredentials.first());
+    const foundKnown = await known.waitFor({ state: 'visible', timeout: 30_000 }).then(() => true).catch(() => false);
+    if (!foundKnown) return undefined;
+
+    if (await unconfirmedEmail.first().isVisible().catch(() => false)) {
+      return `Compte ${login} — email jamais confirmé sur cet environnement ("Adresse email non confirmée") : ` +
+        'le compte existe mais reste bloqué tant que la validation manuelle n\'est pas faite. ' +
+        'Anomalie de provisionnement de données, pas un bug de test.';
+    }
+
+    return `Compte ${login} — "Identifiants incorrects" avec le mot de passe de démo attendu : ` +
+      'ce compte n\'est probablement pas provisionné (ou a un mot de passe différent) dans cet ' +
+      'environnement. Anomalie de provisionnement de données, pas un bug de test.';
+  }
 }

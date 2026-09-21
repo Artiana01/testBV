@@ -128,6 +128,13 @@ export function getRoles(): BuildNivoRole[] {
       password: process.env.ARCHITECTE_PASSWORD ?? 'Alice123!!',
       session: 'architecte.json',
     },
+    {
+      key: 'tenant-owner',
+      label: 'Propriétaire (tenant owner)',
+      login: process.env.TENANT_OWNER_EMAIL ?? 'johnim@entreprise.test',
+      password: process.env.TENANT_OWNER_PASSWORD ?? 'John123!!!',
+      session: 'tenant-owner.json',
+    },
   ];
 }
 

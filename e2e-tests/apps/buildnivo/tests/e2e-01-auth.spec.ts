@@ -57,7 +57,34 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     await expect(submitBtn).toBeDisabled();
   });
 
+  // NB: doit s'exécuter avant AUTH-06 — AUTH-06 déclenche volontairement le throttle
+  // du compte DIRECTION_EMAIL, ce qui ferait échouer "Envoyer le lien" ici avec le même
+  // message "Trop de tentatives" (observé : le throttle est par compte, pas par test).
+  test('Formulaire "Mot de passe oublié" accessible et fonctionnel (AUTH-03, étape 1)', async ({ page }) => {
+    const login = new LoginPage(page);
+    await login.navigateToForgotPassword();
+
+    // Le formulaire s'ouvre dans une modale par-dessus /connexion — le champ email doit
+    // être cherché dans la modale, pas sur la page (sinon le sélecteur générique
+    // "input[id*=email]" résout vers le champ de login masqué derrière l'overlay).
+    const modal = page.locator('.fixed.inset-0').first();
+    await modal.waitFor({ state: 'visible', timeout: 15_000 });
+    const emailField = modal.locator('input[type="email"]').first();
+    await expect(emailField).toBeVisible({ timeout: 15_000 });
+
+    await emailField.fill(DIRECTION_EMAIL);
+    await modal.getByRole('button', { name: /envoyer le lien/i }).click();
+    await page.waitForTimeout(1500);
+
+    const confirmation = page.getByText(/envoyé|consultez votre boîte|lien.*transmis/i);
+    await expect(confirmation.first()).toBeVisible({ timeout: 10_000 });
+  });
+
   test('AUTH-06 — Force-brute sur la connexion → throttle après tentatives répétées', async ({ page }) => {
+    // Timeout par défaut (120s) trop juste une fois qu'on ajoute la dissipation du
+    // throttle en fin de test (jusqu'à 90s) après les 7 tentatives + vérifications.
+    test.setTimeout(210_000);
+
     const login = new LoginPage(page);
     await login.navigateToLogin();
 
@@ -80,26 +107,25 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
       'soit le rate limiting n\'est pas encore implémenté côté BuildNivo (à consigner comme anomalie potentielle).'
     );
     expect(isThrottled).toBeTruthy();
-  });
 
-  test('Formulaire "Mot de passe oublié" accessible et fonctionnel (AUTH-03, étape 1)', async ({ page }) => {
-    const login = new LoginPage(page);
-    await login.navigateToForgotPassword();
-
-    // Le formulaire s'ouvre dans une modale par-dessus /connexion — le champ email doit
-    // être cherché dans la modale, pas sur la page (sinon le sélecteur générique
-    // "input[id*=email]" résout vers le champ de login masqué derrière l'overlay).
-    const modal = page.locator('.fixed.inset-0').first();
-    await modal.waitFor({ state: 'visible', timeout: 15_000 });
-    const emailField = modal.locator('input[type="email"]').first();
-    await expect(emailField).toBeVisible({ timeout: 15_000 });
-
-    await emailField.fill(DIRECTION_EMAIL);
-    await modal.getByRole('button', { name: /envoyer le lien/i }).click();
-    await page.waitForTimeout(1500);
-
-    const confirmation = page.getByText(/envoyé|consultez votre boîte|lien.*transmis/i);
-    await expect(confirmation.first()).toBeVisible({ timeout: 10_000 });
+    // Ce test déclenche volontairement le throttle du compte DIRECTION_EMAIL — sans
+    // dissipation avant la fin, le tout prochain test à utiliser ce compte (une autre
+    // connexion, un lien de récupération...) hériterait du blocage et échouerait pour
+    // une raison sans rapport avec lui (observé : "Connexion réussie — Direction" et
+    // le formulaire "mot de passe oublié" échouent tous deux ainsi selon l'ordre
+    // d'exécution). On revérifie en soumettant une vraie tentative de connexion —
+    // un simple rechargement de /connexion efface le message d'erreur affiché sans que
+    // le throttle serveur soit réellement retombé, ce qui faussait la détection.
+    for (let waited = 0; waited < 90_000; waited += 15_000) {
+      await page.waitForTimeout(15_000);
+      await login.navigateToLogin();
+      if (!page.url().includes('/connexion')) break;
+      await login.fillLoginForm(DIRECTION_EMAIL, DIRECTION_PASSWORD);
+      await login.submitLoginForm();
+      if (!page.url().includes('/connexion')) break;
+      const stillThrottled = await throttleMsg.first().isVisible({ timeout: 3_000 }).catch(() => false);
+      if (!stillThrottled) break;
+    }
   });
 
 });
