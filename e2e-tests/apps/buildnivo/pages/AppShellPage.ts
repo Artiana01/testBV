@@ -76,9 +76,21 @@ export class AppShellPage extends BasePage {
     // à la volée avec le même compte plutôt que de laisser filer cette cascade. Tous les
     // appelants de gotoModule() (ModulePage, régression) utilisent exclusivement la
     // session Direction — pas de risque d'élever les privilèges d'un autre rôle ici.
-    if (this.page.url().includes('/connexion')) {
-      await this.reauthenticateAsDirection();
+    // Le redirect vers /connexion (session expirée) se fait côté client, après une
+    // vérification API du token (GET /api/auth/me → 401) — donc APRÈS que
+    // 'domcontentloaded' soit déjà résolu. Juger l'URL immédiatement ici la capture
+    // trop tôt (avant le redirect) et manque systématiquement la détection. Mesuré en
+    // conditions réelles : le redirect survient ~4s après le 401 — 8s laisse une marge
+    // confortable sans pénaliser le cas sain (résout dès que l'URL change).
+    await this.page.waitForURL(/\/connexion/, { timeout: 8_000 }).catch(() => {});
+    // 2 tentatives : la reconnexion elle-même peut échouer de façon intermittente
+    // (observé : le formulaire de /connexion met occasionnellement plus de 15s à
+    // apparaître sous charge) — même logique de tolérance qu'ailleurs dans cette
+    // suite (global-setup, PROJ-01) plutôt qu'un aléa ponctuel qui fait tout échouer.
+    for (let attempt = 1; attempt <= 2 && this.page.url().includes('/connexion'); attempt++) {
+      await this.reauthenticateAsDirection().catch(() => {});
       await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+      await this.page.waitForURL(/\/connexion/, { timeout: 8_000 }).catch(() => {});
     }
 
     await this.dismissOnboardingTour();
