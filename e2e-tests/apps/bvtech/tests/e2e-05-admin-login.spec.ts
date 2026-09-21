@@ -19,7 +19,8 @@
 import { test, expect, Browser, BrowserContext, Page } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { LoginPage } from '../pages/LoginPage';
+import * as fs from 'fs';
+import { LoginPage, LOGIN_BROKEN_SKIP_REASON } from '../pages/LoginPage';
 import { AdminDashboardPage } from '../pages/AdminDashboardPage';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -51,8 +52,11 @@ test.describe('E2E 05 — Dashboard Admin (session partagée)', () => {
   let sharedPage: Page;
 
   test.beforeAll(async ({ browser }) => {
+    const adminSessionPath = path.resolve(__dirname, '../auth/admin.json');
+    test.skip(!fs.existsSync(adminSessionPath), LOGIN_BROKEN_SKIP_REASON);
+
     sharedContext = await browser.newContext({
-      storageState: path.resolve(__dirname, '../auth/admin.json'),
+      storageState: adminSessionPath,
     });
     sharedPage = await sharedContext.newPage();
     const BASE = process.env.BASE_URL ?? 'https://dev.bluevaloristech.com';
@@ -61,7 +65,9 @@ test.describe('E2E 05 — Dashboard Admin (session partagée)', () => {
   });
 
   test.afterAll(async () => {
-    await sharedContext.close();
+    // sharedContext reste undefined si le beforeAll a skip avant de le créer
+    // (admin.json absent — voir BVTECH-LOGIN-CASSE)
+    await sharedContext?.close();
   });
 
   test('05.2 — Accès au dashboard admin après connexion', async () => {

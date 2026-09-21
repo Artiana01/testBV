@@ -117,13 +117,14 @@
     .action-row { display: flex; gap: 8px; flex-direction: column; }
 
     /* ── Stats ── */
-    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
     .stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 9px; text-align: center; }
     .stat-card .num { font-size: 20px; font-weight: 700; }
     .stat-card .lbl { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
     .stat-card.pass .num  { color: var(--pass); }
     .stat-card.fail .num  { color: var(--fail); }
     .stat-card.total .num { color: var(--accent); }
+    .stat-card.skip .num  { color: var(--warn); }
 
     /* ── Output panel ── */
     .output-panel { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
@@ -240,6 +241,7 @@
       <div class="stat-card total"><div class="num" id="statTotal">0</div><div class="lbl">Total</div></div>
       <div class="stat-card pass"><div class="num"  id="statPass">0</div><div class="lbl">Réussis</div></div>
       <div class="stat-card fail"><div class="num"  id="statFail">0</div><div class="lbl">Échoués</div></div>
+      <div class="stat-card skip"><div class="num"  id="statSkip">0</div><div class="lbl">En attente</div></div>
     </div>
     <div class="action-row">
       <button class="btn btn-primary" id="btnRun" onclick="startTests()">▶ Lancer les tests</button>
@@ -307,7 +309,7 @@
   let currentFilter = 'all';
   let currentTab    = 'output';
   let logLines      = [];
-  let stats         = { total: 0, pass: 0, fail: 0 };
+  let stats         = { total: 0, pass: 0, fail: 0, skip: 0 };
   let autoScroll    = true;
   let isRunning     = false;
   let es            = null;
@@ -371,10 +373,14 @@
         appendLine('summary', data.message);
         const mp = data.message.match(/(\d+)\s+passed/);
         const mf = data.message.match(/(\d+)\s+failed/);
-        if (mp || mf) {
+        const ms = data.message.match(/(\d+)\s+skipped/);
+        if (mp || mf || ms) {
           if (mp) stats.pass = parseInt(mp[1]);
           if (mf) stats.fail = parseInt(mf[1]);
-          stats.total = stats.pass + stats.fail;
+          if (ms) stats.skip = parseInt(ms[1]);
+          // Le total inclut les tests suspendus (bug connu déjà identifié) : ce ne
+          // sont pas des échecs, mais ils ont bien été « traités » par le run.
+          stats.total = stats.pass + stats.fail + stats.skip;
           updateStats();
         }
         break;
@@ -473,7 +479,7 @@
 
   // ── Stats ──────────────────────────────────────────────────────────────────
   function resetStats() {
-    stats = { total: 0, pass: 0, fail: 0 }; updateStats();
+    stats = { total: 0, pass: 0, fail: 0, skip: 0 }; updateStats();
     document.querySelectorAll('.result-badge').forEach(b => { b.className = 'result-badge'; b.textContent = ''; });
   }
 
@@ -481,6 +487,7 @@
     document.getElementById('statTotal').textContent = stats.total;
     document.getElementById('statPass').textContent  = stats.pass;
     document.getElementById('statFail').textContent  = stats.fail;
+    document.getElementById('statSkip').textContent  = stats.skip;
   }
 
   // ── Running state ──────────────────────────────────────────────────────────

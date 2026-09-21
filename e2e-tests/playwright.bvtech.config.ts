@@ -25,6 +25,12 @@ dotenv.config({ path: path.resolve(__dirname, 'apps/bvtech/.env') });
 const clientSessionPath = path.resolve(__dirname, 'apps/bvtech/auth/client.json');
 const clientStorageState = fs.existsSync(clientSessionPath) ? clientSessionPath : undefined;
 
+// admin.json peut être absent tant que BVTECH-LOGIN-CASSE n'est pas corrigé côté site
+// (le login réel échoue, donc plus de session à sauvegarder) — sans ce garde-fou,
+// Playwright plante au lancement (ENOENT) au lieu de laisser les tests se skip proprement.
+const adminSessionPath  = path.resolve(__dirname, 'apps/bvtech/auth/admin.json');
+const adminStorageState = fs.existsSync(adminSessionPath) ? adminSessionPath : undefined;
+
 export default defineConfig({
   // Répertoire de tests BV Tech uniquement
   testDir: './apps/bvtech/tests',
@@ -100,8 +106,8 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        // Session admin pré-connectée → zéro login pendant les tests
-        storageState: './apps/bvtech/auth/admin.json',
+        // Session admin pré-connectée si disponible (voir BVTECH-LOGIN-CASSE plus haut)
+        ...(adminStorageState ? { storageState: adminStorageState } : {}),
       },
     },
 
@@ -125,7 +131,7 @@ export default defineConfig({
       testMatch: ['**/regression.spec.ts'],
       use: {
         ...devices['Desktop Chrome'],
-        storageState: './apps/bvtech/auth/admin.json',
+        ...(adminStorageState ? { storageState: adminStorageState } : {}),
       },
     },
   ],

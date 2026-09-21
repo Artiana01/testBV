@@ -427,11 +427,15 @@ function runTests(selectedTests, app) {
   history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${appLabel}...`);
   history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
-  // shell:false + npx.cmd sur Windows évite DEP0190
-  const npxCmd = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  // Sous Windows, spawn('npx.cmd', ..., {shell:false}) plante avec EINVAL — un .cmd
+  // ne peut être lancé sans passer par un shell. shell:true est donc nécessaire sous
+  // Windows (detached:false l'accompagne pour éviter le silence du stdout constaté
+  // avec shell+detached ensemble). Sous Linux/prod, shell:false + npx (sans .cmd)
+  // fonctionne nativement et évite l'avertissement de dépréciation DEP0190.
+  const npxCmd = IS_WINDOWS ? 'npx.cmd' : 'npx';
   runningProcess = spawn(npxCmd, args, {
     cwd: ROOT_DIR,
-    shell: false,
+    shell: IS_WINDOWS,
     detached: !IS_WINDOWS,
     env: { ...process.env, FORCE_COLOR: '0' },
   });

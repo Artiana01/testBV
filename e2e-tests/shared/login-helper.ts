@@ -143,15 +143,24 @@ export async function loginAndSave(opts: {
         await page.keyboard.press('Enter');
       }
 
-      // ── Succès = URL différente de la page de login initiale ─────────────────
-      // On ne liste pas de mots-clés — on compare directement avec l'URL de départ.
+      // ── Succès = changement de PATH par rapport à la page de login ───────────
+      // On compare le pathname, pas l'URL complète : si le clic tombe avant que le
+      // JS de la page n'ait attaché son gestionnaire de soumission, le navigateur
+      // peut faire un fallback natif (GET) qui reste sur le même /login mais avec
+      // email/mot de passe ajoutés en query string — une URL "différente" en texte,
+      // mais qui n'indique aucune connexion réussie. Il ne faut pas la compter comme un succès.
+      const startPath = new URL(actualLoginUrl).pathname;
       await page.waitForURL(
-        u => {
-          const current = u.toString();
-          return current !== actualLoginUrl && current !== loginUrl;
-        },
+        u => new URL(u.toString()).pathname !== startPath,
         { timeout: 60_000 }
       );
+
+      // Garde-fou supplémentaire : si on est repassé par ce même pathname avec des
+      // identifiants en query string avant d'en sortir, la session obtenue n'est
+      // pas fiable — mieux vaut échouer explicitement que sauvegarder une session bidon.
+      if (/[?&]password=/.test(page.url())) {
+        throw new Error(`Soumission native détectée (credentials en query string) : ${page.url()}`);
+      }
 
       await ctx.storageState({ path: sessionFile });
       console.log(`   ✅  Session ${label} sauvegardée → ${path.basename(sessionFile)}`);

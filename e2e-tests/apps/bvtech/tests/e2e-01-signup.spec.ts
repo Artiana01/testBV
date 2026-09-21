@@ -3,17 +3,16 @@
  * ------------------------------------------
  * E2E 01 : Inscription + Accès Dashboard (CRITIQUE)
  *
- * ⚠️  CONTRAINTE CONNUE : reCAPTCHA Google présent sur le formulaire.
- *     La soumission automatisée du formulaire est impossible sans
- *     désactiver le reCAPTCHA côté serveur (env variable).
+ * ℹ️  Le reCAPTCHA Google a été retiré du formulaire (vérifié le 08/07/2026 :
+ *     plus aucune iframe/script reCAPTCHA sur /fr/signup). Le test 01.5
+ *     constate désormais son absence au lieu de supposer sa présence.
  *
  * Ce que ces tests couvrent :
  *   ✅ Accessibilité de la page d'inscription
  *   ✅ Présence de tous les champs requis (Nom, Email, Mot de passe)
- *   ✅ Présence du reCAPTCHA (confirmation que c'est lui qui bloque)
+ *   ✅ Absence de reCAPTCHA (n'entrave plus la soumission automatisée)
  *   ✅ Remplissage du formulaire (hors soumission)
  *   ✅ Navigation vers le formulaire depuis la page login
- *   ⚠️  Soumission ignorée — reCAPTCHA empêche l'automatisation
  *
  * Priorité : Critique
  */
@@ -59,19 +58,27 @@ test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
     const signupPage = new SignupPage(page);
     await signupPage.goto();
     const passwordFields = page.locator('input[type="password"]');
-    const count = await passwordFields.count();
-    expect(count).toBeGreaterThanOrEqual(2);
+    // .count() ne réessaie pas comme les assertions Playwright classiques : si la page
+    // met un peu plus de temps que d'habitude à s'afficher, il peut lire 0 à cet instant
+    // précis. On enveloppe donc la vérification dans toPass() pour réessayer jusqu'à 20s.
+    await expect(async () => {
+      const count = await passwordFields.count();
+      expect(count).toBeGreaterThanOrEqual(2);
+    }).toPass({ timeout: 20_000 });
     await expect(passwordFields.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.5 — Le reCAPTCHA est présent sur le formulaire', async ({ page }) => {
+  test('01.5 — Le formulaire ne contient plus de reCAPTCHA', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
     const recaptcha = page.locator('iframe[title*="reCAPTCHA"], .g-recaptcha, [data-sitekey]')
       .or(page.locator('iframe[src*="recaptcha"]'));
-    await expect(recaptcha.first()).toBeVisible({ timeout: 20_000 });
-    console.log('reCAPTCHA détecté — Soumission automatisée impossible sans clés de test');
+    const hasRecaptcha = await recaptcha.first().isVisible({ timeout: 5_000 }).catch(() => false);
+    expect(hasRecaptcha).toBeFalsy();
+    console.log(hasRecaptcha
+      ? '⚠️ reCAPTCHA détecté — la soumission automatisée reste bloquée'
+      : 'ℹ️ Aucun reCAPTCHA détecté — la soumission automatisée n\'est plus bloquée par ce mécanisme');
   });
 
   test('01.6 — Les champs du formulaire sont remplissables', async ({ page }) => {
