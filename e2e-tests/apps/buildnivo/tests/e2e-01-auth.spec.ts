@@ -125,8 +125,12 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
       await login.fillLoginForm(DIRECTION_EMAIL, DIRECTION_PASSWORD);
       await login.submitLoginForm();
       if (!page.url().includes('/connexion')) break;
-      const stillThrottled = await throttleMsg.first().isVisible({ timeout: 3_000 }).catch(() => false);
-      if (!stillThrottled) break;
+      // NB : on ne sort plus sur la seule disparition du message de throttle (retiré — observé en
+      // pratique : le message précis de throttleMsg peut cesser d'être visible dès la 1ère resoumission
+      // — probablement un message différent, ou un état transitoire — alors que le compte est encore
+      // bloqué et qu'on est toujours sur /connexion. Ça faisait sortir la boucle après une seule
+      // itération de 15s au lieu des 120s prévus, laissant faussement croire à une dissipation. Seule
+      // la vérification finale sur l'URL (après la boucle) fait foi désormais.
     }
 
     // Vérification finale explicite : la boucle ci-dessus peut sortir ("plus de message de
