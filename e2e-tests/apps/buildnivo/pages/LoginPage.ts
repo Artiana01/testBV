@@ -84,6 +84,26 @@ export class LoginPage extends BasePage {
     await expect(this.page.locator('body')).toBeVisible();
   }
 
+  /**
+   * Comme verifyLoginSuccess(), mais retente une connexion complète une fois si on est
+   * toujours sur /connexion après le délai normal de 45s. Observé sur plusieurs comptes
+   * différents selon les runs (pas uniquement après AUTH-06) : l'environnement de recette
+   * a des lenteurs ponctuelles à la connexion qui se résolvent à une deuxième tentative.
+   * N'avale que ce cas précis — si on n'est plus sur /connexion (autre erreur inattendue),
+   * ou si la deuxième tentative échoue aussi, l'erreur d'origine remonte normalement.
+   */
+  async verifyLoginSuccessWithRetry(login: string, password: string): Promise<void> {
+    try {
+      await this.verifyLoginSuccess();
+      return;
+    } catch (err) {
+      if (!this.page.url().includes('/connexion')) throw err;
+    }
+    await this.fillLoginForm(login, password);
+    await this.submitLoginForm();
+    await this.verifyLoginSuccess();
+  }
+
   async verifyLoginError(): Promise<void> {
     // On doit rester sur /connexion, et/ou un message d'erreur doit apparaître
     await this.page.waitForTimeout(1500);

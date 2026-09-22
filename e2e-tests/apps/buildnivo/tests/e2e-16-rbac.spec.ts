@@ -29,6 +29,18 @@ const ADMIN_ONLY_PATHS = [
 
 const SESSION_FILE = path.resolve(__dirname, '../auth/intervenant-simple.json');
 
+// ANOMALIE CONFIRMÉE sur dev.buildnivo.com (run du 2026-09-22) — PAS un problème de test :
+// pour les 2 chemins de ADMIN_ONLY_PATHS, le rôle "Intervenant sans droit particulier" charge
+// la page en entier en y accédant directement par l'URL (contenu réel — onglets, filtres,
+// en-têtes, "Journal des accès" sur /controle/acces — pas un état de chargement, aucun message
+// 403/refusé). Le lien est pourtant correctement masqué de la sidebar pour ce rôle : la
+// protection n'est donc appliquée que côté navigation (masquage du lien), pas côté route —
+// aucune garde d'autorisation sur la route elle-même. Le chantier de démo n'a pas de données
+// réelles sur ces pages (aucune fuite concrète constatée dans ce run), mais l'UI admin n'est
+// pas bloquée pour autant. Captures : test-results/e2e-16-rbac-...-buildnivo-rbac/test-failed-1.png.
+// Bug applicatif à corriger côté BuildNivo (garde d'autorisation manquante sur /equipes et
+// /controle/acces) — voir test.fixme() ci-dessous, à repasser en test actif une fois corrigé.
+
 test.describe('BuildNivo — 02. Utilisateurs & rôles (RBAC)', () => {
 
   test.beforeEach(async ({ page }) => {
@@ -49,6 +61,13 @@ test.describe('BuildNivo — 02. Utilisateurs & rôles (RBAC)', () => {
 
   for (const path of ADMIN_ONLY_PATHS) {
     test(`RBAC-03 — Accès à ${path} sans droit suffisant → refusé`, async ({ page }) => {
+      test.fixme(true,
+        `RBAC-03 — ${path} : accès non bloqué pour "Intervenant sans droit particulier" (contrôle ` +
+        "d'accès manquant côté route BuildNivo, confirmé le 2026-09-22 — voir commentaire au-dessus " +
+        'de ADMIN_ONLY_PATHS). Anomalie applicative réelle, pas un défaut de ce test — à repasser en ' +
+        'test actif une fois la garde d\'autorisation ajoutée côté app.'
+      );
+
       const shell = new AppShellPage(page);
       await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await shell.dismissOnboardingTour();

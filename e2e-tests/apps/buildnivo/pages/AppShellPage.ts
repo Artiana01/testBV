@@ -65,7 +65,7 @@ export class AppShellPage extends BasePage {
     // réseau pendant 500ms" peut ne jamais survenir même quand la page est parfaitement
     // utilisable — d'où des timeouts de navigation à 45-90s sans rapport avec un vrai bug.
     // 'domcontentloaded' + attente du rendu réel (skeleton → contenu) est plus fiable.
-    await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await this.gotoTolerant(path);
 
     // La session "direction.json" (créée une fois en global-setup) est réutilisée pendant
     // toute la durée des sections 03-16 + régression — 20 à 35 minutes de tests
@@ -89,7 +89,7 @@ export class AppShellPage extends BasePage {
     // suite (global-setup, PROJ-01) plutôt qu'un aléa ponctuel qui fait tout échouer.
     for (let attempt = 1; attempt <= 2 && this.page.url().includes('/connexion'); attempt++) {
       await this.reauthenticateAsDirection().catch(() => {});
-      await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+      await this.gotoTolerant(path);
       await this.page.waitForURL(/\/connexion/, { timeout: 8_000 }).catch(() => {});
     }
 
@@ -100,6 +100,26 @@ export class AppShellPage extends BasePage {
     // pour éviter qu'une modale "Passer" apparue en retard n'intercepte un clic plus tard
     // dans le test.
     await this.watchForOnboardingTour();
+  }
+
+  /**
+   * page.goto() qui tolère une redirection cliente vers /connexion survenant EN PLEIN VOL
+   * (session qui expire pile pendant la navigation) : Playwright rejette alors avec "Navigation
+   * to X is interrupted by another navigation to .../connexion" au lieu de simplement résoudre
+   * sur /connexion. Sans ce filtre, l'exception remonte avant même d'atteindre la boucle de
+   * self-heal ci-dessus (qui ne s'exécute donc jamais) et fait échouer le test pour une raison
+   * qui n'a rien à voir avec lui — observé sur des pages différentes selon le run (Pointage,
+   * Visas, Réunions, Documents, Messages, Notifications...), toutes avec ce message précis.
+   * Toute autre erreur remonte normalement.
+   */
+  private async gotoTolerant(path: string): Promise<void> {
+    try {
+      await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    } catch (err) {
+      const msg = (err as Error)?.message ?? '';
+      const interruptedByLogin = /interrupted by another navigation/i.test(msg) && /\/connexion/.test(msg);
+      if (!interruptedByLogin) throw err;
+    }
   }
 
   private async reauthenticateAsDirection(): Promise<void> {

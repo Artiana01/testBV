@@ -20,13 +20,14 @@ test.describe('BuildNivo — 02. Connexion des rôles métier (RBAC prérequis)'
 
   for (const role of getRoles()) {
     test(`Connexion réussie — ${role.label} (${role.login})`, async ({ page }) => {
+      test.setTimeout(150_000);
       const login = new LoginPage(page);
       await login.login(role.login, role.password);
 
       const blockedReason = await login.getKnownAccountBlockReason(role.login);
       test.skip(!!blockedReason, blockedReason);
 
-      await login.verifyLoginSuccess();
+      await login.verifyLoginSuccessWithRetry(role.login, role.password);
 
       const shell = new AppShellPage(page);
       await shell.dismissOnboardingTour();

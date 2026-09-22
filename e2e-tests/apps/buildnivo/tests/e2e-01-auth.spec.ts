@@ -16,9 +16,10 @@ const DIRECTION_PASSWORD = process.env.DIRECTION_PASSWORD ?? 'Harena@123!!';
 test.describe('BuildNivo — 01. Authentification & compte', () => {
 
   test('AUTH-02 — Connexion avec identifiants valides → tableau de bord, session active', async ({ page }) => {
+    test.setTimeout(150_000);
     const login = new LoginPage(page);
     await login.login(DIRECTION_EMAIL, DIRECTION_PASSWORD);
-    await login.verifyLoginSuccess();
+    await login.verifyLoginSuccessWithRetry(DIRECTION_EMAIL, DIRECTION_PASSWORD);
     await expect(page).not.toHaveURL(/\/connexion/);
   });
 
@@ -82,8 +83,8 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
 
   test('AUTH-06 — Force-brute sur la connexion → throttle après tentatives répétées', async ({ page }) => {
     // Timeout par défaut (120s) trop juste une fois qu'on ajoute la dissipation du
-    // throttle en fin de test (jusqu'à 90s) après les 7 tentatives + vérifications.
-    test.setTimeout(210_000);
+    // throttle en fin de test (jusqu'à 120s) après les 7 tentatives + vérifications.
+    test.setTimeout(240_000);
 
     const login = new LoginPage(page);
     await login.navigateToLogin();
@@ -116,7 +117,8 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     // d'exécution). On revérifie en soumettant une vraie tentative de connexion —
     // un simple rechargement de /connexion efface le message d'erreur affiché sans que
     // le throttle serveur soit réellement retombé, ce qui faussait la détection.
-    for (let waited = 0; waited < 90_000; waited += 15_000) {
+    const DISSIPATION_BUDGET_MS = 120_000;
+    for (let waited = 0; waited < DISSIPATION_BUDGET_MS; waited += 15_000) {
       await page.waitForTimeout(15_000);
       await login.navigateToLogin();
       if (!page.url().includes('/connexion')) break;
@@ -125,6 +127,25 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
       if (!page.url().includes('/connexion')) break;
       const stillThrottled = await throttleMsg.first().isVisible({ timeout: 3_000 }).catch(() => false);
       if (!stillThrottled) break;
+    }
+
+    // Vérification finale explicite : la boucle ci-dessus peut sortir ("plus de message de
+    // throttle visible") sans que le compte soit réellement débloqué (ex. un message différent,
+    // ou une page encore en chargement au moment du check). Sans cette vérification, le test
+    // passe silencieusement même quand la dissipation a échoué, et c'est alors le prochain test
+    // à réutiliser ce compte qui hérite du blocage pour une raison qui n'a aucun rapport avec lui
+    // (voir commentaire plus haut — déjà observé). On échoue ici, bruyamment, avec un message qui
+    // pointe directement vers la cause.
+    const dissipated = !page.url().includes('/connexion');
+    if (!dissipated) {
+      throw new Error(
+        `AUTH-06 — le throttle ne s'est pas dissipé après ${DISSIPATION_BUDGET_MS / 1000}s d'attente : ` +
+        `le compte ${DIRECTION_EMAIL} semble toujours bloqué après une tentative de reconnexion avec les ` +
+        'bons identifiants. Les tests suivants qui réutilisent ce compte (Direction, section 02, ' +
+        'self-heal des pages module...) vont très probablement échouer pour cette même raison — ce ' +
+        "n'est pas un bug de leur côté. Si ce blocage est normalement plus long sur cet environnement, " +
+        'augmenter DISSIPATION_BUDGET_MS ci-dessus.'
+      );
     }
   });
 
