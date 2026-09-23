@@ -38,7 +38,15 @@ test.describe('BuildNivo — 16. Notifications', () => {
     const markAllReadBtn = page.getByRole('button', { name: /tout marquer comme lu/i })
       .or(page.getByText(/tout marquer comme lu/i));
     const hasBtn = await markAllReadBtn.first().isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasBtn, 'NOTIF-02 — bouton "Tout marquer comme lu" introuvable dans le panneau de notifications.');
+    // Confirmé (inspection live, 2026-09-23) : le panneau "Alertes prioritaires" affiche de
+    // nombreuses notifications réelles (changements de statut de tâche, documents, visas...)
+    // mais ne contient aucun texte "marquer" nulle part dans tout l'arbre d'accessibilité de la
+    // page — pas un souci de sélecteur, aucune action de lecture groupée trouvée dans l'UI.
+    test.skip(!hasBtn,
+      'NOTIF-02 — aucun contrôle "Tout marquer comme lu" trouvé dans le panneau de notifications, ' +
+      'même avec de nombreuses notifications réelles affichées — possible absence de cette ' +
+      'fonctionnalité, à vérifier manuellement.'
+    );
 
     await markAllReadBtn.first().click();
     await page.waitForTimeout(1000);

@@ -23,7 +23,16 @@ test.describe('BuildNivo — 07. Journal de chantier', () => {
 
     const entryField = page.locator('textarea').first();
     const hasEntryField = await entryField.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasEntryField, 'JOUR-01 — zone de saisie du journal introuvable pour ce rôle/chantier.');
+    // Confirmé (inspection live, 2026-09-23) : sur Résidence Itaosy, la page affiche un message
+    // de refus explicite pour Direction — "Accès restreint au journal de chantier — Le journal
+    // de coordination est réservé à son rédacteur. Votre rôle n'y a pas accès sur ce chantier."
+    // Restriction de rôle délibérée côté app, pas un souci de sélecteur ni un bug : à tester avec
+    // le rôle "rédacteur" du journal (Chef de chantier probable, à confirmer) plutôt que Direction.
+    test.skip(!hasEntryField,
+      'JOUR-01 — Direction n\'a délibérément pas accès au journal de chantier sur ce chantier ' +
+      '("réservé à son rédacteur", message affiché par l\'app) — pas un bug, ce test doit tourner ' +
+      'avec le rôle rédacteur (Chef de chantier probable), pas Direction.'
+    );
 
     const contenu = `Entrée E2E ${new Date().toISOString()}`;
     await entryField.fill(contenu);

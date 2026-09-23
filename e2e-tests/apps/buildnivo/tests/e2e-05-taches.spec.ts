@@ -55,7 +55,16 @@ test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
     await mod.goto();
 
     const addBtn = await mod.findActionButton(/nouvelle tâche|ajouter une tâche|créer une tâche/i);
-    test.skip(!addBtn, 'TASK-01 — bouton de création de tâche non trouvé (peut être accessible uniquement depuis une colonne du Kanban).');
+    // Confirmé (inspection live, 2026-09-23, chantier Résidence Itaosy avec tâches réelles dans
+    // chaque colonne) : aucun bouton/contrôle de création nulle part sur la page, y compris dans
+    // la colonne "À faire" (qui affiche juste "Aucune tâche", sans "+" ni action). Les tâches
+    // existantes n'ont que des actions de changement de statut ("Marquer terminée", "Bloquer la
+    // tâche"...). Pas un souci de sélecteur : aucune UI de création trouvée pour ce rôle.
+    test.skip(!addBtn,
+      'TASK-01 — aucun contrôle de création de tâche trouvé nulle part sur la page (colonnes ' +
+      'incluses), même avec le chantier de démo et des tâches existantes affichées — possible ' +
+      'absence de cette fonctionnalité pour le rôle Direction, à vérifier manuellement.'
+    );
 
     await addBtn!.click();
     await page.waitForTimeout(1000);

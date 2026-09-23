@@ -22,7 +22,16 @@ test.describe('BuildNivo — 11. Réunions & comptes rendus', () => {
     await mod.goto();
 
     const addBtn = await mod.findActionButton(/nouvelle réunion|planifier une réunion|créer une réunion/i);
-    test.skip(!addBtn, 'REU-01 — bouton de création de réunion introuvable pour ce rôle/chantier.');
+    // Confirmé (inspection live, 2026-09-23, chantier Résidence Itaosy avec données réelles) :
+    // aucun bouton de création manuelle nulle part sur la page — cohérent avec la description de
+    // la page elle-même : "Convocation, présences et compte rendu hebdomadaire composé
+    // AUTOMATIQUEMENT". Les réunions semblent générées par le système plutôt que créées à la
+    // main : REU-01 teste peut-être un flux qui n'existe pas (ou plus) tel quel dans l'app.
+    test.skip(!addBtn,
+      'REU-01 — aucun bouton de création manuelle trouvé ; la page indique que le compte rendu ' +
+      'hebdomadaire est "composé automatiquement" — le flux de création manuelle testé ici ne ' +
+      'correspond peut-être pas (plus ?) au fonctionnement réel du module.'
+    );
 
     await addBtn!.click();
     await page.waitForTimeout(1000);

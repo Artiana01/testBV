@@ -9,7 +9,7 @@
  * notifications.
  */
 
-import { Page, expect } from '@playwright/test';
+import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../../../shared/pages/BasePage';
 import { LoginPage } from './LoginPage';
 
@@ -179,8 +179,32 @@ export class AppShellPage extends BasePage {
    * scénarios qui dépendent de données existantes (achats, documents, réserves...).
    */
   async ensureDemoChantierSelected(): Promise<void> {
-    const switcher = this.getChantierSwitcher();
-    if (!(await switcher.isVisible({ timeout: 3_000 }).catch(() => false))) return;
+    let switcher = this.getChantierSwitcher();
+    if (!(await switcher.isVisible({ timeout: 3_000 }).catch(() => false))) {
+      // Le sélecteur n'apparaît pas du tout sur cette page — observé de façon reproductible
+      // (compte Direction, ~30 chantiers de test accumulés au fil des runs PROJ-01/régression,
+      // jamais nettoyés) quand le "chantier actif" du compte pointe sur un chantier autre que
+      // celui affiché ici en arrivant DIRECTEMENT sur une page module (hors /chantiers) : la page
+      // affiche alors "Aucun chantier rattaché" à la place du sélecteur, sans aucune action de
+      // sélection possible sur place — donc rien à corriger ici. En passant par /chantiers
+      // d'abord (où le sélecteur est, lui, toujours présent), on peut sélectionner Résidence
+      // Itaosy puis revenir sur la page d'origine, qui affiche alors le bon contexte.
+      const originalUrl = this.page.url();
+      await this.page.goto('/chantiers', { waitUntil: 'domcontentloaded', timeout: 45_000 }).catch(() => {});
+      await this.dismissOnboardingTour();
+      await this.waitForSkeletonToClear();
+      switcher = this.getChantierSwitcher();
+      if (!(await switcher.isVisible({ timeout: 3_000 }).catch(() => false))) return;
+      await this.selectResidenceItaosy(switcher);
+      await this.page.goto(originalUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 }).catch(() => {});
+      await this.dismissOnboardingTour();
+      await this.waitForSkeletonToClear();
+      return;
+    }
+    await this.selectResidenceItaosy(switcher);
+  }
+
+  private async selectResidenceItaosy(switcher: Locator): Promise<void> {
     const current = await switcher.inputValue().catch(() => '');
     const options = await switcher.locator('option').all();
     for (const opt of options) {
