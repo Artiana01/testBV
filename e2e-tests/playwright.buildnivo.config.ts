@@ -120,6 +120,18 @@ export default defineConfig({
       },
     },
 
+    // === Billing (Stripe Customer Portal) — compte "Propriétaire" (tenant-owner), seul rôle
+    // avec le bouton "Gérer mon abonnement". Chaque test gère sa propre session via
+    // browser.newContext({ storageState }) (pas de storageState au niveau du projet) car ce
+    // n'est ni "public" (comptes 01/02) ni Direction/Intervenant simple (autres projets).
+    {
+      name: 'buildnivo-billing',
+      testMatch: ['**/e2e-17-billing.spec.ts'],
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+    },
+
     // === Régression complète
     {
       name: 'buildnivo-regression',
