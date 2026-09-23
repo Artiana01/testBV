@@ -103,6 +103,7 @@ export default defineConfig({
         '**/e2e-13-documents.spec.ts',
         '**/e2e-14-messages.spec.ts',
         '**/e2e-15-notifications.spec.ts',
+        '**/e2e-18-carnet-entretien.spec.ts',
       ],
       use: {
         ...devices['Desktop Chrome'],
