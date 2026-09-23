@@ -192,47 +192,23 @@ test.describe('BuildNivo — 18. Carnet d\'entretien engins', () => {
     await fileInput.setInputFiles(exePath).catch(() => {});
     await page.waitForTimeout(800);
 
+    // Requête réseau observée (inspection live, run réel, pas une supposition) : POST
+    // /api/engins/{id}/entretiens répond 422, et le formulaire affiche le message de validation
+    // Laravel renvoyé par l'API telle quelle : "Le champ files.0 doit être un fichier de type :
+    // jpg, jpeg, png, webp, heic, pdf." — texte très spécifique, on ancre dessus sans trop le
+    // figer (liste d'extensions exacte non garantie stable) plutôt que de deviner un message
+    // générique qui ne correspond pas à ce que l'app affiche réellement.
+    const submitResponse = page.waitForResponse(r => /\/api\/engins\/.+\/entretiens/i.test(r.url()) && r.request().method() === 'POST', { timeout: 10_000 }).catch(() => null);
     await page.getByRole('button', { name: /consigner l.intervention/i }).click();
-    await page.waitForTimeout(1_500);
+    const response = await submitResponse;
+    await page.waitForTimeout(1_000);
 
-    const errorMsg = page.getByText(/format.*(non supporté|invalide|accepté|autorisé)|type de fichier|extension/i);
-    const rejectedWithMessage = await errorMsg.first().isVisible({ timeout: 3_000 }).catch(() => false);
-    if (rejectedWithMessage) {
-      expect(rejectedWithMessage).toBeTruthy();
-      return;
+    if (response) {
+      // Jamais un succès (2xx) pour ce fichier interdit — ce serait le signe d'un contrôle de
+      // type manquant côté serveur, une vraie anomalie de sécurité, pas un défaut de ce test.
+      expect(response.ok(), 'Le serveur a accepté un fichier .exe (réponse 2xx) — contrôle de type manquant côté API.').toBeFalsy();
     }
-
-    // Pas de message de refus détecté. Deux cas distincts (confirmé par un run réel — la
-    // modale peut très bien rester ouverte SANS aucun texte matchant nos regex, ce qui est déjà
-    // en soi "pas un message clair" mais différent d'un passage en force silencieux) :
-    const stillOpen = await page.locator('[role="dialog"]').first().isVisible({ timeout: 2_000 }).catch(() => false);
-    if (stillOpen) {
-      // Formulaire bloqué sans message explicite reconnu par nos regex — pas un plantage, mais
-      // pas non plus "un message clair" au sens du scénario. À affiner manuellement (texte de
-      // refus probablement présent mais formulé autrement que prévu) plutôt que d'échouer sur
-      // une regex qu'on sait incomplète.
-      test.skip(true,
-        'Fichier .exe : la soumission est restée bloquée (formulaire toujours ouvert) mais aucun ' +
-        'message reconnu par les regex de ce test — refus probable mais libellé exact à vérifier ' +
-        'manuellement plutôt que de deviner un texte supplémentaire.'
-      );
-      return;
-    }
-
-    // Modale fermée sans message : vérifier si l'intervention a quand même été créée AVEC le
-    // fichier .exe en pièce jointe. Si oui, ce n'est pas juste "pas de message clair" — c'est un
-    // fichier exécutable accepté sans aucun contrôle, une vraie anomalie de sécurité à signaler
-    // telle quelle plutôt qu'à masquer en assouplissant cette assertion.
-    const modalAfter = await openCarnetForGrue4(page);
-    const newRow = modalAfter.locator('table').first().locator('tbody tr').filter({ hasText: label });
-    const created = await newRow.isVisible({ timeout: 5_000 }).catch(() => false);
-    if (created) {
-      const exeAttached = await newRow.locator('button[title$=".exe"]').isVisible({ timeout: 3_000 }).catch(() => false);
-      expect(exeAttached,
-        'Un fichier .exe a été accepté comme pièce jointe sans aucun message de refus — anomalie ' +
-        'applicative potentielle (contrôle de type de fichier manquant côté serveur), pas un bug de ce test.'
-      ).toBeFalsy();
-    }
+    await expect(page.getByText(/doit être un fichier de type/i)).toBeVisible({ timeout: 5_000 });
   });
 
   test('Fichier interdit — image trop volumineuse (> 10 Mo)', async ({ page }) => {
@@ -449,21 +425,35 @@ test.describe('BuildNivo — 18. Carnet d\'entretien engins', () => {
     const preview = page.locator('[role="dialog"]').filter({ hasText: /\.jpg/i }).last();
     const image = preview.locator('img').first();
     await expect(image).toBeVisible({ timeout: 10_000 });
+    // Le conteneur de l'image porte le zoom/la rotation réels via un style CSS inline
+    // ("transform: scale(1) rotate(0deg)") — on vérifie que les boutons changent CETTE valeur,
+    // pas juste que l'image reste visible (elle le resterait de toute façon, zoom ou pas).
+    const transformBox = preview.locator('div[style*="transform"]').first();
+    const initialTransform = await transformBox.getAttribute('style');
 
-    const zoomIn = preview.getByRole('button', { name: /zoom avant|zoomer|agrandir|\+/i }).first();
-    const hasZoom = await zoomIn.isVisible({ timeout: 3_000 }).catch(() => false);
-    test.skip(!hasZoom, 'Contrôle de zoom introuvable dans l\'aperçu photo — sélecteur à ajuster manuellement.');
+    // Confirmé (inspection du DOM réel) : zoom avant/arrière n'ont ni texte ni title/aria-label
+    // (icônes lucide-zoom-in/lucide-zoom-out nues) — seule la rotation a un title exploitable
+    // ("Pivoter de 90°"). On cible donc les boutons zoom via leur icône SVG.
+    const zoomIn = preview.locator('button').filter({ has: page.locator('svg.lucide-zoom-in') }).first();
+    await expect(zoomIn).toBeVisible({ timeout: 5_000 });
     await zoomIn.click();
+    await page.waitForTimeout(300);
+    await expect(transformBox).not.toHaveAttribute('style', initialTransform ?? '');
+    await expect(image).toBeVisible();
+
+    const zoomOut = preview.locator('button').filter({ has: page.locator('svg.lucide-zoom-out') }).first();
+    await expect(zoomOut).toBeVisible();
+    await zoomOut.click();
     await page.waitForTimeout(300);
     await expect(image).toBeVisible();
 
-    const rotateBtn = preview.getByRole('button', { name: /rotation|pivoter|rotate/i }).first();
-    const hasRotate = await rotateBtn.isVisible({ timeout: 3_000 }).catch(() => false);
-    if (hasRotate) {
-      await rotateBtn.click();
-      await page.waitForTimeout(300);
-      await expect(image).toBeVisible();
-    }
+    const rotateBtn = preview.getByTitle(/pivoter/i);
+    await expect(rotateBtn).toBeVisible({ timeout: 5_000 });
+    const beforeRotate = await transformBox.getAttribute('style');
+    await rotateBtn.click();
+    await page.waitForTimeout(300);
+    await expect(transformBox).not.toHaveAttribute('style', beforeRotate ?? '');
+    await expect(image).toBeVisible();
   });
 
   test('Aperçu PDF — lecteur intégré, pas un simple lien', async ({ page }) => {
