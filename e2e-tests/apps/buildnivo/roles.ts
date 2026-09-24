@@ -45,8 +45,12 @@ export function getRoles(): BuildNivoRole[] {
     {
       key: 'salarie',
       label: 'Salarié ouvrier',
-      login: process.env.SALARIE_EMAIL ?? 'aime@salarie.test',
-      password: process.env.SALARIE_PASSWORD ?? 'Aime123!!!',
+      // NB: l'identifiant initial (aime@salarie.test) échoue systématiquement sur cet
+      // environnement (confirmé à plusieurs reprises, y compris après nettoyage disque —
+      // pas un problème d'espace/throttle) ; remplacé le 2026-09-24 par le compte réel
+      // fourni (Liva Be, déjà visible comme collaborateur seedé dans les rapports IA).
+      login: process.env.SALARIE_EMAIL ?? 'livabe@ouvrier.test',
+      password: process.env.SALARIE_PASSWORD ?? 'Liva@123!!',
       session: 'salarie.json',
     },
     {
@@ -134,6 +138,19 @@ export function getRoles(): BuildNivoRole[] {
       login: process.env.TENANT_OWNER_EMAIL ?? 'johnim@entreprise.test',
       password: process.env.TENANT_OWNER_PASSWORD ?? 'John123!!!',
       session: 'tenant-owner.json',
+    },
+    {
+      key: 'superadmin',
+      label: 'Superadmin',
+      // Pas de littéral de repli ici, contrairement aux autres rôles : ce n'est pas un
+      // compte de démo jetable (@test.test/@xxx.test) mais un compte d'administration réel
+      // de l'agence (domaine bluevaloris.com), fourni le 2026-09-24 pour couvrir les
+      // scénarios positifs de la console d'audit (BUILDNIVO-293). Sans .env renseigné, ce
+      // rôle échoue simplement à se connecter comme n'importe quel compte non provisionné
+      // (dégradation déjà gérée par global-setup) plutôt que d'exposer ce compte dans le repo.
+      login: process.env.SUPERADMIN_EMAIL ?? '',
+      password: process.env.SUPERADMIN_PASSWORD ?? '',
+      session: 'superadmin.json',
     },
   ];
 }

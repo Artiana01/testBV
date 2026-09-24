@@ -133,6 +133,27 @@ export default defineConfig({
       },
     },
 
+    // === Sécurité/Audit (BUILDNIVO-293) — plusieurs rôles non-Superadmin testés dans le même
+    // fichier ; chaque test gère sa propre session via browser.newContext({ storageState })
+    // (même raison que buildnivo-billing ci-dessus : ni un rôle unique ni les comptes publics).
+    {
+      name: 'buildnivo-audit',
+      testMatch: ['**/e2e-19-supervision-audit.spec.ts'],
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+    },
+
+    // === Rapports IA — plusieurs rôles (Direction, Maître d'ouvrage) dans le même fichier ;
+    // même raison que buildnivo-billing/buildnivo-audit : chaque test gère sa propre session.
+    {
+      name: 'buildnivo-rapports-ia',
+      testMatch: ['**/e2e-20-rapports-ia.spec.ts'],
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+    },
+
     // === Régression complète
     {
       name: 'buildnivo-regression',
