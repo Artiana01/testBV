@@ -40,38 +40,46 @@ test.describe('BuildNivo — 15. Messagerie & copilote IA', () => {
     await expect(modal.locator('input').first()).toBeVisible({ timeout: 8_000 });
   });
 
+  // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-09-25) — PAS un problème de test : aucun
+  // anti-flood sur l'envoi de messages. 30 POST /api/conversations/:id/messages simultanés
+  // (multipart text_content, session Direction, conversation 1:1 avec Raivosoa Andria) → 30 × 201,
+  // aucun 429 ni message de ralentissement ; les 30 messages sont bien créés (supprimés ensuite).
+  // Le login, lui, est throttlé (AUTH-06) : la protection existe dans l'app mais pas sur la
+  // messagerie. L'UI n'envoie qu'un message à la fois (15 "Entrée" rapides → 5 envois), donc une
+  // rafale via l'interface n'atteint jamais le serveur assez vite : le test la fait au niveau API,
+  // comme le ferait un client automatisé. À repasser en test actif une fois un rate-limit ajouté.
   test('MSG-04 — Envoi de messages en rafale → throttle déclenché', async ({ page }) => {
+    test.fixme(true,
+      'MSG-04 — aucun rate-limit sur POST /api/conversations/:id/messages (30 envois simultanés → ' +
+      '30 × 201, confirmé le 2026-09-25 — voir commentaire au-dessus). Anomalie applicative réelle, ' +
+      'pas un défaut de ce test.'
+    );
+
     const mod = new ModulePage(page, '/messages');
     await mod.goto();
+    const opened = page.waitForResponse(r => r.request().method() === 'GET' && /\/api\/conversations\/[^/]+\/messages/.test(r.url()));
+    await page.getByRole('button', { name: /^Raivosoa Andria/ }).first().click();
+    const messagesUrl = (await opened).url().split('?')[0];
 
-    const newMsgBtn = page.getByRole('button', { name: /nouveau message/i }).first();
-    const hasBtn = await newMsgBtn.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasBtn, 'MSG-04 — impossible d\'ouvrir une conversation pour tester le throttle d\'envoi.');
+    const { statuses, ids } = await page.evaluate(async ({ url, tag }) => {
+      const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1] ?? '');
+      const results = await Promise.all(Array.from({ length: 30 }, async (_, i) => {
+        const body = new FormData();
+        body.append('text_content', `${tag} #${i}`);
+        const r = await fetch(url, { method: 'POST', credentials: 'include', body, headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf } });
+        const json = await r.json().catch(() => ({}));
+        return { status: r.status, id: json?.data?.id as string | undefined };
+      }));
+      return { statuses: results.map(r => r.status), ids: results.map(r => r.id).filter(Boolean) as string[] };
+    }, { url: messagesUrl, tag: `E2E rafale ${Date.now()}` });
 
-    await newMsgBtn.click();
-    await mod.dismissOnboardingTour();
-    await page.waitForTimeout(1000);
+    // Nettoyage des messages effectivement créés (conversation réelle d'un compte de démo).
+    await page.evaluate(async (messageIds) => {
+      const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1] ?? '');
+      await Promise.all(messageIds.map(id => fetch(`/api/messages/${id}`, { method: 'DELETE', credentials: 'include', headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf } })));
+    }, ids);
 
-    // "Nouveau message" ouvre une recherche de destinataire, pas une zone de texte directe
-    // (voir MSG-01) — sans destinataire disponible sur ce chantier ("Personne d'autre à qui
-    // écrire"), il n'y a pas de zone de composition à tester pour le throttle.
-    const composeField = page.locator('.fixed.inset-0 textarea, .fixed.inset-0 input[type="text"]').first();
-    const hasCompose = await composeField.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasCompose, 'MSG-04 — zone de saisie de message introuvable (destinataire/canal requis au préalable, aucun autre membre sur ce chantier dans les données de démo).');
-
-    for (let i = 0; i < 15; i++) {
-      await composeField.fill(`Message rafale E2E #${i}`);
-      await page.keyboard.press('Enter');
-      await page.waitForTimeout(150);
-    }
-
-    const throttleMsg = page.getByText(/trop de messages|ralentissez|réessayer plus tard|patientez/i);
-    const isThrottled = await throttleMsg.first().isVisible({ timeout: 5_000 }).catch(() => false);
-
-    test.skip(!isThrottled,
-      'MSG-04 — aucun throttle détecté après 15 envois rapides (à consigner comme anomalie potentielle si confirmé manuellement).'
-    );
-    expect(isThrottled).toBeTruthy();
+    expect(statuses).toContain(429);
   });
 
 });

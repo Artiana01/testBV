@@ -19,26 +19,12 @@
  */
 
 import { test, expect } from '@playwright/test';
-import * as fs from 'fs';
-import * as path from 'path';
-import { AppShellPage } from '../pages/AppShellPage';
-
-const AUTH_DIR = path.resolve(__dirname, '../auth');
+import { openModuleAs } from '../pages/RoleSession';
 
 test.describe('BuildNivo — Rapports IA', () => {
 
   test('Direction — page complète : onglets, prompt système, actions Modifier/Régénérer, export PDF', async ({ browser }) => {
-    const sessionFile = path.join(AUTH_DIR, 'direction.json');
-    test.skip(!fs.existsSync(sessionFile), 'Session Direction indisponible.');
-
-    const context = await browser.newContext({ storageState: sessionFile });
-    const page = await context.newPage();
-    const shell = new AppShellPage(page);
-
-    await page.goto('/rapports', { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await shell.dismissOnboardingTour();
-    await shell.waitForSkeletonToClear(30_000);
-    await shell.watchForOnboardingTour();
+    const { context, page } = await openModuleAs(browser, 'direction', '/rapports');
 
     await expect(page.getByRole('heading', { name: 'Rapports IA', level: 1 })).toBeVisible();
 
@@ -64,17 +50,7 @@ test.describe('BuildNivo — Rapports IA', () => {
   });
 
   test('Direction — changement d\'onglet : Synthèse hebdo et Relances affichent un contenu propre à l\'onglet', async ({ browser }) => {
-    const sessionFile = path.join(AUTH_DIR, 'direction.json');
-    test.skip(!fs.existsSync(sessionFile), 'Session Direction indisponible.');
-
-    const context = await browser.newContext({ storageState: sessionFile });
-    const page = await context.newPage();
-    const shell = new AppShellPage(page);
-
-    await page.goto('/rapports', { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await shell.dismissOnboardingTour();
-    await shell.waitForSkeletonToClear(30_000);
-    await shell.watchForOnboardingTour();
+    const { context, page } = await openModuleAs(browser, 'direction', '/rapports');
 
     await page.getByRole('tab', { name: /synthèse hebdo/i }).click();
     await page.waitForTimeout(1_000);
@@ -84,26 +60,24 @@ test.describe('BuildNivo — Rapports IA', () => {
     await page.getByRole('tab', { name: /relances/i }).click();
     await page.waitForTimeout(1_000);
     await expect(page.getByRole('tab', { name: /relances/i })).toHaveAttribute('aria-selected', 'true');
-    // "Relances" n'a pas de rapport figé à afficher/modifier — seulement une consigne de
-    // régénération partagée entre tous les onglets, jamais de bouton "Modifier".
+    // "Relances" : consigne de régénération partagée + liste de relances préparées par l'IA.
+    // Chaque relance est éditable, et celles pas encore parties attendent une validation
+    // humaine explicite ("Valider l'envoi") — jamais d'envoi automatique ("Envoyée" sinon).
     await expect(page.getByRole('button', { name: /^régénérer$/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /^modifier$/i })).toHaveCount(0);
+    const relances = page.getByText(/^Relance\b/);
+    if (await relances.count() > 0) {
+      await expect(page.getByRole('button', { name: /^modifier$/i }).first()).toBeVisible();
+      await expect(page.getByRole('button', { name: /valider l.envoi/i }).or(page.getByText('Envoyée', { exact: true })).first())
+        .toBeVisible();
+    } else {
+      await expect(page.getByText(/aucune relance à préparer/i)).toBeVisible();
+    }
 
     await context.close();
   });
 
   test('Maître d\'ouvrage — accès en lecture seule confirmé : pas de prompt système, pas de Générer/Modifier/Régénérer', async ({ browser }) => {
-    const sessionFile = path.join(AUTH_DIR, 'maitre-ouvrage.json');
-    test.skip(!fs.existsSync(sessionFile), 'Session Maître d\'ouvrage indisponible.');
-
-    const context = await browser.newContext({ storageState: sessionFile });
-    const page = await context.newPage();
-    const shell = new AppShellPage(page);
-
-    await page.goto('/rapports', { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await shell.dismissOnboardingTour();
-    await shell.waitForSkeletonToClear(30_000);
-    await shell.watchForOnboardingTour();
+    const { context, page } = await openModuleAs(browser, 'maitre-ouvrage', '/rapports');
 
     // La page se charge bien pour ce rôle (contenu métier légitime), contrairement à
     // /admin/activity-logs (e2e-19) qui ne devrait jamais être accessible à personne d'autre
@@ -122,17 +96,7 @@ test.describe('BuildNivo — Rapports IA', () => {
   });
 
   test('Direction — export PDF déclenche un téléchargement réel', async ({ browser }) => {
-    const sessionFile = path.join(AUTH_DIR, 'direction.json');
-    test.skip(!fs.existsSync(sessionFile), 'Session Direction indisponible.');
-
-    const context = await browser.newContext({ storageState: sessionFile });
-    const page = await context.newPage();
-    const shell = new AppShellPage(page);
-
-    await page.goto('/rapports', { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await shell.dismissOnboardingTour();
-    await shell.waitForSkeletonToClear(30_000);
-    await shell.watchForOnboardingTour();
+    const { context, page } = await openModuleAs(browser, 'direction', '/rapports');
 
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: 20_000 }),

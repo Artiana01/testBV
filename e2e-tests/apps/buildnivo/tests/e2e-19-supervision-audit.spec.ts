@@ -25,6 +25,8 @@ import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import { AppShellPage } from '../pages/AppShellPage';
+import { openModuleAs } from '../pages/RoleSession';
+import { getRole } from '../roles';
 
 const AUTH_DIR = path.resolve(__dirname, '../auth');
 
@@ -35,7 +37,6 @@ const NON_SUPERADMIN_ROLES: Array<{ label: string; file: string }> = [
   { label: 'Intervenant sans droit particulier', file: 'intervenant-simple.json' },
 ];
 
-const SUPERADMIN_SESSION = path.join(AUTH_DIR, 'superadmin.json');
 
 // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (run du 2026-09-24) — PAS un problème de test :
 // /admin/activity-logs ("Journal d'audit & Traçabilité") affiche lui-même le texte "Registre
@@ -108,15 +109,8 @@ test.describe('BuildNivo — Sécurité/Audit. Console de supervision (BUILDNIVO
   }
 
   test('Superadmin — sidebar "Administration" visible avec les 4 liens dédiés', async ({ browser }) => {
-    test.skip(!fs.existsSync(SUPERADMIN_SESSION), 'Session Superadmin indisponible (SUPERADMIN_EMAIL/PASSWORD absents de .env).');
-
-    const context = await browser.newContext({ storageState: SUPERADMIN_SESSION });
-    const page = await context.newPage();
-    const shell = new AppShellPage(page);
-
-    await page.goto('/chantiers', { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await shell.dismissOnboardingTour();
-    await shell.waitForSkeletonToClear(30_000);
+    test.skip(!getRole('superadmin').login, 'SUPERADMIN_EMAIL/PASSWORD absents de apps/buildnivo/.env.');
+    const { context, page } = await openModuleAs(browser, 'superadmin', '/chantiers');
 
     await expect(page.getByText('Administration', { exact: true })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Dashboard admin' })).toBeVisible();
@@ -128,14 +122,8 @@ test.describe('BuildNivo — Sécurité/Audit. Console de supervision (BUILDNIVO
   });
 
   test('Superadmin — /admin/activity-logs : contenu réel, recherche, filtres et exports fonctionnels', async ({ browser }) => {
-    test.skip(!fs.existsSync(SUPERADMIN_SESSION), 'Session Superadmin indisponible (SUPERADMIN_EMAIL/PASSWORD absents de .env).');
-
-    const context = await browser.newContext({ storageState: SUPERADMIN_SESSION });
-    const page = await context.newPage();
-    const shell = new AppShellPage(page);
-
-    await page.goto('/admin/activity-logs', { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    await shell.waitForSkeletonToClear(30_000);
+    test.skip(!getRole('superadmin').login, 'SUPERADMIN_EMAIL/PASSWORD absents de apps/buildnivo/.env.');
+    const { context, page } = await openModuleAs(browser, 'superadmin', '/admin/activity-logs');
     await page.waitForTimeout(1_000);
 
     await expect(page.getByRole('heading', { name: /journal d.audit/i })).toBeVisible();

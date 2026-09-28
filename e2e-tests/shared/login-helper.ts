@@ -66,6 +66,10 @@ export async function loginAndSave(opts: {
       console.log(`\n🔐  Connexion ${label} (${email})${attempt > 1 ? ` — essai ${attempt}` : ''}...`);
 
       await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+      // Sur les SPA (BuildNivo…), remplir le formulaire avant la fin de l'hydratation fait
+      // réinitialiser les champs par le framework : l'envoi part vide et l'essai échoue au
+      // bout de 60s (observé à chaque premier essai, formulaire vide sur la capture).
+      await page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => {});
 
       // Capturer l'URL réelle après les redirects (ex: /fr/login → /fr/connexion)
       // C'est cette URL qui sert de référence pour détecter le succès du login
@@ -121,6 +125,9 @@ export async function loginAndSave(opts: {
         await pwInput.clear();
         await pwInput.pressSequentially(password, { delay: 30 });
       }
+
+      if ((await emailInput.inputValue().catch(() => '')) !== email) await emailInput.fill(email);
+      if ((await pwInput.inputValue().catch(() => '')) !== password) await pwInput.fill(password);
 
       // ── Submit : type=submit → texte connu → Enter ───────────────────────────
       const submitByType = page.locator('button[type="submit"]').first();

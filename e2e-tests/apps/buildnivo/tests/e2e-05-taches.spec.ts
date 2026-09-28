@@ -7,9 +7,8 @@
  */
 
 import { test, expect } from '@playwright/test';
-import * as fs from 'fs';
-import * as path from 'path';
 import { ModulePage } from '../pages/ModulePage';
+import { openModuleAs, isoDateInDays } from '../pages/RoleSession';
 
 test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
 
@@ -50,43 +49,40 @@ test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
     await expect(zoneSelect).toBeVisible();
   });
 
-  test('TASK-01 — Création d\'une tâche avec titre, assigné et échéance', async ({ page }) => {
-    const mod = new ModulePage(page, '/taches');
-    await mod.goto();
+  // Matrice RBAC de l'app (/matrix, table role_module_permissions) : Tâches = "read" pour
+  // Direction, "full" pour Conducteur de travaux — l'absence de "Nouvelle tâche" côté Direction
+  // est donc voulue, la création se teste avec le Conducteur.
+  test('TASK-01 — Création d\'une tâche avec titre, assigné et échéance (Conducteur de travaux)', async ({ browser }) => {
+    const { context, page } = await openModuleAs(browser, 'conducteur', '/taches');
 
-    const addBtn = await mod.findActionButton(/nouvelle tâche|ajouter une tâche|créer une tâche/i);
-    // Confirmé (inspection live, 2026-09-23, chantier Résidence Itaosy avec tâches réelles dans
-    // chaque colonne) : aucun bouton/contrôle de création nulle part sur la page, y compris dans
-    // la colonne "À faire" (qui affiche juste "Aucune tâche", sans "+" ni action). Les tâches
-    // existantes n'ont que des actions de changement de statut ("Marquer terminée", "Bloquer la
-    // tâche"...). Pas un souci de sélecteur : aucune UI de création trouvée pour ce rôle.
-    test.skip(!addBtn,
-      'TASK-01 — aucun contrôle de création de tâche trouvé nulle part sur la page (colonnes ' +
-      'incluses), même avec le chantier de démo et des tâches existantes affichées — possible ' +
-      'absence de cette fonctionnalité pour le rôle Direction, à vérifier manuellement.'
-    );
-
-    await addBtn!.click();
-    await page.waitForTimeout(1000);
+    await page.getByRole('button', { name: 'Nouvelle tâche' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Nouvelle tâche' });
+    await expect(dialog).toBeVisible();
 
     const titre = `E2E Tâche ${Date.now()}`;
-    const titreField = page.locator('input[type="text"], input:not([type])').first();
-    await titreField.fill(titre);
+    await dialog.getByPlaceholder(/reprendre l.enduit/i).fill(titre);
+    await dialog.locator('select').filter({ has: page.locator('option', { hasText: 'Non assigné' }) })
+      .selectOption({ label: 'Raivosoa Andria' });
+    await dialog.locator('input[type="date"]').fill(isoDateInDays(7));
 
-    await page.getByRole('button', { name: /créer|ajouter|enregistrer|valider/i }).first().click();
-    await page.waitForTimeout(1500);
+    const createBtn = dialog.getByRole('button', { name: 'Créer la tâche' });
+    await expect(createBtn).toBeEnabled();
+    await createBtn.click();
+    await expect(dialog).toBeHidden({ timeout: 15_000 });
 
-    await expect(page.getByText(titre).first()).toBeVisible({ timeout: 10_000 });
+    const card = page.locator('article').filter({ hasText: titre });
+    await expect(card).toBeVisible({ timeout: 15_000 });
+    await expect(card).toContainText('Raivosoa Andria');
+
+    // Nettoyage best-effort : aucune suppression de tâche dans l'UI, on la sort au moins de
+    // la colonne "À faire" du chantier de démo partagé.
+    await card.getByRole('combobox', { name: 'Changer le statut' }).selectOption('Terminée').catch(() => {});
+
+    await context.close();
   });
 
   test('TASK-05 — Suppression d\'une tâche par un utilisateur non autorisé (rôle Intervenant simple)', async ({ browser }) => {
-    const sessionFile = path.resolve(__dirname, '../auth/intervenant-simple.json');
-    test.skip(!fs.existsSync(sessionFile), 'Session "Intervenant sans droit particulier" non disponible (global-setup).');
-
-    const context = await browser.newContext({ storageState: sessionFile });
-    const page = await context.newPage();
-    const mod = new ModulePage(page, '/taches');
-    await mod.goto();
+    const { context, page } = await openModuleAs(browser, 'intervenant-simple', '/taches');
 
     const deleteBtn = page.getByRole('button', { name: /supprimer/i }).first();
     const hasDeleteOption = await deleteBtn.isVisible({ timeout: 5_000 }).catch(() => false);

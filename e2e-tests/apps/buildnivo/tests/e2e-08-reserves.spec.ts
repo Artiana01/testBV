@@ -2,12 +2,12 @@
  * e2e-08-reserves.spec.ts
  * ---------------------------
  * Section 09 du cahier de recette — Réserves.
- * Couvre : RES-01 à RES-04 (best-effort — la création directe de réserve
- * peut n'être accessible que depuis le module Photos, cf. PHOTO-02).
+ * Couvre : RES-01 à RES-04 (best-effort).
  */
 
 import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
+import { openModuleAs, isoDateInDays } from '../pages/RoleSession';
 
 test.describe('BuildNivo — 09. Réserves', () => {
 
@@ -21,27 +21,38 @@ test.describe('BuildNivo — 09. Réserves', () => {
     }
   });
 
-  test('RES-01 — Création d\'une réserve avec localisation et description', async ({ page }) => {
-    const mod = new ModulePage(page, '/reserves');
-    await mod.goto();
+  // Matrice RBAC de l'app (/matrix) : Réserves = "read" pour Direction, "full" pour Conducteur de
+  // travaux — le bouton "Nouvelle réserve" n'existe (volontairement) que pour ce dernier.
+  test('RES-01 — Création d\'une réserve avec localisation et description (Conducteur de travaux)', async ({ browser }) => {
+    const { context, page } = await openModuleAs(browser, 'conducteur', '/reserves');
 
-    const addBtn = await mod.findActionButton(/nouvelle réserve|ajouter une réserve|créer une réserve/i);
-    test.skip(!addBtn,
-      'RES-01 — aucun bouton de création directe sur /reserves : la création se fait probablement ' +
-      'depuis une photo (PHOTO-02, "Créer une réserve"), voir e2e-07-photos.spec.ts.'
-    );
+    await page.getByRole('button', { name: 'Nouvelle réserve' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Nouvelle réserve' });
+    await expect(dialog).toBeVisible();
 
-    await addBtn!.click();
-    await page.waitForTimeout(1000);
+    const titre = `E2E Réserve ${Date.now()}`;
+    await dialog.getByPlaceholder(/fissure cloison/i).fill(titre);
+    // Zone et Concerné sont des listes personnalisées (bouton "—" + listbox avec recherche).
+    await dialog.getByText('Zone *').locator('xpath=following::button[1]').click();
+    await page.getByRole('listbox').getByRole('option', { name: 'Bâtiment Principal', exact: true }).click();
+    await dialog.getByText('Concerné *').locator('xpath=following::button[1]').click();
+    await page.getByRole('listbox').getByRole('option', { name: 'Entreprise Principale', exact: true }).click();
+    await dialog.locator('input[type="date"]').fill(isoDateInDays(14));
 
-    const description = `Réserve E2E ${Date.now()}`;
-    const descField = page.locator('textarea, input[type="text"]').first();
-    await descField.fill(description);
+    await dialog.getByRole('button', { name: 'Créer la réserve' }).click();
+    await expect(dialog).toBeHidden({ timeout: 15_000 });
 
-    await page.getByRole('button', { name: /créer|ajouter|enregistrer/i }).first().click();
-    await page.waitForTimeout(1500);
+    const row = page.getByRole('row').filter({ hasText: titre });
+    await expect(row).toBeVisible({ timeout: 15_000 });
+    await expect(row).toContainText('Bâtiment Principal');
+    await expect(row).toContainText('Entreprise Principale');
+    await expect(row).toContainText(/ouverte/i);
 
-    await expect(page.getByText(description).first()).toBeVisible({ timeout: 10_000 });
+    // Nettoyage : pas de suppression de réserve dans l'UI, on la lève (état terminal).
+    await row.getByRole('button', { name: 'Marquer levée' }).click();
+    await expect(row).toContainText(/levée/i, { timeout: 15_000 });
+
+    await context.close();
   });
 
   test('Filtrage des réserves par lot et par zone', async ({ page }) => {

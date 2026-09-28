@@ -29,8 +29,10 @@ test.describe('BuildNivo — RÉGRESSION — Parcours critiques', () => {
 
   test('RÉGRESSION — Navigation à travers tous les modules sans erreur', async ({ page }) => {
     // 15 routes, certaines (Achats...) mettent jusqu'à ~40s à charger leurs données sous
-    // charge — le timeout global (90s) est trop court pour ce test qui les enchaîne toutes.
-    test.setTimeout(300_000);
+    // charge, et chaque gotoModule() coûte ~15-20s fixes (attente d'une éventuelle
+    // redirection de session expirée + surveillance du tour guidé) : 300s a été dépassé
+    // (run du 2026-09-25, bloqué sur la 15e route /parametres, page pourtant correcte).
+    test.setTimeout(600_000);
     const routes = [
       '/chantiers', '/dashboard', '/pointage', '/taches', '/journal', '/photos',
       '/visas', '/reunions', '/reserves', '/achats', '/finances', '/documents',

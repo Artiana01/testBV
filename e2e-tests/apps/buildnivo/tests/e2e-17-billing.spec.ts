@@ -19,11 +19,8 @@
  */
 
 import { test, expect, Page } from '@playwright/test';
-import * as fs from 'fs';
-import * as path from 'path';
 import { AppShellPage } from '../pages/AppShellPage';
-
-const OWNER_SESSION = path.resolve(__dirname, '../auth/tenant-owner.json');
+import { openModuleAs } from '../pages/RoleSession';
 
 // Le portail Stripe suit la locale du navigateur (locale: 'fr-FR' dans ce config, voir
 // playwright.buildnivo.config.ts) et s'affiche donc en FRANÇAIS lors des vrais runs — confirmé en
@@ -46,18 +43,8 @@ function parseEuroAmount(text: string | null): number {
   return parseInt(match[1] ?? match[2], 10);
 }
 
-// NB: on n'utilise pas AppShellPage.gotoModule() ici — son self-heal en cas de
-// session expirée se reconnecte en dur avec le compte Direction (voir
-// reauthenticateAsDirection()), ce qui basculerait ces tests sur le mauvais
-// compte au lieu de "Propriétaire". Navigation directe + vérifications
-// explicites, comme dans e2e-16-rbac.spec.ts (même situation, autre rôle).
-async function gotoAsOwner(page: Page, urlPath: string): Promise<void> {
-  const shell = new AppShellPage(page);
-  await page.goto(urlPath, { waitUntil: 'domcontentloaded', timeout: 45_000 });
-  await shell.dismissOnboardingTour();
-  await shell.waitForSkeletonToClear();
-  await shell.dismissOnboardingTour();
-}
+// NB: pas AppShellPage.gotoModule() ici — son self-heal en cas de session expirée se
+// reconnecte en Direction ; openModuleAs() se reconnecte avec le compte "Propriétaire".
 
 /**
  * Depuis /parametres, clique "Gérer mon abonnement" et attend l'arrivée sur le
@@ -67,7 +54,10 @@ async function gotoAsOwner(page: Page, urlPath: string): Promise<void> {
 async function openStripePortal(page: Page): Promise<void> {
   const manageBtn = page.getByRole('button', { name: /gérer mon abonnement/i });
   await manageBtn.click();
-  await page.waitForURL(/stripe\.com/i, { timeout: 20_000 });
+  // 'commit' et pas 'load' : l'événement load du portail Stripe (scripts tiers, sandbox)
+  // arrive parfois bien après 20s alors que la page est déjà là — le vrai signal de
+  // disponibilité est le bloc abonnement attendu juste après.
+  await page.waitForURL(/stripe\.com/i, { timeout: 45_000, waitUntil: 'commit' });
   await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
   // Le portail Stripe affiche d'abord une coquille (logo + bandeau "Sandbox"/"Environnement de
   // test") avant que son contenu réel (abonnement, moyen de paiement...) ne s'hydrate quelques
@@ -75,23 +65,64 @@ async function openStripePortal(page: Page): Promise<void> {
   // juste après). "Powered by Stripe" fait partie du pied de page statique de la coquille
   // elle-même, donc PAS un bon indicateur — on attend plutôt le bloc abonnement, qui n'apparaît
   // qu'une fois le contenu réel monté.
-  await page.getByText(RE_CURRENT_SUB).waitFor({ state: 'visible', timeout: 30_000 });
+  await page.getByText(RE_CURRENT_SUB).waitFor({ state: 'visible', timeout: 60_000 });
 }
+
+interface PortalPlan { index: number; name: string; price: number; current: boolean; selectable: boolean }
+
+/** Depuis la vue principale du portail, ouvre "Modifier l'abonnement" et relève les forfaits. */
+async function openPlanPicker(page: Page): Promise<PortalPlan[]> {
+  await page.getByRole('link', { name: RE_UPDATE_SUB_LINK }).click();
+  const cards = page.locator('[data-testid="pricing-table-card"]');
+  await cards.first().waitFor({ state: 'visible', timeout: 30_000 });
+  const plans: PortalPlan[] = [];
+  for (let i = 0; i < await cards.count(); i++) {
+    const card = cards.nth(i);
+    const text = await card.innerText();
+    plans.push({
+      index: i,
+      name: text.split('\n').map(l => l.trim()).find(l => l && !/abonnement actuel|current subscription/i.test(l)) ?? '',
+      price: parseEuroAmount(text),
+      current: /abonnement actuel|current subscription/i.test(text),
+      selectable: await card.getByRole('button', { name: RE_SELECT_BTN }).isVisible().catch(() => false),
+    });
+  }
+  return plans;
+}
+
+// Forfait d'entrée de gamme visé pour redescendre : "Company Essential" à 99 €/mois, l'offre
+// d'origine du compte (historique de facturation du 17/09). Le portail propose aussi un
+// "Company Essential" à 59 € que l'app ne reconnaît pas (constaté le 2026-09-25 : carte
+// Abonnement sans ligne "Offre actuelle", quasiment tous les modules verrouillés) — évité ici,
+// c'est une incohérence de configuration Stripe/app à traiter à part.
+function entryPlan(plans: PortalPlan[]): PortalPlan {
+  const plan = plans.find(p => p.selectable && p.name === 'Company Essential' && p.price === 99);
+  expect(plan, 'Forfait "Company Essential" à 99 € introuvable dans le portail').toBeTruthy();
+  return plan!;
+}
+
+/**
+ * Choisit un forfait dans le sélecteur ouvert, vérifie le récapitulatif (prorata : "Montant dû
+ * aujourd'hui" distinct du tarif mensuel) et confirme ; revient sur la vue principale du portail.
+ */
+async function confirmPlan(page: Page, plan: PortalPlan): Promise<void> {
+  await page.locator('[data-testid="pricing-table-card"]').nth(plan.index).getByRole('button', { name: RE_SELECT_BTN }).click();
+  await page.getByRole('button', { name: RE_CONTINUE_BTN }).click();
+  await expect(page.getByText(RE_CONFIRM_UPDATES)).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(RE_AMOUNT_DUE)).toBeVisible();
+  await page.getByRole('button', { name: RE_CONFIRM_BTN }).click();
+  await expect(page.getByText(RE_CURRENT_SUB)).toBeVisible({ timeout: 60_000 });
+}
+
+// Le forfait du compte de test change à chaque run (mode TEST Stripe) : le Scénario 2 le fait
+// monter d'un palier, et au palier maximum ("Project") il n'y a plus d'upgrade possible ni de
+// module verrouillé. Les scénarios 2 et 4 redescendent donc au forfait d'entrée de gamme quand leur
+// précondition n'est plus remplie (downgrade immédiat, 0 € dû, confirmé en direct le 2026-09-25).
 
 test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
 
-  test.beforeEach(async ({ page }) => {
-    test.skip(!fs.existsSync(OWNER_SESSION),
-      'Session "Propriétaire" (tenant-owner) indisponible (identifiants refusés au login — ' +
-      'voir e2e-02-roles-login.spec.ts) : les scénarios billing ne peuvent pas être exécutés ' +
-      'tant que ce compte n\'est pas provisionné dans cet environnement.'
-    );
-  });
-
   test('Scénario 1 — Carte Abonnement sur /parametres et accès au portail Stripe', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: OWNER_SESSION });
-    const page = await context.newPage();
-    await gotoAsOwner(page, '/parametres');
+    const { context, page } = await openModuleAs(browser, 'tenant-owner', '/parametres');
 
     // Pastille verte "Abonnement actif"
     await expect(page.getByText(/^abonnement actif$/i).first()).toBeVisible({ timeout: 15_000 });
@@ -124,65 +155,30 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
   });
 
   test('Scénario 2 — Changement de forfait (upgrade) et calcul du prorata', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: OWNER_SESSION });
-    const page = await context.newPage();
-    await gotoAsOwner(page, '/parametres');
+    test.setTimeout(300_000);
+    const { context, page } = await openModuleAs(browser, 'tenant-owner', '/parametres');
     await openStripePortal(page);
 
-    // Prix du forfait actuel, pour choisir ensuite une formule STRICTEMENT supérieure — la suite
-    // tourne plusieurs fois par jour et change le forfait à chaque passage (mode TEST, sans
-    // risque), donc on ne peut pas viser un nom de plan fixe ("Company Business"...) : il faut
-    // recalculer l'upgrade à chaque run par rapport au prix courant, pas par son nom. On travaille
-    // sur le texte brut de la page (pas de traversée DOM ancêtre/suivant, trop fragile ici selon
-    // la structure Stripe réelle — testé, une extraction par xpath following::*[1] renvoie du vide).
+    // Forfaits = cartes [data-testid="pricing-table-card"] ; l'upgrade vise un forfait
+    // STRICTEMENT plus cher que l'actuel, recalculé à chaque run (pas de nom de plan figé).
+    let plans = await openPlanPicker(page);
+    let currentPrice = plans.find(p => p.current)?.price ?? NaN;
+    if (!plans.some(p => p.selectable && p.price > currentPrice)) {
+      // Déjà au palier maximum (runs précédents) : préparation → forfait d'entrée de gamme.
+      await confirmPlan(page, entryPlan(plans));
+      plans = await openPlanPicker(page);
+      currentPrice = plans.find(p => p.current)?.price ?? NaN;
+    }
+    const target = plans.find(p => p.selectable && p.price > currentPrice);
+    expect(target, `Aucun forfait plus cher que ${currentPrice} € dans le portail`).toBeTruthy();
+
+    // Récapitulatif avec prorata ("Montant dû aujourd'hui" ≠ tarif mensuel) puis confirmation.
+    await confirmPlan(page, target!);
+
+    // L'abonnement en cours affiche bien le prix du forfait choisi.
     const bodyText = (await page.locator('body').textContent()) ?? '';
     const currentSubIdx = bodyText.search(RE_CURRENT_SUB);
-    const currentPrice = currentSubIdx >= 0
-      ? parseEuroAmount(bodyText.slice(currentSubIdx, currentSubIdx + 200))
-      : NaN;
-
-    await page.getByRole('link', { name: RE_UPDATE_SUB_LINK }).click();
-    await page.waitForLoadState('networkidle', { timeout: 20_000 }).catch(() => {});
-
-    // Chaque option de forfait est une carte [data-testid="pricing-table-card"] (confirmé par
-    // inspection du DOM réel — pas de rôle ARIA de type "listitem"/"radio" exploitable ici) avec
-    // un lien role="button" "Select"/"Sélectionner" (PAS un <button> HTML — piège si on cible
-    // document.querySelectorAll('button') côté page.evaluate, ça ne matche pas ces liens ;
-    // getByRole('button', ...) fonctionne car il lit l'arbre d'accessibilité, pas les balises
-    // brutes). parseEuroAmount() gère le séparateur décimal virgule français ("59,00 €" → 59, pas
-    // 5900 comme le donnerait un simple strip des caractères non numériques).
-    const cards = page.locator('[data-testid="pricing-table-card"]');
-    const cardCount = await cards.count();
-    let upgraded = false;
-    for (let i = 0; i < cardCount && !upgraded; i++) {
-      const card = cards.nth(i);
-      const price = parseEuroAmount(await card.textContent());
-      const selectBtn = card.getByRole('button', { name: RE_SELECT_BTN });
-      const hasSelect = await selectBtn.isVisible({ timeout: 1_000 }).catch(() => false);
-      if (hasSelect && (Number.isNaN(currentPrice) || price > currentPrice)) {
-        await selectBtn.click();
-        upgraded = true;
-      }
-    }
-    test.skip(!upgraded, 'Scénario 2 — aucune formule strictement supérieure au forfait actuel trouvée dans le catalogue Stripe.');
-
-    await page.getByRole('button', { name: RE_CONTINUE_BTN }).click();
-    await page.waitForLoadState('networkidle', { timeout: 20_000 }).catch(() => {});
-
-    // Récapitulatif avec prorata — "Montant dû aujourd'hui" est le montant prélevé immédiatement,
-    // distinct du tarif plein mensuel à partir du prochain cycle. Les deux doivent être présents
-    // pour confirmer un vrai calcul de prorata (et pas juste le plein tarif du nouveau forfait
-    // facturé immédiatement).
-    await expect(page.getByText(RE_CONFIRM_UPDATES)).toBeVisible({ timeout: 15_000 });
-    await expect(page.getByText(RE_AMOUNT_DUE)).toBeVisible();
-
-    await page.getByRole('button', { name: RE_CONFIRM_BTN }).click();
-    await page.waitForLoadState('networkidle', { timeout: 20_000 }).catch(() => {});
-    // Retour sur la vue principale du portail — pas de message "Votre forfait a été mis à jour"
-    // observé (Stripe redirige directement vers le récapitulatif d'abonnement mis à jour) ; on
-    // vérifie donc le résultat concret (abonnement bien passé au nouveau prix) plutôt qu'un texte
-    // de confirmation qui n'existe pas tel quel sur ce portail.
-    await expect(page.getByText(RE_CURRENT_SUB)).toBeVisible({ timeout: 15_000 });
+    expect(parseEuroAmount(bodyText.slice(currentSubIdx, currentSubIdx + 200))).toBe(target!.price);
 
     await page.getByRole('link', { name: RE_RETURN_LINK }).click();
     await expect(page).toHaveURL(/dev\.buildnivo\.com\/parametres/i, { timeout: 20_000 });
@@ -191,9 +187,7 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
   });
 
   test('Scénario 3 — Badge "Votre plan actuel" sur /tarifs', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: OWNER_SESSION });
-    const page = await context.newPage();
-    await page.goto('/tarifs', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    const { context, page } = await openModuleAs(browser, 'tenant-owner', '/tarifs');
     await page.waitForTimeout(2_000);
 
     // ANOMALIE OBSERVÉE (inspection live, 2026-09-23) : le badge "Votre plan actuel" apparaît sur
@@ -222,19 +216,28 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
   });
 
   test('Scénario 4 — Soft gating : module non inclus dans l\'offre', async ({ browser }) => {
-    const context = await browser.newContext({ storageState: OWNER_SESSION });
-    const page = await context.newPage();
-    await gotoAsOwner(page, '/chantiers');
+    test.setTimeout(300_000);
+    const { context, page } = await openModuleAs(browser, 'tenant-owner', '/chantiers');
 
-    // Repère un module verrouillé (badge "Pro" + cadenas dans la sidebar) plutôt que de viser un
-    // module précis par son nom : lequel est verrouillé dépend du forfait courant, qui change à
-    // chaque exécution du Scénario 2 — un module fixe ("Journal de chantier"...) casserait dès
-    // que le compte passerait à un forfait qui l'inclut déjà.
-    const lockedLink = page.locator('a').filter({ hasText: /pro/i }).first();
-    const hasLocked = await lockedLink.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasLocked, 'Scénario 4 — aucun module verrouillé "Pro" trouvé (le forfait actuel du compte les inclut peut-être tous).');
+    // Module verrouillé = lien de la sidebar dont le texte se TERMINE par le badge "Pro"
+    // ("Journal de chantierPro"), casse respectée — un simple /pro/i attrapait "Photos &
+    // problèmes", module pourtant inclus. Lequel est verrouillé dépend du forfait courant.
+    const lockedLinks = page.getByRole('navigation').getByRole('link').filter({ hasText: /Pro$/ });
+    if (!(await lockedLinks.first().isVisible({ timeout: 5_000 }).catch(() => false))) {
+      // Forfait courant = tous modules inclus : préparation → forfait d'entrée de gamme.
+      await page.goto('/parametres', { waitUntil: 'domcontentloaded' });
+      await new AppShellPage(page).waitForSkeletonToClear();
+      await openStripePortal(page);
+      await confirmPlan(page, entryPlan(await openPlanPicker(page)));
+      await page.getByRole('link', { name: RE_RETURN_LINK }).click();
+      await page.waitForURL(/dev\.buildnivo\.com/i, { timeout: 30_000 });
+      await page.goto('/chantiers', { waitUntil: 'domcontentloaded' });
+      await new AppShellPage(page).waitForSkeletonToClear();
+    }
+    const lockedLink = lockedLinks.first();
+    await expect(lockedLink).toBeVisible({ timeout: 15_000 });
 
-    const moduleName = (await lockedLink.textContent())?.replace(/pro/i, '').trim();
+    const moduleName = (await lockedLink.textContent())?.replace(/\s*Pro\s*$/, '').trim();
     await lockedLink.click();
     await page.waitForLoadState('domcontentloaded', { timeout: 20_000 }).catch(() => {});
 

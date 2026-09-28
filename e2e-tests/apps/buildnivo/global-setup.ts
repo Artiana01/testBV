@@ -28,6 +28,23 @@ const AUTH_DIR  = path.resolve(__dirname, 'auth');
 // 2 fois chacun de ces logins avec leurs timeouts complets avant de démarrer les tests.
 const FAILED_LOGIN_CACHE_MIN = 30;
 
+// Le cookie "buildnivo-session" (Laravel) expire 120 min après la sauvegarde du fichier, alors
+// que login-helper réutilise un fichier jusqu'à 4h : une session sauvegardée il y a plus d'une
+// heure mourait en plein run (~1h), faisant échouer les derniers tests (redirigés vers /connexion).
+// On force donc la reconnexion si le cookie ne couvre plus au moins la durée d'un run complet.
+const MIN_SESSION_REMAINING_MIN = 90;
+
+function expiresTooSoon(sessionFile: string): boolean {
+  try {
+    const state = JSON.parse(fs.readFileSync(sessionFile, 'utf-8'));
+    const session = (state.cookies ?? []).find((c: { name: string }) => c.name === 'buildnivo-session');
+    if (!session || !(session.expires > 0)) return true;
+    return (session.expires * 1000 - Date.now()) / 60_000 < MIN_SESSION_REMAINING_MIN;
+  } catch {
+    return true;
+  }
+}
+
 function failedMarkerPath(session: string): string {
   return path.join(AUTH_DIR, `${session}.failed`);
 }
@@ -49,6 +66,10 @@ export default async function globalSetup(_config: FullConfig) {
     if (recentlyFailed(role.session)) {
       console.log(`   ⏭️   Session BuildNivo-${role.label} — échec récent (< ${FAILED_LOGIN_CACHE_MIN}min), pas de nouvelle tentative`);
       continue;
+    }
+
+    if (fs.existsSync(sessionFile) && expiresTooSoon(sessionFile)) {
+      fs.rmSync(sessionFile, { force: true });
     }
 
     const ok = await loginAndSave({

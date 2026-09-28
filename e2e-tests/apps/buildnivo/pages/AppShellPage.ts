@@ -13,10 +13,23 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../../../shared/pages/BasePage';
 import { LoginPage } from './LoginPage';
 
+const pagesWithTourHandler = new WeakSet<Page>();
+
 export class AppShellPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
+    // Le tour guidé ("Bienvenue sur BuildNivo" → Passer/Suivant) peut surgir plusieurs secondes
+    // après le chargement et intercepter n'importe quel clic (observé sur le Scénario 4 billing,
+    // bien après dismissOnboardingTour()). Le handler Playwright le ferme dès qu'il bloque une
+    // action, quel que soit le moment. Une seule inscription par page.
+    if (!pagesWithTourHandler.has(page)) {
+      pagesWithTourHandler.add(page);
+      const tourSkip = page.getByRole('dialog')
+        .filter({ has: page.getByRole('button', { name: /^Suivant$/i }) })
+        .getByRole('button', { name: /^Passer$/i });
+      void page.addLocatorHandler(tourSkip, async btn => { await btn.click().catch(() => {}); }).catch(() => {});
+    }
   }
 
   /**

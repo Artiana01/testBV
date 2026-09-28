@@ -8,17 +8,21 @@
  * et POINT-05 utilisent donc une session dédiée plutôt que celle du describe.
  */
 
-import { test, expect } from '@playwright/test';
-import * as fs from 'fs';
-import * as path from 'path';
+import { test, expect, Page } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
+import { openModuleAs } from '../pages/RoleSession';
 
 // Confirmé (inspection live, 2026-09-23) : ni Direction ni Chef de chantier n'ont de pointage
 // personnel sur /pointage (Direction : aucune section pointage ; Chef de chantier : vue
 // superviseur d'équipe uniquement, "Temps réel"/"Feuille de pointage"/"Export paie", pas de
-// "Mon pointage"). Le rôle "Ouvrier sous-traitant" a lui une section "Mon pointage" avec un
-// bouton "Pointer l'arrivée" — c'est le rôle attendu pour POINT-01/POINT-05, pas Direction.
-const OUVRIER_SESSION = path.resolve(__dirname, '../auth/ouvrier-sous-traitant.json');
+// "Mon pointage"). Le rôle "Ouvrier sous-traitant" a lui une section "Mon pointage" — c'est le
+// rôle attendu pour POINT-01/POINT-05, pas Direction.
+function monPointage(page: Page) {
+  return page.locator('div')
+    .filter({ has: page.getByRole('heading', { name: 'Mon pointage' }) })
+    .filter({ has: page.getByRole('button') })
+    .last();
+}
 
 test.describe('BuildNivo — 05. Pointage & présences', () => {
 
@@ -29,64 +33,59 @@ test.describe('BuildNivo — 05. Pointage & présences', () => {
     await expect(page.getByText(/présents maintenant|prévus aujourd'hui/i).first()).toBeVisible({ timeout: 10_000 });
   });
 
-  // NB: POINT-05 doit s'exécuter avant POINT-01 — POINT-05 vérifie le refus d'un clock-out SANS
-  // clock-in préalable, ce qui ne tient que si Henri (Ouvrier sous-traitant) n'a pas déjà pointé
-  // son arrivée aujourd'hui. Comme POINT-01 pointe réellement l'arrivée sur ce compte de démo
-  // (état persistant côté serveur, pas juste local au test), l'exécuter avant casserait la
-  // précondition de POINT-05.
+  // Machine d'états réelle de "Mon pointage" (Ouvrier sous-traitant, confirmée en direct) :
+  //   Absent  → "Pointer l'arrivée" (+ confirmation) → Présent ("Arrivé à HH:MM",
+  //   "Démarrer la pause", "Pointer la sortie") → "Pointer la sortie" (+ confirmation, "Votre
+  //   journée sera clôturée") → "Journée terminée – X travaillées" (bouton désactivé).
+  // Une seule arrivée par jour et par compte : l'état persiste côté serveur d'un run à l'autre,
+  // les deux tests vérifient donc la règle applicable à l'état trouvé au lieu de dépendre d'un
+  // compte "vierge" (ils sautaient dès le 2e run de la journée).
+  // NB: POINT-05 s'exécute avant POINT-01 pour couvrir, au 1er run du jour, l'état "Absent".
+
   test('POINT-05 — Clock-out sans clock-in préalable → action refusée', async ({ browser }) => {
-    test.skip(!fs.existsSync(OUVRIER_SESSION), 'Session "Ouvrier sous-traitant" non disponible (global-setup).');
-    const context = await browser.newContext({ storageState: OUVRIER_SESSION });
-    const page = await context.newPage();
-    const mod = new ModulePage(page, '/pointage');
-    await mod.goto();
+    const { context, page } = await openModuleAs(browser, 'ouvrier-sous-traitant', '/pointage');
+    const card = monPointage(page);
+    await expect(card).toBeVisible();
 
-    const clockOutBtn = await mod.findActionButton(/pointer le départ|badger le départ|clock.?out/i);
-    test.skip(!clockOutBtn,
-      'POINT-05 — bouton de pointage départ introuvable pour Ouvrier sous-traitant (peut-être déjà ' +
-      'pointé aujourd\'hui par un run précédent de la suite — état persistant côté serveur).'
-    );
+    // Une arrivée est ouverte (run précédent du jour) : on clôture la journée pour retrouver un
+    // état sans pointage d'arrivée ouvert, qui est la précondition de POINT-05.
+    const clockOut = card.getByRole('button', { name: 'Pointer la sortie' });
+    if (await clockOut.isVisible().catch(() => false)) {
+      await clockOut.click();
+      await page.getByRole('dialog', { name: 'Pointer la sortie' }).getByRole('button', { name: 'Confirmer' }).click();
+      await expect(card.getByText(/journée terminée/i).first()).toBeVisible({ timeout: 15_000 });
+    }
 
-    await clockOutBtn!.click();
-    await page.waitForTimeout(1500);
-
-    const errorMsg = page.getByText(/aucun pointage d'arrivée|vous n'avez pas pointé|erreur/i);
-    const disabled = await clockOutBtn!.isDisabled().catch(() => false);
-    const hasError = await errorMsg.first().isVisible({ timeout: 3_000 }).catch(() => false);
-
-    expect(disabled || hasError).toBeTruthy();
+    // Sans arrivée ouverte, aucune sortie ne doit pouvoir être pointée.
+    await expect(card.getByRole('button', { name: 'Pointer la sortie' })).toHaveCount(0);
+    const closedDay = card.getByRole('button', { name: /journée terminée/i });
+    if (await closedDay.isVisible().catch(() => false)) {
+      await expect(closedDay).toBeDisabled();
+    } else {
+      await expect(card.getByRole('button', { name: "Pointer l'arrivée" })).toBeVisible();
+    }
     await context.close();
   });
 
   test('POINT-01 — Clock-in en début de journée', async ({ browser }) => {
-    test.skip(!fs.existsSync(OUVRIER_SESSION), 'Session "Ouvrier sous-traitant" non disponible (global-setup).');
-    const context = await browser.newContext({ storageState: OUVRIER_SESSION });
-    const page = await context.newPage();
-    const mod = new ModulePage(page, '/pointage');
-    await mod.goto();
+    const { context, page } = await openModuleAs(browser, 'ouvrier-sous-traitant', '/pointage');
+    const card = monPointage(page);
+    await expect(card).toBeVisible();
 
-    const clockInBtn = await mod.findActionButton(/pointer l'arrivée|badger l'arrivée|clock.?in|pointer l'entrée/i);
-    test.skip(!clockInBtn,
-      'POINT-01 — bouton de pointage arrivée introuvable pour Ouvrier sous-traitant (peut-être ' +
-      'déjà pointé aujourd\'hui par un run précédent de la suite — état persistant côté serveur).'
-    );
-
-    await clockInBtn!.click();
-    await page.waitForTimeout(500);
-    // "Pointer l'arrivée" ouvre une modale de confirmation ("Vous allez pointer votre arrivée sur
-    // ce chantier." / Confirmer / Annuler) avant l'action réelle — sans ce 2e clic, rien n'est
-    // jamais enregistré (observé : reste indéfiniment sur "Absent" / "Aucun pointage aujourd'hui").
-    const confirmBtn = page.getByRole('button', { name: /^confirmer$/i });
-    if (await confirmBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      await confirmBtn.click();
+    const clockIn = card.getByRole('button', { name: "Pointer l'arrivée" });
+    if (await clockIn.isVisible().catch(() => false)) {
+      await clockIn.click();
+      // Confirmation obligatoire : sans ce 2e clic, rien n'est enregistré.
+      await page.getByRole('dialog').getByRole('button', { name: 'Confirmer' }).click();
+      await expect(card.getByText(/arrivé à \d{1,2}:\d{2}/i)).toBeVisible({ timeout: 15_000 });
+      await expect(card.getByRole('button', { name: 'Pointer la sortie' })).toBeVisible();
+    } else {
+      // Arrivée déjà pointée aujourd'hui (run précédent) : elle doit être consignée, et une
+      // deuxième arrivée le même jour ne doit pas être proposée.
+      test.info().annotations.push({ type: 'note', description: 'Arrivée déjà pointée aujourd\'hui par un run précédent : vérification de l\'arrivée consignée et de l\'absence de double pointage.' });
+      await expect(card.getByText(/arrivé à \d{1,2}:\d{2}|journée terminée – .+ travaillées/i).first()).toBeVisible();
+      await expect(clockIn).toHaveCount(0);
     }
-    await page.waitForTimeout(1500);
-
-    // Le texte exact affiché après confirmation n'a pas été observé directement — on accepte donc
-    // soit un message de confirmation explicite, soit le badge "Mon statut" passant à "Présent"
-    // (son état avant pointage, visible sur ce même écran, est "Absent").
-    const confirmation = page.getByText(/arrivée enregistrée|pointage enregistré/i).or(page.getByText(/^présent$/i));
-    await expect(confirmation.first()).toBeVisible({ timeout: 10_000 });
     await context.close();
   });
 

@@ -28,9 +28,8 @@ import { test, expect, Page, Locator } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ModulePage } from '../pages/ModulePage';
-import { AppShellPage } from '../pages/AppShellPage';
+import { openModuleAs } from '../pages/RoleSession';
 
-const OUVRIER_SESSION = path.resolve(__dirname, '../auth/ouvrier-sous-traitant.json');
 
 // Fichiers de test écrits sous e2e-tests/ (disque D:) plutôt que os.tmpdir() (disque C:, chroniquement
 // proche de saturation sur cette machine sur toute la durée de cette session — un fichier de 11 Mo y a
@@ -73,6 +72,8 @@ async function waitForCarnetLoaded(page: Page, modal: Locator): Promise<void> {
  */
 async function openCarnetForEngine(page: Page, opts: { tracksHours: boolean }): Promise<Locator> {
   const rows = page.locator('tbody tr');
+  // La liste des engins est chargée après le rendu de la page : compter avant renvoie 0.
+  await rows.first().waitFor({ state: 'visible', timeout: 20_000 });
   const count = await rows.count();
   for (let i = 0; i < count; i++) {
     const row = rows.nth(i);
@@ -99,6 +100,7 @@ async function openCarnetForEngine(page: Page, opts: { tracksHours: boolean }): 
  */
 async function openCarnetForGrue4(page: Page): Promise<Locator> {
   const rows = page.locator('tbody tr').filter({ hasText: 'Grue 4' });
+  await rows.first().waitFor({ state: 'visible', timeout: 20_000 });
   const count = await rows.count();
   for (let i = 0; i < count; i++) {
     const row = rows.nth(i);
@@ -307,22 +309,16 @@ test.describe('BuildNivo — 18. Carnet d\'entretien engins', () => {
   });
 
   test('Rôle restreint (Ouvrier sous-traitant) — création OK, édition et API bloquées', async ({ browser }) => {
-    test.skip(!fs.existsSync(OUVRIER_SESSION), 'Session "Ouvrier sous-traitant" indisponible (global-setup).');
-
-    const context = await browser.newContext({ storageState: OUVRIER_SESSION });
-    const page = await context.newPage();
-    const shell = new AppShellPage(page);
-    await page.goto('/engins', { waitUntil: 'domcontentloaded', timeout: 45_000 });
-    const authenticated = !page.url().includes('/connexion');
-    test.skip(!authenticated, 'Session "Ouvrier sous-traitant" présente mais invalide/expirée (redirigé vers /connexion).');
-    await shell.dismissOnboardingTour();
-    await shell.waitForSkeletonToClear();
+    const { context, page } = await openModuleAs(browser, 'ouvrier-sous-traitant', '/engins');
 
     const rows = page.locator('tbody tr');
-    const hasRows = await rows.first().isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasRows, 'Aucun engin visible pour ce rôle — impossible de vérifier la restriction.');
+    await expect(rows.first()).toBeVisible({ timeout: 20_000 });
 
+    // Le détail de l'engin (dont ses interventions, "maintenance_logs") est chargé à l'ouverture
+    // du carnet : on s'en sert pour cibler une intervention réelle dans la vérification API.
+    const detail = page.waitForResponse(r => r.request().method() === 'GET' && /\/api\/engins\/[^/?]+$/.test(r.url()));
     await rows.first().getByRole('button', { name: /carnet d.entretien/i }).click();
+    const logs: Array<{ id: string; intervention_type: string }> = ((await (await detail).json()).data ?? {}).maintenance_logs ?? [];
     const modal = page.locator('[role="dialog"]').first();
     await modal.waitFor({ state: 'visible', timeout: 10_000 });
     await waitForCarnetLoaded(page, modal);
@@ -344,56 +340,22 @@ test.describe('BuildNivo — 18. Carnet d\'entretien engins', () => {
     const editPencils = modal.getByTitle(/modifier/i);
     await expect(editPencils).toHaveCount(0);
 
-    // Sécurité API : même sans bouton dans l'UI, une tentative directe doit être bloquée. On
-    // découvre la vraie forme de la requête PATCH/PUT d'ajout de pièce jointe à la volée (en
-    // observant un appel authentique fait par une session Direction dans un contexte
-    // temporaire séparé) plutôt que de deviner l'URL — plus robuste qu'une valeur figée, et le
-    // test se dégrade en skip explicite si la découverte échoue, au lieu d'échouer pour une
-    // mauvaise raison.
-    const directionSessionPath = path.resolve(__dirname, '../auth/direction.json');
-    let discoveredCall: { method: string; url: string } | null = null;
-    if (fs.existsSync(directionSessionPath)) {
-      const probeContext = await browser.newContext({ storageState: directionSessionPath });
-      const probePage = await probeContext.newPage();
-      probePage.on('requestfinished', req => {
-        const m = req.method();
-        if ((m === 'PATCH' || m === 'PUT' || m === 'POST') && /engin/i.test(req.url()) && !discoveredCall) {
-          discoveredCall = { method: m, url: req.url() };
-        }
+    // Sécurité API : même sans bouton dans l'UI, l'édition directe d'une intervention
+    // (PATCH /api/entretiens/:id, l'appel réel du bouton "Enregistrer les modifications" côté
+    // Direction) doit être refusée. Valeur renvoyée inchangée : aucune altération de données
+    // même si l'API l'acceptait à tort.
+    expect(logs.length, 'Aucune intervention sur cet engin pour tester l\'édition API').toBeGreaterThan(0);
+    const status = await page.evaluate(async ({ id, type }) => {
+      const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1] ?? '');
+      const r = await fetch(`/api/entretiens/${id}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-XSRF-TOKEN': xsrf },
+        body: JSON.stringify({ intervention_type: type }),
       });
-      const probeShell = new AppShellPage(probePage);
-      await probePage.goto('/engins', { waitUntil: 'domcontentloaded', timeout: 30_000 }).catch(() => {});
-      await probeShell.dismissOnboardingTour().catch(() => {});
-      await probeShell.waitForSkeletonToClear().catch(() => {});
-      const probeRows = probePage.locator('tbody tr');
-      if (await probeRows.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
-        await probeRows.first().getByRole('button', { name: /carnet d.entretien/i }).click().catch(() => {});
-        const probeModal = probePage.locator('[role="dialog"]').first();
-        await probeModal.waitFor({ state: 'visible', timeout: 10_000 }).catch(() => {});
-        await waitForCarnetLoaded(probePage, probeModal).catch(() => {});
-        const firstEdit = probeModal.locator('table').first().locator('tbody tr').first().getByTitle(/modifier/i);
-        if (await firstEdit.isVisible({ timeout: 3_000 }).catch(() => false)) {
-          await firstEdit.click();
-          await probePage.waitForTimeout(500);
-          await probePage.getByRole('button', { name: /enregistrer les modifications/i }).click().catch(() => {});
-          await probePage.waitForTimeout(2_000);
-        }
-      }
-      await probeContext.close();
-    }
-
-    test.skip(!discoveredCall, 'Endpoint API d\'ajout de pièce jointe non découvert dynamiquement — vérification 403 à faire manuellement.');
-    if (discoveredCall) {
-      const call = discoveredCall as { method: string; url: string };
-      const response = await context.request.fetch(call.url, { method: call.method, multipart: { probe: 'e2e' } }).catch(() => null);
-      // Refus attendu : 403 (Forbidden) idéalement, mais 401/404 restent acceptables selon la
-      // façon dont l'API distingue "pas les droits" de "n'existe pas pour vous" — jamais un
-      // succès (2xx), qui indiquerait une vraie faille IDOR.
-      expect(response, 'La requête API directe aurait dû être bloquée, pas planter côté test').not.toBeNull();
-      if (response) {
-        expect(response.ok()).toBeFalsy();
-      }
-    }
+      return r.status;
+    }, { id: logs[0].id, type: logs[0].intervention_type });
+    expect(status).toBe(403);
 
     await context.close();
   });
