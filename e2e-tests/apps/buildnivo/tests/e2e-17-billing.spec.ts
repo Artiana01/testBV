@@ -137,19 +137,7 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
     const manageBtn = page.getByRole('button', { name: /gérer mon abonnement/i });
     await expect(manageBtn).toBeVisible();
 
-    await manageBtn.click();
-    // Spinner de chargement bref dans le bouton — best-effort : sa fenêtre d'affichage est trop
-    // courte pour être fiable (redirection quasi immédiate une fois la session Stripe créée côté
-    // serveur), donc on ne bloque pas le test dessus si on ne l'attrape pas à temps.
-    await page.locator('[class*="spin"], [class*="loading"]').first().isVisible({ timeout: 2_000 }).catch(() => {});
-
-    await expect(page).toHaveURL(/billing\.stripe\.com\/p\/session/i, { timeout: 20_000 });
-    // Le portail affiche d'abord sa coquille statique (logo, bandeau environnement de test) avant
-    // que le contenu réel ne s'hydrate quelques secondes après — le bloc abonnement n'apparaît
-    // qu'une fois ce contenu monté, donc c'est un bien meilleur indicateur de "page réellement
-    // chargée" qu'un simple changement d'URL ou networkidle (observé : page blanche capturée juste
-    // après ceux-ci).
-    await expect(page.getByText(RE_CURRENT_SUB)).toBeVisible({ timeout: 30_000 });
+    await openStripePortal(page);
 
     await context.close();
   });
