@@ -36,7 +36,7 @@ test.describe('BuildNivo — 11. Réunions & comptes rendus', () => {
     await dialog.locator('input[type="date"]').first().fill(isoDateInDays(3));
     await dialog.locator('input[type="time"]').fill(heure);
 
-    const convoques = ['Rinasoa Rav', 'Hery Randria'];
+    const convoques = ['Raivosoa Andria'];
     for (const nom of convoques) {
       await dialog.locator('*:has(> input[type="checkbox"])').filter({ hasText: nom }).first()
         .locator('input[type="checkbox"]').check();
@@ -46,6 +46,8 @@ test.describe('BuildNivo — 11. Réunions & comptes rendus', () => {
     await dialog.getByRole('button', { name: 'Créer le compte-rendu' }).click();
     await expect(dialog).toBeHidden({ timeout: 15_000 });
 
+    // Relire depuis le serveur pour vérifier que la réunion et ses convocations sont persistées.
+    await page.reload({ waitUntil: 'domcontentloaded' });
     const meeting = page.getByRole('button', { name: new RegExp(`Réunion de chantier n°\\d+ .*\\(${heure}\\)`) });
     await expect(meeting).toBeVisible({ timeout: 15_000 });
     await meeting.click();

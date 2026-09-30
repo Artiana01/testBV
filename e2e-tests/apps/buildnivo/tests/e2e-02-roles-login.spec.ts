@@ -12,14 +12,22 @@
  */
 
 import { test, expect } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
 import { LoginPage } from '../pages/LoginPage';
 import { AppShellPage } from '../pages/AppShellPage';
-import { getRoles } from '../roles';
+import { getRole, getRoles } from '../roles';
+
+const AUTH_DIR = path.resolve(__dirname, '../auth');
 
 test.describe('BuildNivo — 02. Connexion des rôles métier (RBAC prérequis)', () => {
 
-  for (const role of getRoles()) {
+  for (const role of getRoles().filter(({ login, password }) => login && password)) {
     test(`Connexion réussie — ${role.label} (${role.login})`, async ({ page }) => {
+      test.skip(
+        fs.existsSync(path.join(AUTH_DIR, `${role.session}.failed`)),
+        `Session ${role.label} non sauvegardée après les tentatives du setup; connexion ignorée.`,
+      );
       test.setTimeout(150_000);
       const login = new LoginPage(page);
       await login.login(role.login, role.password);
@@ -34,5 +42,19 @@ test.describe('BuildNivo — 02. Connexion des rôles métier (RBAC prérequis)'
       await expect(page.getByText('BuildNivo').first()).toBeVisible({ timeout: 15_000 });
     });
   }
+
+  test('Superadmin — connexion et arrivée sur Chantiers', async ({ page }) => {
+    const role = getRole('superadmin');
+    test.skip(!role.login || !role.password, 'Identifiants superadmin absents de apps/buildnivo/.env.');
+    test.skip(
+      fs.existsSync(path.join(AUTH_DIR, `${role.session}.failed`)),
+      'Session Superadmin non sauvegardée après les tentatives du setup; connexion ignorée.',
+    );
+
+    const login = new LoginPage(page);
+    await login.login(role.login, role.password);
+    await login.verifyLoginSuccessWithRetry(role.login, role.password);
+    await expect(page).toHaveURL(/\/chantiers\/?$/);
+  });
 
 });

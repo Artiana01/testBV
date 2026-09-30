@@ -92,7 +92,7 @@ export function getRoles(): BuildNivoRole[] {
       key: 'bureau-etude',
       label: "Bureau d'étude",
       login: process.env.BUREAU_ETUDE_EMAIL ?? 'claire@test.mg',
-      password: process.env.BUREAU_ETUDE_PASSWORD ?? 'Claire123!!!',
+      password: process.env.BUREAU_ETUDE_PASSWORD ?? 'Claire123!!',
       session: 'bureau-etude.json',
     },
     {
