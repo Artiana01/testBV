@@ -40,30 +40,25 @@ test.describe('BuildNivo — 15. Messagerie & copilote IA', () => {
     await expect(modal.locator('input').first()).toBeVisible({ timeout: 8_000 });
   });
 
-  // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-09-25) — PAS un problème de test : aucun
-  // anti-flood sur l'envoi de messages. 30 POST /api/conversations/:id/messages simultanés
-  // (multipart text_content, session Direction, conversation 1:1 avec Raivosoa Andria) → 30 × 201,
-  // aucun 429 ni message de ralentissement ; les 30 messages sont bien créés (supprimés ensuite).
-  // Le login, lui, est throttlé (AUTH-06) : la protection existe dans l'app mais pas sur la
-  // messagerie. L'UI n'envoie qu'un message à la fois (15 "Entrée" rapides → 5 envois), donc une
-  // rafale via l'interface n'atteint jamais le serveur assez vite : le test la fait au niveau API,
-  // comme le ferait un client automatisé. À repasser en test actif une fois un rate-limit ajouté.
+  // Historique : le 2026-09-25, 30 POST /api/conversations/:id/messages simultanés → 30 × 201, aucun
+  // anti-flood. Un rate-limit a depuis été ajouté (constaté le 2026-10-07 : 30 envois passent, puis
+  // ~32 messages dans la fenêtre → 429 pour les suivants). Une rafale de 30 reste donc juste sous le
+  // seuil : on en envoie 60. L'UI n'envoie qu'un message à la fois (15 "Entrée" rapides → 5 envois),
+  // donc une rafale via l'interface n'atteint jamais le serveur assez vite : le test la fait au niveau
+  // API, comme le ferait un client automatisé (conversation 1:1 avec Raivosoa Andria, session Direction).
+  // Les messages créés sont supprimés ensuite.
   test('MSG-04 — Envoi de messages en rafale → throttle déclenché', async ({ page }) => {
-    test.fixme(true,
-      'MSG-04 — aucun rate-limit sur POST /api/conversations/:id/messages (30 envois simultanés → ' +
-      '30 × 201, confirmé le 2026-09-25 — voir commentaire au-dessus). Anomalie applicative réelle, ' +
-      'pas un défaut de ce test.'
-    );
-
     const mod = new ModulePage(page, '/messages');
     await mod.goto();
-    const opened = page.waitForResponse(r => r.request().method() === 'GET' && /\/api\/conversations\/[^/]+\/messages/.test(r.url()));
+    // Ouvrir la conversation déclenche un POST …/read, et un GET …/messages seulement si elle n'est
+    // pas déjà en cache : on déduit donc l'URL d'envoi de l'identifiant de conversation de l'une ou l'autre.
+    const opened = page.waitForResponse(r => /\/api\/conversations\/[^/]+\/(messages|read)/.test(r.url()));
     await page.getByRole('button', { name: /^Raivosoa Andria/ }).first().click();
-    const messagesUrl = (await opened).url().split('?')[0];
+    const messagesUrl = (await opened).url().split('?')[0].replace(/\/(messages|read)$/, '/messages');
 
     const { statuses, ids } = await page.evaluate(async ({ url, tag }) => {
       const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1] ?? '');
-      const results = await Promise.all(Array.from({ length: 30 }, async (_, i) => {
+      const results = await Promise.all(Array.from({ length: 60 }, async (_, i) => {
         const body = new FormData();
         body.append('text_content', `${tag} #${i}`);
         const r = await fetch(url, { method: 'POST', credentials: 'include', body, headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf } });

@@ -91,6 +91,8 @@ export default defineConfig({
       name: 'buildnivo-direction',
       testMatch: [
         '**/e2e-03-chantiers.spec.ts',
+        '**/e2e-21-reprise-guide.spec.ts',
+        '**/e2e-22-reprise.spec.ts',
         '**/e2e-04-pointage.spec.ts',
         '**/e2e-05-taches.spec.ts',
         '**/e2e-06-journal.spec.ts',

@@ -198,6 +198,8 @@ const REGISTRY = {
       'e2e-13-documents':     { file: 'apps/buildnivo/tests/e2e-13-documents.spec.ts',     label: '14 — Documents (GED)' },
       'e2e-14-messages':      { file: 'apps/buildnivo/tests/e2e-14-messages.spec.ts',      label: '15 — Messagerie & copilote IA' },
       'e2e-15-notifications': { file: 'apps/buildnivo/tests/e2e-15-notifications.spec.ts', label: '16 — Notifications' },
+      'e2e-21-reprise-guide': { file: 'apps/buildnivo/tests/e2e-21-reprise-guide.spec.ts', label: '17 — Reprise de chantier' },
+      'e2e-22-reprise':       { file: 'apps/buildnivo/tests/e2e-22-reprise.spec.ts',       label: '17 — Reprise de chantier (parcours & droits)' },
       'e2e-16-rbac':          { file: 'apps/buildnivo/tests/e2e-16-rbac.spec.ts',          label: '02 — RBAC (accès refusé)' },
       'regression':           { file: 'apps/buildnivo/tests/regression.spec.ts',           label: 'Régression Complète' },
     },

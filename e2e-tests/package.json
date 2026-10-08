@@ -97,6 +97,7 @@
     "test:launchpad:regression": "playwright test --config=playwright.launchpad.config.ts apps/launchpad/tests/regression.spec.ts",
     "test:launchpad:report": "playwright show-report playwright-report-launchpad",
     "test:buildnivo": "playwright test --config=playwright.buildnivo.config.ts",
+    "cleanup:buildnivo": "playwright test --config=playwright.buildnivo.cleanup.config.ts",
     "test:buildnivo:auth": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-01-auth.spec.ts",
     "test:buildnivo:roles": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-02-roles-login.spec.ts",
     "test:buildnivo:chantiers": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-03-chantiers.spec.ts",

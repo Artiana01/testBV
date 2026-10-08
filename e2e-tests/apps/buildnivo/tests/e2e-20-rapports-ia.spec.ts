@@ -18,8 +18,23 @@
  * confirmation équivalente n'a été donnée ici — à ajouter si confirmé.
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import { openModuleAs } from '../pages/RoleSession';
+
+/**
+ * L'API ai-reports du serveur de recette échoue par intermittence : le panneau affiche alors
+ * "Impossible de charger le rapport." + un bouton "Réessayer" (observé ~1 run sur 4). On
+ * fait comme un utilisateur — cliquer "Réessayer" — au plus 3 fois ; une vraie panne
+ * persistante fait toujours échouer le test.
+ */
+async function waitForReportPanel(page: Page, loaded: ReturnType<Page['locator']>): Promise<void> {
+  const loadError = page.getByText(/impossible de charger le rapport/i);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await loaded.or(loadError).first().waitFor({ state: 'visible', timeout: 15_000 });
+    if (!(await loadError.isVisible())) return;
+    await page.getByRole('button', { name: /réessayer/i }).click();
+  }
+}
 
 test.describe('BuildNivo — Rapports IA', () => {
 
@@ -55,11 +70,14 @@ test.describe('BuildNivo — Rapports IA', () => {
     await page.getByRole('tab', { name: /synthèse hebdo/i }).click();
     await page.waitForTimeout(1_000);
     await expect(page.getByRole('tab', { name: /synthèse hebdo/i })).toHaveAttribute('aria-selected', 'true');
-    await expect(page.getByRole('heading', { name: /synthèse hebdomadaire/i })).toBeVisible();
+    const heading = page.getByRole('heading', { name: /synthèse hebdomadaire/i });
+    await waitForReportPanel(page, heading);
+    await expect(heading).toBeVisible();
 
     await page.getByRole('tab', { name: /relances/i }).click();
     await page.waitForTimeout(1_000);
     await expect(page.getByRole('tab', { name: /relances/i })).toHaveAttribute('aria-selected', 'true');
+    await waitForReportPanel(page, page.getByRole('button', { name: /^régénérer$/i }));
     // "Relances" : consigne de régénération partagée + liste de relances préparées par l'IA.
     // Chaque relance est éditable, et celles pas encore parties attendent une validation
     // humaine explicite ("Valider l'envoi") — jamais d'envoi automatique ("Envoyée" sinon).

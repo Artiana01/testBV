@@ -78,12 +78,14 @@ test.describe('BuildNivo — Sécurité/Audit. Console de supervision (BUILDNIVO
 
   for (const role of NON_SUPERADMIN_ROLES) {
     test(`Accès à /admin/activity-logs refusé pour ${role.label} (non-Superadmin)`, async ({ browser }) => {
-      test.fixme(true,
-        `BUILDNIVO-293 — /admin/activity-logs accessible pour "${role.label}" pendant une fenêtre ` +
-        "juste après chargement/connexion (race condition côté garde d'autorisation, confirmée le " +
-        '2026-09-24 sur plusieurs rôles dont le moins privilégié du système — voir commentaire ' +
-        'au-dessus de NON_SUPERADMIN_ROLES). Anomalie applicative réelle, pas un défaut de ce test — ' +
-        'à repasser en test actif une fois la garde d\'autorisation corrigée côté app.'
+      // Reconstaté le 2026-10-07 : Conducteur de travaux et Chef de chantier sont bloqués (3/3 essais,
+      // tests réactivés). Direction voit systématiquement le titre de la console, et Intervenant le
+      // voit par intermittence (1 essai sur 3) — la race condition décrite au-dessus persiste.
+      test.fixme(role.label === 'Direction' || role.label === 'Intervenant sans droit particulier',
+        `BUILDNIVO-293 — /admin/activity-logs affiche encore le titre "Journal d'audit" au rôle ` +
+        `"${role.label}" (non-Superadmin) — race condition de la garde d'autorisation, reconfirmée le ` +
+        '2026-10-07 (voir commentaire au-dessus de NON_SUPERADMIN_ROLES). Anomalie applicative réelle, ' +
+        "pas un défaut de ce test — à repasser en test actif une fois la garde corrigée côté app."
       );
 
       const sessionFile = path.join(AUTH_DIR, role.file);
