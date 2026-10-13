@@ -47,6 +47,19 @@ async function openHistory(page: Page) {
   await expect(button).toHaveAttribute('aria-expanded', 'true');
 }
 
+// Le chantier de démo est partagé : selon qu'une reprise y est en cours ou non, la page affiche soit le
+// parcours (Déposer / Recommencer), soit l'invitation "Démarrer la reprise". Les tests de droits par
+// rôle (lecture seule) ne doivent pas dépendre de cet état — ils vérifient l'action d'écriture
+// disponible dans l'un ou l'autre cas.
+const depositButton = (page: Page) => page.getByRole('button', { name: 'Déposer les documents du chantier' });
+
+async function expectWriteActions(page: Page) {
+  await expect(startButton(page).or(restartButton(page))).toBeVisible();
+  if (await startButton(page).isVisible()) return; // aucune reprise en cours : démarrer est l'action d'écriture
+  await expect(depositButton(page)).toBeVisible();
+  await expect(restartButton(page)).toBeVisible();
+}
+
 async function expectRepriseHeading(page: Page) {
   await expect(page.getByRole('heading', { name: 'Reprise de chantier', level: 1 })).toBeVisible({ timeout: 30_000 });
 }
@@ -297,12 +310,11 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await context.close();
     });
 
-    test('REPRISE-10 — Direction : peut déposer et recommencer, bandeau de droits limités, Responsable Reprise désigné', async ({ browser }) => {
+    test('REPRISE-10 — Direction : peut démarrer/déposer et recommencer, bandeau de droits limités, Responsable Reprise désigné', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'direction', '/reprise');
       await expectRepriseHeading(page);
 
-      await expect(page.getByRole('button', { name: 'Déposer les documents du chantier' })).toBeVisible();
-      await expect(restartButton(page)).toBeVisible();
+      await expectWriteActions(page);
       await expect(page.getByText(/droits d.activation limités/i)).toBeVisible();
       await expect(page.getByText(/votre profil actuel \(Direction\) ne dispose pas des droits d.écriture/i)).toBeVisible();
       await expect(page.getByText(/Responsable Reprise sur ce chantier/)).toBeVisible();
@@ -310,23 +322,21 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await context.close();
     });
 
-    test('REPRISE-11 — Conducteur de travaux : peut déposer et recommencer, bandeau de droits limités à son profil', async ({ browser }) => {
+    test('REPRISE-11 — Conducteur de travaux : peut démarrer/déposer et recommencer, bandeau de droits limités à son profil', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'conducteur', '/reprise');
       await expectRepriseHeading(page);
 
-      await expect(page.getByRole('button', { name: 'Déposer les documents du chantier' })).toBeVisible();
-      await expect(restartButton(page)).toBeVisible();
+      await expectWriteActions(page);
       await expect(page.getByText(/droits d.activation limités/i)).toBeVisible();
       await expect(page.getByText(/votre profil actuel \(Conducteur de travaux\) ne dispose pas des droits d.écriture/i)).toBeVisible();
       await context.close();
     });
 
-    test('REPRISE-12 — Chef de chantier : peut déposer et recommencer, sans bandeau de droits limités', async ({ browser }) => {
+    test('REPRISE-12 — Chef de chantier : peut démarrer/déposer et recommencer, sans bandeau de droits limités', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'chef-chantier', '/reprise');
       await expectRepriseHeading(page);
 
-      await expect(page.getByRole('button', { name: 'Déposer les documents du chantier' })).toBeVisible();
-      await expect(restartButton(page)).toBeVisible();
+      await expectWriteActions(page);
       await expect(page.getByText(/droits d.activation limités/i)).toHaveCount(0);
       await context.close();
     });
@@ -336,12 +346,14 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await expectRepriseHeading(page);
 
       await expect(page.getByText(/lecture seule/i).first()).toBeVisible();
-      // Consultation permise...
+      // Consultation permise (parcours en cours, ou invitation à reprendre si aucune reprise n'a démarré)...
       await expect(historyButton(page)).toBeVisible();
-      await expect(stepper(page)).toBeVisible();
-      await expect(page.getByRole('heading', { name: 'Documents du chantier', level: 2 })).toBeVisible();
+      await expect(stepper(page).or(page.getByRole('heading', { name: 'Reprendre ce chantier', level: 2 }))).toBeVisible();
+      if (await stepper(page).isVisible()) {
+        await expect(page.getByRole('heading', { name: 'Documents du chantier', level: 2 })).toBeVisible();
+      }
       // ...mais aucune action qui modifie la reprise.
-      await expect(page.getByRole('button', { name: 'Déposer les documents du chantier' })).toHaveCount(0);
+      await expect(depositButton(page)).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Choisir un dossier' })).toHaveCount(0);
       await expect(page.getByRole('button', { name: 'Lien de dossier public' })).toHaveCount(0);
       await expect(page.getByRole('button', { name: /^Retirer /})).toHaveCount(0);

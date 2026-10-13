@@ -12,6 +12,9 @@ import { LoginPage } from '../pages/LoginPage';
 
 const DIRECTION_EMAIL    = process.env.DIRECTION_EMAIL ?? 'harenakely@test.test';
 const DIRECTION_PASSWORD = process.env.DIRECTION_PASSWORD ?? 'Harena@123!!';
+// Compte distinct pour "Mot de passe oublié" : AUTH-04/06 martèlent DIRECTION_EMAIL et le throttle
+// (par compte) y persiste d'un run à l'autre — "Envoyer le lien" y répond alors "Trop de tentatives".
+const FORGOT_PASSWORD_EMAIL = process.env.CONDUCTEUR_EMAIL ?? 'raivosoa@conduteur.test';
 
 test.describe('BuildNivo — 01. Authentification & compte', () => {
 
@@ -58,9 +61,9 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     await expect(submitBtn).toBeDisabled();
   });
 
-  // NB: doit s'exécuter avant AUTH-06 — AUTH-06 déclenche volontairement le throttle
-  // du compte DIRECTION_EMAIL, ce qui ferait échouer "Envoyer le lien" ici avec le même
-  // message "Trop de tentatives" (observé : le throttle est par compte, pas par test).
+  // NB: utilise un compte autre que DIRECTION_EMAIL — AUTH-06 déclenche volontairement le throttle
+  // de ce dernier, ce qui ferait échouer "Envoyer le lien" avec "Trop de tentatives" (observé : le
+  // throttle est par compte, pas par test, et survit entre deux runs).
   test('Formulaire "Mot de passe oublié" accessible et fonctionnel (AUTH-03, étape 1)', async ({ page }) => {
     const login = new LoginPage(page);
     await login.navigateToForgotPassword();
@@ -73,7 +76,7 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     const emailField = modal.locator('input[type="email"]').first();
     await expect(emailField).toBeVisible({ timeout: 15_000 });
 
-    await emailField.fill(DIRECTION_EMAIL);
+    await emailField.fill(FORGOT_PASSWORD_EMAIL);
     await modal.getByRole('button', { name: /envoyer le lien/i }).click();
     await page.waitForTimeout(1500);
 
