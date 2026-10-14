@@ -50,6 +50,19 @@ export async function openModuleAs(browser: Browser, roleKey: string, modulePath
   return { context, page, shell };
 }
 
+/**
+ * Recharge un module avec la session déjà ouverte par openModuleAs (même rôle, même contexte) :
+ * permet à plusieurs tests d'un fichier de partager un contexte (une seule connexion) tout en
+ * repartant d'une page propre — aucune modale ouverte par un test précédent ne survit au rechargement.
+ */
+export async function revisit(page: Page, modulePath: string): Promise<void> {
+  await page.goto(modulePath, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+  const shell = new AppShellPage(page);
+  await shell.dismissOnboardingTour();
+  await shell.waitForSkeletonToClear();
+  await shell.watchForOnboardingTour(3_000);
+}
+
 /** Date locale (AAAA-MM-JJ) à J+n — les champs date de l'app refusent le passé (min = aujourd'hui). */
 export function isoDateInDays(days: number): string {
   const d = new Date();

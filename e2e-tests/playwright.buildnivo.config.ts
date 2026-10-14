@@ -3,7 +3,7 @@
  * --------------------------------
  * Configuration Playwright dédiée à l'application BuildNivo.
  * Basée sur le cahier de recette BuildNivo (cahier-recette-buildnivo.pdf) :
- * 17 sections fonctionnelles couvertes par apps/buildnivo/tests/e2e-*.spec.ts.
+ * sections fonctionnelles couvertes par apps/buildnivo/tests/e2e-*.spec.ts (une par module de la sidebar).
  *
  * Différences vs la config globale :
  *  - globalSetup : connexion des 13 comptes de démonstration (un par rôle
@@ -106,6 +106,16 @@ export default defineConfig({
         '**/e2e-14-messages.spec.ts',
         '**/e2e-15-notifications.spec.ts',
         '**/e2e-18-carnet-entretien.spec.ts',
+        '**/e2e-23-projets.spec.ts',
+        '**/e2e-24-anomalies.spec.ts',
+        '**/e2e-25-checklists.spec.ts',
+        '**/e2e-26-habilitations.spec.ts',
+        '**/e2e-27-copilote.spec.ts',
+        '**/e2e-28-controle-financier.spec.ts',
+        '**/e2e-29-support.spec.ts',
+        '**/e2e-30-profil.spec.ts',
+        '**/e2e-31-equipes.spec.ts',
+        '**/e2e-32-parametres.spec.ts',
       ],
       use: {
         ...devices['Desktop Chrome'],
@@ -141,6 +151,16 @@ export default defineConfig({
     {
       name: 'buildnivo-audit',
       testMatch: ['**/e2e-19-supervision-audit.spec.ts'],
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+    },
+
+    // === Administration plateforme (Superadmin) : dashboard admin, offres & tarification, rôles &
+    // permissions, matrice. Chaque test gère sa propre session (Superadmin, ou Direction pour les refus).
+    {
+      name: 'buildnivo-admin',
+      testMatch: ['**/e2e-33-administration.spec.ts'],
       use: {
         ...devices['Desktop Chrome'],
       },

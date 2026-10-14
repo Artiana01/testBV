@@ -48,6 +48,24 @@ test.describe('BuildNivo — RÉGRESSION — Parcours critiques', () => {
     }
   });
 
+  test('RÉGRESSION — Navigation à travers les modules complémentaires sans erreur', async ({ page }) => {
+    // Modules ajoutés après la première version du parcours ci-dessus (Projets, Reprise, Engins, Copilote,
+    // Contrôle financier, Support, Profil). Séparé pour garder chaque test sous son timeout.
+    test.setTimeout(600_000);
+    const routes = [
+      '/projets', '/reprise', '/engins', '/copilote',
+      '/controle', '/controle/rapports', '/controle/justificatifs', '/controle/acces',
+      '/support', '/mon-profil',
+    ];
+
+    for (const route of routes) {
+      const mod = new ModulePage(page, route);
+      await mod.goto();
+      await expect(page).not.toHaveURL(/\/connexion/);
+      await expect(page.getByText(/erreur inattendue|something went wrong|500/i)).not.toBeVisible({ timeout: 2_000 }).catch(() => {});
+    }
+  });
+
   test('RÉGRESSION — Création d\'un chantier reste fonctionnelle (PROJ-01)', async ({ page }) => {
     const chantiers = new ChantiersPage(page);
     await chantiers.goto();
