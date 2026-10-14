@@ -41,9 +41,11 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
   });
 
   test('AUTH-05 — Inscription avec un email déjà utilisé → refus explicite', async ({ page }) => {
-    await page.goto('/inscription', { waitUntil: 'networkidle', timeout: 45_000 });
+    await page.goto('/inscription', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const emailField = page.locator('input[type="email"], input[name="email"]').first();
+    // 'networkidle' est fragile sur cette app : on attend simplement le formulaire.
+    await emailField.waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {});
     const skipReason = 'Formulaire d\'inscription introuvable sur /inscription — vérifier le routing BuildNivo';
     test.skip(!(await emailField.isVisible({ timeout: 5_000 }).catch(() => false)), skipReason);
 
@@ -52,10 +54,16 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     // il n'est pas nécessaire (ni possible) de soumettre le formulaire pour le constater.
     await page.locator('input[name="first_name"]').fill('E2E');
     await page.locator('input[name="last_name"]').fill('Test');
-    await emailField.fill(DIRECTION_EMAIL);
 
+    // Sans 'networkidle', le formulaire est visible avant l'hydratation React : une saisie trop
+    // précoce n'y déclenche pas la validation en temps réel. On ressaisit l'email jusqu'à ce que le
+    // message apparaisse (comme le ferait un utilisateur qui retape son adresse).
     const errorMsg = page.getByText(/déjà associée à un compte|déjà utilisé|already exists|déjà enregistré|déjà pris/i);
-    await expect(errorMsg.first()).toBeVisible({ timeout: 10_000 });
+    await expect(async () => {
+      await emailField.fill('');
+      await emailField.fill(DIRECTION_EMAIL);
+      await expect(errorMsg.first()).toBeVisible({ timeout: 6_000 });
+    }).toPass({ timeout: 45_000 });
 
     const submitBtn = page.getByRole('button', { name: /créer mon compte/i });
     await expect(submitBtn).toBeDisabled();

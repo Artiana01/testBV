@@ -53,25 +53,15 @@ async function createProjectAndWaitForGuide(page: Page) {
 }
 
 /**
- * La liste /chantiers est paginée (une dizaine de cartes par page) et les chantiers E2E créés par
- * les runs successifs s'y accumulent : le chantier qu'on vient de créer est le plus récent, donc sur
- * la dernière page — pas forcément sur la première. On le cherche page par page.
+ * La liste /chantiers est paginée (176 chantiers à ce jour, les chantiers E2E des runs successifs s'y
+ * accumulent) et son ordre de tri a changé (plus récent d'abord, puis l'inverse selon les versions) :
+ * chercher le chantier page par page est fragile. On utilise la barre "Rechercher un projet", comme un
+ * utilisateur, ce qui ramène le chantier créé sur la première page quel que soit l'ordre.
  */
 async function findProjectCard(page: Page, projectName: string) {
   const heading = page.getByRole('heading', { name: projectName, exact: true });
-  const next = page.getByRole('button', { name: /^suivant$/i });
-  const lastPage = page.getByRole('button', { name: /^Page \d+$/ }).last();
-
-  if (!(await heading.isVisible().catch(() => false)) && await lastPage.isVisible().catch(() => false)) {
-    await lastPage.click();
-    await page.waitForTimeout(500);
-  }
-  // Repli : parcourir les pages suivantes si le chantier n'est pas sur la dernière.
-  for (let i = 0; i < 30 && !(await heading.isVisible().catch(() => false)); i++) {
-    if (!(await next.isVisible().catch(() => false)) || !(await next.isEnabled())) break;
-    await next.click();
-    await page.waitForTimeout(500);
-  }
+  await page.getByRole('searchbox', { name: 'Rechercher un projet' }).fill(projectName);
+  await heading.waitFor({ state: 'visible', timeout: 30_000 });
   return heading.locator('xpath=../../..');
 }
 

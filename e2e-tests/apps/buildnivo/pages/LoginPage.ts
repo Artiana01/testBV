@@ -26,10 +26,29 @@ export class LoginPage extends BasePage {
   // =========================================================
 
   async navigateToLogin(): Promise<void> {
-    await this.page.goto('/connexion', { waitUntil: 'networkidle', timeout: 45_000 });
+    // 'networkidle' est fragile sur cette app (websocket de messagerie/notifications toujours
+    // ouvert, voir AppShellPage.gotoModule) : /connexion pouvait expirer à 45s sans aucun vrai
+    // problème. On attend 'domcontentloaded', puis soit le formulaire, soit la redirection.
+    await this.page.goto('/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    const field = this.page.locator(this.loginInput);
+    await Promise.race([
+      field.waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {}),
+      this.page.waitForURL(url => !url.pathname.includes('/connexion'), { timeout: 30_000 }).catch(() => {}),
+    ]);
     // Déjà connecté via storageState → redirigé hors de /connexion
     if (!this.page.url().includes('/connexion')) return;
-    await this.page.locator(this.loginInput).waitFor({ state: 'visible', timeout: 15_000 });
+    await field.waitFor({ state: 'visible', timeout: 15_000 });
+    await this.waitForHydration();
+  }
+
+  /**
+   * Le formulaire est rendu (visible) avant l'hydratation React : une saisie ou un clic trop précoces
+   * sont ignorés. 'networkidle' le garantissait mais peut ne jamais se produire ici (websocket toujours
+   * ouvert) — on l'attend donc de façon bornée et tolérante, sans jamais faire échouer la navigation.
+   */
+  private async waitForHydration(): Promise<void> {
+    await this.page.waitForLoadState('load', { timeout: 15_000 }).catch(() => {});
+    await this.page.waitForLoadState('networkidle', { timeout: 8_000 }).catch(() => {});
   }
 
   async navigateToSignup(): Promise<void> {
@@ -37,8 +56,15 @@ export class LoginPage extends BasePage {
   }
 
   async navigateToForgotPassword(): Promise<void> {
-    await this.page.goto('/connexion', { waitUntil: 'networkidle', timeout: 45_000 });
-    await this.page.getByRole('button', { name: /mot de passe oublié/i }).click();
+    await this.page.goto('/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    const forgot = this.page.getByRole('button', { name: /mot de passe oublié/i });
+    await forgot.waitFor({ state: 'visible', timeout: 30_000 });
+    await this.waitForHydration();
+    // Un clic encore reçu avant l'hydratation n'ouvre pas la modale : on le réitère jusqu'à son ouverture.
+    await expect(async () => {
+      await forgot.click();
+      await expect(this.page.locator('.fixed.inset-0').first()).toBeVisible({ timeout: 4_000 });
+    }).toPass({ timeout: 40_000 });
   }
 
   // =========================================================

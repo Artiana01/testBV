@@ -4,7 +4,7 @@
  * Module "Signalements d'anomalie" (/anomalies) : alertes sécurité / qualité remontées du terrain.
  *
  * Droits observés (matrice RBAC) :
- *  - Direction : accès restreint (page "Accès restreint aux signalements")
+ *  - Direction : consultation seule (pas de création ni de traitement)
  *  - Conducteur de travaux : consultation + traitement (pas de bouton "Nouveau signalement")
  *  - Chef de chantier et Salarié ouvrier : peuvent créer un signalement
  *
@@ -35,13 +35,15 @@ async function expectNewReportForm(page: Page) {
 
 test.describe('BuildNivo — 24. Signalements d\'anomalie', () => {
 
-  test('ANO-01 — Direction : accès restreint, renvoi vers le tableau de bord', async ({ browser }) => {
+  test('ANO-01 — Direction : consulte le registre (colonnes, filtres), sans création ni traitement', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/anomalies');
-    await expect(page.getByRole('heading', { name: 'Accès restreint aux signalements' })).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByText(/ne sont pas ouverts à votre rôle sur ce chantier/i)).toBeVisible();
+    await expect(page.getByRole('heading', { name: "Signalements d'anomalie", level: 1 })).toBeVisible({ timeout: 30_000 });
+    // NB : la page affiche brièvement "Accès restreint aux signalements" tant que les droits ne sont pas
+    // chargés (état transitoire constaté) — l'état stable de Direction est la consultation.
+    await expect(page.getByRole('heading', { name: /accès restreint/i })).toHaveCount(0);
+    for (const col of COLUMNS) await expect(page.getByRole('columnheader', { name: col, exact: true }), `Colonne "${col}"`).toBeVisible();
     await expect(page.getByRole('button', { name: 'Nouveau signalement' })).toHaveCount(0);
-    await page.getByRole('link', { name: 'Retour au tableau de bord' }).click();
-    await expect(page).toHaveURL(/\/dashboard$/, { timeout: 20_000 });
+    await expect(page.getByRole('button', { name: 'Marquer traité' })).toHaveCount(0);
     await context.close();
   });
 

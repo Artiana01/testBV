@@ -90,11 +90,16 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
   });
 
   test('Nouveau fournisseur — le formulaire de création s\'ouvre', async ({ page }) => {
+    // Achats est la page la plus lente de l'app (jusqu'à ~40s, parfois bien plus sous charge : le
+    // rendu n'avait pas démarré au bout des 120s par défaut dans un run complet).
+    test.setTimeout(240_000);
     const mod = new ModulePage(page, '/achats');
     await mod.goto();
 
     await mod.dismissOnboardingTour();
-    await page.getByText('Nouveau fournisseur', { exact: true }).first().click();
+    const newSupplier = page.getByText('Nouveau fournisseur', { exact: true }).first();
+    await newSupplier.waitFor({ state: 'visible', timeout: 90_000 });
+    await newSupplier.click();
     await mod.dismissOnboardingTour();
     await page.waitForTimeout(1000);
 
