@@ -49,7 +49,7 @@ export default async function globalSetup(_config: FullConfig) {
         return;
       }
     } catch {
-      console.log('   ⚠️   BVINVEST_ADMIN_SESSION invalide — ignorée.');
+      console.log('   ⚠️   BVINVEST_ADMIN_SESSION invalide - ignorée.');
     }
   }
 

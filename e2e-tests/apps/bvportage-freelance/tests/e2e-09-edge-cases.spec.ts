@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-test.describe('E2E-09 — Cas limites & comptes', () => {
+test.describe('E2E-09 - Cas limites & comptes', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/fr/inscription', { waitUntil: 'domcontentloaded', timeout: 45_000 });
   });
@@ -38,8 +38,8 @@ test.describe('E2E-09 — Cas limites & comptes', () => {
     await signupPage.submit();
 
     const isError = await signupPage.isErrorVisible();
-    // May succeed silently or show error — either is acceptable behavior
-    console.log(`Deuxième inscription même email — erreur visible: ${isError}`);
+    // May succeed silently or show error - either is acceptable behavior
+    console.log(`Deuxième inscription même email - erreur visible: ${isError}`);
     expect(true).toBeTruthy();
   });
 

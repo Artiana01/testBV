@@ -27,16 +27,16 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const BASE = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
 
-test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
+test.describe('SC-01 - Création de compte Magic Link (CRITIQUE)', () => {
 
-  test('01.1 — La page login/inscription est accessible et contient le formulaire', async ({ page }) => {
+  test('01.1 - La page login/inscription est accessible et contient le formulaire', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.navigateToSignup();
     await signupPage.verifySignupFormVisible();
   });
 
-  test('01.2 — Soumission sans email reste sur /login (validation)', async ({ page }) => {
+  test('01.2 - Soumission sans email reste sur /login (validation)', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
     await page.waitForLoadState('domcontentloaded');
@@ -46,7 +46,7 @@ test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
     expect(page.url()).toContain('/login');
   });
 
-  test('01.3 — Soumission avec un nouvel email envoie un magic link', async ({ page }) => {
+  test('01.3 - Soumission avec un nouvel email envoie un magic link', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     const testEmail = generateRandomEmail('bvb-new', 'mailinator.com');
@@ -57,7 +57,7 @@ test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
     console.log(`Magic link envoyé pour nouveau compte : ${testEmail}`);
   });
 
-  test('01.4 — L\'email est affiché après envoi du magic link', async ({ page }) => {
+  test('01.4 - L\'email est affiché après envoi du magic link', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     const testEmail = generateRandomEmail('bvb-display', 'mailinator.com');
@@ -70,7 +70,7 @@ test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
     await expect(emailDisplay.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.5 — Le bouton "Continuer avec Google" est disponible comme alternative', async ({ page }) => {
+  test('01.5 - Le bouton "Continuer avec Google" est disponible comme alternative', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
     await page.waitForLoadState('domcontentloaded');
@@ -78,7 +78,7 @@ test.describe('SC-01 — Création de compte Magic Link (CRITIQUE)', () => {
     await expect(googleBtn.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.6 — La page affiche les mentions légales (CGU / Politique de confidentialité)', async ({ page }) => {
+  test('01.6 - La page affiche les mentions légales (CGU / Politique de confidentialité)', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
     await page.waitForLoadState('domcontentloaded');

@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/pages/AuthPage.ts
  * ---------------------------------
- * Page Object — Authentification (app Atelier)
+ * Page Object - Authentification (app Atelier)
  * Couvre : /auth/login, /auth/register, /auth/forgot-password
  *
  * Sélecteurs validés sur l'HTML réel de l'application.
@@ -12,7 +12,7 @@ import { BasePage } from '../../../shared/pages/BasePage';
 
 export class AuthPage extends BasePage {
 
-  // --- Login — sélecteurs Atelier ---
+  // --- Login - sélecteurs Atelier ---
   // Utilise le type plutôt que l'id : Base UI peut déplacer l'id sur un wrapper lors de l'hydratation
   private readonly emailInput    = 'input[type="email"]';
   private readonly passwordInput = 'input[type="password"]';
@@ -33,7 +33,7 @@ export class AuthPage extends BasePage {
   async navigateToLogin(): Promise<void> {
     await this.navigate('/auth/login');
     await this.waitForLoad();
-    // La page login est un Client Component — attendre que React hydrate le formulaire
+    // La page login est un Client Component - attendre que React hydrate le formulaire
     await this.page.locator(this.emailInput).waitFor({ state: 'visible', timeout: 10_000 });
   }
 

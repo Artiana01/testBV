@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/AdminContactsPage.ts
  * -----------------------------------------
- * Page Object — Gestion des Contacts / Messages (admin)
+ * Page Object - Gestion des Contacts / Messages (admin)
  * Couvre : liste des messages, recherche, pagination
  */
 

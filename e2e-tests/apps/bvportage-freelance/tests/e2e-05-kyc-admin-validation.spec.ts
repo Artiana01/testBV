@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-test.describe('E2E-05 — KYC + Validation Admin', () => {
+test.describe('E2E-05 - KYC + Validation Admin', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
     await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 

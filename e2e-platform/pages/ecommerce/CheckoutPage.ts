@@ -32,7 +32,7 @@ export class CheckoutPage extends BasePage {
   }
 
   async fillCardDetails(cardNumber = '4242424242424242', expiry = '12/28', cvc = '123') {
-    // Stripe test card — adapt iframe selectors to your payment provider
+    // Stripe test card - adapt iframe selectors to your payment provider
     const stripe = this.page.frameLocator('iframe[name*="card"]').first();
     await stripe.locator('[placeholder*="card number"]').fill(cardNumber);
     await stripe.locator('[placeholder*="MM"]').fill(expiry);

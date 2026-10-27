@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/AdminUsersPage.ts
  * -----------------------------------------
- * Page Object — Gestion Users & Clients Admin BV Business
+ * Page Object - Gestion Users & Clients Admin BV Business
  */
 
 import { Page, expect } from '@playwright/test';

@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/OpportunitiesPage.ts
  * ------------------------------------------
- * Page Object — Opportunités d'investissement BV Invest
+ * Page Object - Opportunités d'investissement BV Invest
  * Couvre : liste projets, détail deal, data room (SC-04, SC-07)
  */
 
@@ -45,7 +45,7 @@ export class OpportunitiesPage extends BasePage {
     if (count > 0) {
       await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     } else {
-      console.log('   ℹ️  Aucune carte opportunité trouvée — vérifier URL/sélecteurs');
+      console.log('   ℹ️  Aucune carte opportunité trouvée - vérifier URL/sélecteurs');
     }
   }
 
@@ -72,7 +72,7 @@ export class OpportunitiesPage extends BasePage {
       .or(this.page.getByText(/data room|documents|fichiers/i));
     const isVisible = await docs.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Data room non visible — accès peut être conditionné au pack');
+      console.log('   ℹ️  Data room non visible - accès peut être conditionné au pack');
     }
   }
 
@@ -80,7 +80,7 @@ export class OpportunitiesPage extends BasePage {
     const btn = this.page.locator(this.downloadBtn);
     const isVisible = await btn.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton téléchargement non trouvé — vérifier droits utilisateur');
+      console.log('   ℹ️  Bouton téléchargement non trouvé - vérifier droits utilisateur');
     }
   }
 }

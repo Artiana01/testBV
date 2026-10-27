@@ -1,4 +1,4 @@
-📋 LIVRABLE FINAL — Gestion de l'Historique des Tests
+📋 LIVRABLE FINAL - Gestion de l'Historique des Tests
 
 ════════════════════════════════════════════════════════════════════════════
 

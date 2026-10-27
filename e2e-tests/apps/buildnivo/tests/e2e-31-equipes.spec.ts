@@ -12,7 +12,7 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
 import { openModuleAs, revisit } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 31. Équipes & sociétés', () => {
+test.describe('BuildNivo - 31. Équipes & sociétés', () => {
   let context: BrowserContext;
   let page: Page;
 
@@ -22,7 +22,7 @@ test.describe('BuildNivo — 31. Équipes & sociétés', () => {
   });
   test.afterAll(async () => { await context?.close(); });
 
-  test('EQP-01 — Page Équipes : chantier actif, actions d\'invitation, onglets Intervenants & Invitations', async () => {
+  test('EQP-01 - Page Équipes : chantier actif, actions d\'invitation, onglets Intervenants & Invitations', async () => {
     await revisit(page, '/equipes');
     await expect(page.getByRole('heading', { name: 'Équipes & Sociétés', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/chantier actif\s*:\s*résidence itaosy/i)).toBeVisible();
@@ -37,7 +37,7 @@ test.describe('BuildNivo — 31. Équipes & sociétés', () => {
     await expect(members).toHaveAttribute('aria-selected', 'true');
   });
 
-  test('EQP-02 — Liste des intervenants : rôle, statut, lots, zones, société ; filtre par nom, email ou rôle', async () => {
+  test('EQP-02 - Liste des intervenants : rôle, statut, lots, zones, société ; filtre par nom, email ou rôle', async () => {
     await revisit(page, '/equipes');
     await expect(page.getByRole('heading', { name: 'Équipes & Sociétés', level: 1 })).toBeVisible({ timeout: 20_000 });
 
@@ -57,7 +57,7 @@ test.describe('BuildNivo — 31. Équipes & sociétés', () => {
     await expect(page.getByText('Hery Randria')).toBeHidden({ timeout: 10_000 });
   });
 
-  test('EQP-03 — Actions par intervenant : horaire, rôle & périmètre, retrait (présentes, non déclenchées)', async () => {
+  test('EQP-03 - Actions par intervenant : horaire, rôle & périmètre, retrait (présentes, non déclenchées)', async () => {
     await revisit(page, '/equipes');
     await expect(page.getByRole('heading', { name: 'Équipes & Sociétés', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('button', { name: "Définir l'horaire" }).first()).toBeVisible({ timeout: 20_000 });
@@ -65,7 +65,7 @@ test.describe('BuildNivo — 31. Équipes & sociétés', () => {
     await expect(page.getByRole('button', { name: 'Retirer du chantier' }).first()).toBeVisible();
   });
 
-  test('EQP-04 — "Inviter un salarié" : email, identité, téléphone, fonction (Ouvrier, Chef chantier, Conducteur, Responsable Reprise), métier ; annulation sans envoi', async () => {
+  test('EQP-04 - "Inviter un salarié" : email, identité, téléphone, fonction (Ouvrier, Chef chantier, Conducteur, Responsable Reprise), métier ; annulation sans envoi', async () => {
     await revisit(page, '/equipes');
     await page.getByRole('button', { name: 'Inviter un salarié' }).click();
 
@@ -85,7 +85,7 @@ test.describe('BuildNivo — 31. Équipes & sociétés', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('EQP-05 — "Inviter une entreprise" et "Inviter un intervenant" ouvrent leur formulaire', async () => {
+  test('EQP-05 - "Inviter une entreprise" et "Inviter un intervenant" ouvrent leur formulaire', async () => {
     for (const [action, title] of [['Inviter une entreprise', /entreprise/i], ['Inviter un intervenant', /intervenant/i]] as const) {
       await revisit(page, '/equipes');
       await page.getByRole('button', { name: action }).click();

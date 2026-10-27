@@ -6,7 +6,7 @@
  * de session) et par les tests qui ont besoin de basculer de rôle.
  *
  * Chaque `session` correspond au fichier auth/<session>.json généré au
- * global-setup — à utiliser comme storageState dans playwright.buildnivo.config.ts.
+ * global-setup - à utiliser comme storageState dans playwright.buildnivo.config.ts.
  */
 
 export interface BuildNivoRole {
@@ -29,7 +29,7 @@ export function getRoles(): BuildNivoRole[] {
     {
       key: 'conducteur',
       label: 'Conducteur de travaux',
-      // NB: l'email fourni initialement ("condicuteur.test") contenait une coquille —
+      // NB: l'email fourni initialement ("condicuteur.test") contenait une coquille -
       // le compte réel sur le chantier de démo est raivosoa@conduteur.test.
       login: process.env.CONDUCTEUR_EMAIL ?? 'raivosoa@conduteur.test',
       password: process.env.CONDUCTEUR_PASSWORD ?? 'Raivo123!!',
@@ -46,7 +46,7 @@ export function getRoles(): BuildNivoRole[] {
       key: 'salarie',
       label: 'Salarié ouvrier',
       // NB: l'identifiant initial (aime@salarie.test) échoue systématiquement sur cet
-      // environnement (confirmé à plusieurs reprises, y compris après nettoyage disque —
+      // environnement (confirmé à plusieurs reprises, y compris après nettoyage disque -
       // pas un problème d'espace/throttle) ; remplacé le 2026-09-24 par le compte réel
       // fourni (Liva Be, déjà visible comme collaborateur seedé dans les rapports IA).
       login: process.env.SALARIE_EMAIL ?? 'livabe@ouvrier.test',
@@ -112,7 +112,7 @@ export function getRoles(): BuildNivoRole[] {
     {
       key: 'intervenant-simple',
       label: 'Intervenant sans droit particulier',
-      // NB: l'email fourni initialement ("feneva@...") contenait une coquille —
+      // NB: l'email fourni initialement ("feneva@...") contenait une coquille -
       // le compte réel sur le chantier de démo est faneva@simple.test (rôle "Paysagiste").
       login: process.env.INTERVENANT_SIMPLE_EMAIL ?? 'faneva@simple.test',
       password: process.env.INTERVENANT_SIMPLE_PASSWORD ?? 'Faneva123!!',

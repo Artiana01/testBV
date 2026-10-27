@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/wishlist.spec.ts
  * ---------------------------------------
- * Tests E2E — Liste de souhaits (Wishlist)
+ * Tests E2E - Liste de souhaits (Wishlist)
  * Couvre : toggle cœur depuis /shop, page /wishlist, ajout au panier,
  *          suppression, persistance.
  *
@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 // =====================================================================
-// PARCOURS 3.2 — Wishlist
+// PARCOURS 3.2 - Wishlist
 // =====================================================================
 test.describe('Wishlist', () => {
 
@@ -94,7 +94,7 @@ test.describe('Wishlist', () => {
       await cartPage.goto();
       await cartPage.verifyCartHasItems();
     } else {
-      // Le bouton n'existe pas — ajouter depuis la page produit à la place
+      // Le bouton n'existe pas - ajouter depuis la page produit à la place
       // 👉 INFO : ce test est conditionnel selon l'implémentation de la wishlist
       console.log("INFO : Le bouton 'Ajouter tout au panier' n'est pas présent dans cette app.");
     }

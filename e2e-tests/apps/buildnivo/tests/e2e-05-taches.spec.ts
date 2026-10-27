@@ -1,7 +1,7 @@
 /**
  * e2e-05-taches.spec.ts
  * -------------------------
- * Section 06 du cahier de recette — Tâches (Kanban).
+ * Section 06 du cahier de recette - Tâches (Kanban).
  * Couvre : TASK-01 à TASK-05 (best-effort selon disponibilité des contrôles
  * de création dans les données de démo).
  */
@@ -10,14 +10,14 @@ import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
 import { openModuleAs, isoDateInDays } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
+test.describe('BuildNivo - 06. Tâches (Kanban)', () => {
 
   test('Tableau Kanban chargé avec les colonnes de statut attendues', async ({ page }) => {
     const mod = new ModulePage(page, '/taches');
     await mod.goto();
     await mod.verifyLoaded(/tâches/i);
 
-    // Un filtre "Statut" (<select>) a été ajouté à cette page depuis la dernière recette —
+    // Un filtre "Statut" (<select>) a été ajouté à cette page depuis la dernière recette -
     // ses <option> partagent le même libellé que les colonnes et sont "hidden" pour
     // Playwright, donc getVisibleText() (pas getByText brut) pour cibler la vraie colonne.
     for (const colonne of ['À faire', 'En cours', 'À valider', 'Bloquée', 'Terminée']) {
@@ -50,9 +50,9 @@ test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
   });
 
   // Matrice RBAC de l'app (/matrix, table role_module_permissions) : Tâches = "read" pour
-  // Direction, "full" pour Conducteur de travaux — l'absence de "Nouvelle tâche" côté Direction
+  // Direction, "full" pour Conducteur de travaux - l'absence de "Nouvelle tâche" côté Direction
   // est donc voulue, la création se teste avec le Conducteur.
-  test('TASK-01 — Création d\'une tâche avec titre, assigné et échéance (Conducteur de travaux)', async ({ browser }) => {
+  test('TASK-01 - Création d\'une tâche avec titre, assigné et échéance (Conducteur de travaux)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'conducteur', '/taches');
 
     await page.getByRole('button', { name: 'Nouvelle tâche' }).click();
@@ -81,7 +81,7 @@ test.describe('BuildNivo — 06. Tâches (Kanban)', () => {
     await context.close();
   });
 
-  test('TASK-05 — Suppression d\'une tâche par un utilisateur non autorisé (rôle Intervenant simple)', async ({ browser }) => {
+  test('TASK-05 - Suppression d\'une tâche par un utilisateur non autorisé (rôle Intervenant simple)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'intervenant-simple', '/taches');
 
     const deleteBtn = page.getByRole('button', { name: /supprimer/i }).first();

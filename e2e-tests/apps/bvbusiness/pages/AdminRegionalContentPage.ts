@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/AdminRegionalContentPage.ts
  * ---------------------------------------------------
- * Page Object — Gestion Contenu Régional Admin BV Business
+ * Page Object - Gestion Contenu Régional Admin BV Business
  * Couvre : sauvegarde, affichage par région (SC-07)
  */
 
@@ -61,7 +61,7 @@ export class AdminRegionalContentPage extends BasePage {
     const btn = this.page.locator(this.saveBtn).first();
     const isVisible = await btn.isVisible({ timeout: 20_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton de sauvegarde régional non trouvé — vérifier URL/sélecteurs dans AdminRegionalContentPage');
+      console.log('   ℹ️  Bouton de sauvegarde régional non trouvé - vérifier URL/sélecteurs dans AdminRegionalContentPage');
       return;
     }
     await btn.click();
@@ -73,7 +73,7 @@ export class AdminRegionalContentPage extends BasePage {
       .or(this.page.getByText(/sauvegardé|saved|success|mis à jour|updated/i));
     const isVisible = await toast.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Toast de succès non visible — vérifier manuellement que la sauvegarde a fonctionné');
+      console.log('   ℹ️  Toast de succès non visible - vérifier manuellement que la sauvegarde a fonctionné');
     }
   }
 
@@ -82,7 +82,7 @@ export class AdminRegionalContentPage extends BasePage {
       .or(this.page.getByText(/région|region|zone/i));
     const isPresent = await selector.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isPresent) {
-      console.log('   ℹ️  Sélecteur de région non trouvé — vérifier URL réelle dans goto()');
+      console.log('   ℹ️  Sélecteur de région non trouvé - vérifier URL réelle dans goto()');
     }
   }
 }

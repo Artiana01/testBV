@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/PackagesPage.ts
  * ----------------------------------------
- * Page Object — Page Packages / Abonnements BV Business
+ * Page Object - Page Packages / Abonnements BV Business
  * Couvre : consultation offres, recherche, filtres, souscription (SC-03)
  */
 

@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/DashboardPage.ts
  * ----------------------------------------
- * Page Object — Dashboard Client BV Business
+ * Page Object - Dashboard Client BV Business
  * Couvre : /fr/dashboard (SC-02, SC-04)
  */
 

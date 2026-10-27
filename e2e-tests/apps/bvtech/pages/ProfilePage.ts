@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/ProfilePage.ts
  * -----------------------------------
- * Page Object — Profil utilisateur BV Tech
+ * Page Object - Profil utilisateur BV Tech
  * Couvre : page profil dans le dashboard
  *
  * Éléments attendus :
@@ -15,9 +15,9 @@ import { BasePage } from '../../../shared/pages/BasePage';
 
 // Grep "BVTECH-PROFIL-CASSE" pour retrouver tous les tests concernés d'un coup.
 export const PROFIL_BROKEN_SKIP_REASON =
-  'BVTECH-PROFIL-CASSE — cliquer sur "Modifier" ne déverrouille jamais le champ ' +
+  'BVTECH-PROFIL-CASSE - cliquer sur "Modifier" ne déverrouille jamais le champ ' +
   'Nom (vérifié 2x en direct, avec délai généreux à chaque fois). Bug applicatif, ' +
-  'pas un problème de test — réactiver une fois le correctif déployé sur le site.';
+  'pas un problème de test - réactiver une fois le correctif déployé sur le site.';
 
 export class ProfilePage extends BasePage {
 
@@ -69,7 +69,7 @@ export class ProfilePage extends BasePage {
     }
 
     // Essayer chaque bouton "Modifier" jusqu'à ce que l'input devienne enabled
-    // (le 1er déverrouille les infos, le 2e ouvre le sélecteur de photo — l'ordre varie)
+    // (le 1er déverrouille les infos, le 2e ouvre le sélecteur de photo - l'ordre varie)
     const modifierBtns = this.page.getByRole('button', { name: /modifier/i });
     const btnCount = await modifierBtns.count();
 
@@ -80,7 +80,7 @@ export class ProfilePage extends BasePage {
     }
 
     // Le bouton "Modifier" est actuellement cassé côté application (ne déverrouille
-    // jamais le champ) — on suspend plutôt que d'échouer sur un bug déjà identifié.
+    // jamais le champ) - on suspend plutôt que d'échouer sur un bug déjà identifié.
     const stillDisabled = !(await textInput.isEnabled().catch(() => false));
     test.skip(stillDisabled, PROFIL_BROKEN_SKIP_REASON);
 

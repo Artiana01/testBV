@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/LoginPage.ts
  * --------------------------------
- * Page Object — Authentification BV Tech
+ * Page Object - Authentification BV Tech
  * Couvre : /fr/login, /fr/signup, /fr/forgot-password
  *
  * Sélecteurs adaptatifs : utilise getByRole, getByLabel, getByPlaceholder
@@ -14,9 +14,9 @@ import { BasePage } from '../../../shared/pages/BasePage';
 // Message affiché pour tout test suspendu tant que le bug applicatif n'est pas corrigé.
 // Grep "BVTECH-LOGIN-CASSE" pour retrouver tous les tests concernés d'un coup.
 export const LOGIN_BROKEN_SKIP_REASON =
-  'BVTECH-LOGIN-CASSE — le formulaire de connexion soumet en GET au lieu de ' +
+  'BVTECH-LOGIN-CASSE - le formulaire de connexion soumet en GET au lieu de ' +
   "passer par l'authentification JS (identifiants exposés dans l'URL, connexion " +
-  'impossible). Bug applicatif, pas un problème de test — réactiver une fois le ' +
+  'impossible). Bug applicatif, pas un problème de test - réactiver une fois le ' +
   'correctif déployé sur le site.';
 
 export class LoginPage extends BasePage {
@@ -44,7 +44,7 @@ export class LoginPage extends BasePage {
   }
 
   /**
-   * Ferme le bandeau de consentement cookies (RGPD) s'il est présent — sans ça,
+   * Ferme le bandeau de consentement cookies (RGPD) s'il est présent - sans ça,
    * il peut rester au-dessus du formulaire et perturber le clic sur "Se connecter".
    */
   private async dismissCookieBanner(): Promise<void> {
@@ -82,7 +82,7 @@ export class LoginPage extends BasePage {
     const emailField = this.page.locator(this.emailInput);
 
     // Le formulaire peut ne pas (re)apparaître après plusieurs tentatives de
-    // connexion rapprochées (rate limiting) — même cause que BVTECH-LOGIN-CASSE.
+    // connexion rapprochées (rate limiting) - même cause que BVTECH-LOGIN-CASSE.
     // On le détecte tôt avec un délai court plutôt que de laisser un timeout de
     // 15s sec échouer sans explication.
     const emailFieldAppeared = await emailField.isVisible({ timeout: 5_000 }).catch(() => false);
@@ -108,7 +108,7 @@ export class LoginPage extends BasePage {
     await this.page.locator(this.submitBtn).click();
     await this.page.waitForLoadState('domcontentloaded');
 
-    // Suspend immédiatement ici si le formulaire est tombé en soumission native —
+    // Suspend immédiatement ici si le formulaire est tombé en soumission native -
     // qu'on attende un succès (verifyLoginSuccess) ou un échec (verifyLoginError),
     // aucun des deux ne peut être vérifié de façon fiable dans cet état, et laisser
     // le test continuer ferait traîner jusqu'au timeout global (60s) sans raison.
@@ -117,7 +117,7 @@ export class LoginPage extends BasePage {
 
   /**
    * Détecte la soumission native de secours du formulaire (GET avec email/mot de
-   * passe dans l'URL) : ce n'est pas un problème de timing du test — c'est le
+   * passe dans l'URL) : ce n'est pas un problème de timing du test - c'est le
    * formulaire de connexion du site qui soumet en GET sans JS d'authentification.
    * Voir JIRA [à créer] : le login BV Tech ne fonctionne pas actuellement.
    */
@@ -141,7 +141,7 @@ export class LoginPage extends BasePage {
 
   async loginAsAdmin(): Promise<void> {
     const BASE = process.env.BASE_URL ?? 'https://dev.bluevaloristech.com';
-    // Navigation vers /login — si storageState actif, redirection automatique vers dashboard
+    // Navigation vers /login - si storageState actif, redirection automatique vers dashboard
     await this.page.goto(`${BASE}/fr/login`, { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     // Déjà connecté via storageState → on sort sans remplir le formulaire
@@ -161,7 +161,7 @@ export class LoginPage extends BasePage {
 
   async verifyLoginSuccess(): Promise<void> {
     // Le login est actuellement cassé côté application (voir LOGIN_BROKEN_SKIP_REASON).
-    // On suspend (skip) plutôt que de faire échouer ou de fausser la vérification —
+    // On suspend (skip) plutôt que de faire échouer ou de fausser la vérification -
     // le test ne doit ni mentir en "passant" à tort, ni bloquer le pipeline sur un
     // bug déjà identifié et pris en charge par ailleurs.
     test.skip(this.hasFallenBackToNativeSubmit(), LOGIN_BROKEN_SKIP_REASON);

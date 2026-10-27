@@ -30,18 +30,18 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'webmaster@bluevaloris.com';
 const BASE        = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
 
 // ── Tests UI du formulaire Magic Link (sans session) ──
-test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
+test.describe('SC-02 - Formulaire Magic Link (CRITIQUE)', () => {
   // Vider le storageState pour ces tests : session active → /login redirige vers dashboard
   test.use({ storageState: { cookies: [], origins: [] } });
 
-  test('02.1 — La page login est accessible', async ({ page }) => {
+  test('02.1 - La page login est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.verifyLoginPageLoaded();
   });
 
-  test('02.2 — Le formulaire contient le champ email et le bouton "Continuer avec l\'adresse email"', async ({ page }) => {
+  test('02.2 - Le formulaire contient le champ email et le bouton "Continuer avec l\'adresse email"', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -52,27 +52,27 @@ test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
     ).toBeVisible({ timeout: 20_000 });
   });
 
-  test('02.3 — Le bouton "Continuer avec Google" est présent', async ({ page }) => {
+  test('02.3 - Le bouton "Continuer avec Google" est présent', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
     await loginPage.verifyGoogleButtonVisible();
   });
 
-  test('02.4 — Soumission avec email valide affiche le bandeau de confirmation', async ({ page }) => {
+  test('02.4 - Soumission avec email valide affiche le bandeau de confirmation', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
 
     // Utiliser un email de test pour déclencher l'envoi sans utiliser le compte réel
-    // (OU utiliser l'email admin — un lien sera envoyé mais non cliqué dans ce test)
+    // (OU utiliser l'email admin - un lien sera envoyé mais non cliqué dans ce test)
     await loginPage.fillEmail(ADMIN_EMAIL);
     await loginPage.clickContinueWithEmail();
     await loginPage.verifyMagicLinkSent();
     console.log(`Magic link envoyé à : ${ADMIN_EMAIL}`);
   });
 
-  test('02.5 — Soumission avec email invalide affiche une erreur', async ({ page }) => {
+  test('02.5 - Soumission avec email invalide affiche une erreur', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -81,7 +81,7 @@ test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
     await loginPage.verifyErrorOnInvalidEmail();
   });
 
-  test('02.6 — Soumission sans email affiche une erreur de validation', async ({ page }) => {
+  test('02.6 - Soumission sans email affiche une erreur de validation', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
     await page.waitForLoadState('domcontentloaded');
@@ -97,30 +97,30 @@ test.describe('SC-02 — Formulaire Magic Link (CRITIQUE)', () => {
 });
 
 // ── Tests Dashboard (session storageState pré-connectée) ──
-test.describe('SC-02 — Dashboard après connexion (storageState)', () => {
+test.describe('SC-02 - Dashboard après connexion (storageState)', () => {
 
-  test('02.7 — Dashboard est accessible avec la session active', async ({ page }) => {
+  test('02.7 - Dashboard est accessible avec la session active', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminDashboardLoaded();
   });
 
-  test('02.8 — KPIs sont visibles sur le dashboard admin', async ({ page }) => {
+  test('02.8 - KPIs sont visibles sur le dashboard admin', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyKpisVisible();
   });
 
-  test('02.9 — La navigation admin (sidebar/menu) est visible', async ({ page }) => {
+  test('02.9 - La navigation admin (sidebar/menu) est visible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminNavigation();
   });
 
-  test('02.10 — Pas de redirection vers /login avec session active', async ({ page }) => {
+  test('02.10 - Pas de redirection vers /login avec session active', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
     await page.waitForLoadState('domcontentloaded');

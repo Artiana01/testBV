@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/SignupPage.ts
  * -------------------------------------
- * Page Object — Création de compte BV Business (Magic Link)
+ * Page Object - Création de compte BV Business (Magic Link)
  *
  * BV Business n'a PAS de page /signup séparée ni de mot de passe.
  * Le même formulaire sur /fr/login gère login ET inscription :

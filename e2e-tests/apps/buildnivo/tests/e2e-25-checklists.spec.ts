@@ -4,7 +4,7 @@
  * Module "Checklists métier" (/checklists) : autocontrôle qualité rempli par corps de métier, à partir
  * de modèles (questions) gérés par le Conducteur de travaux.
  *
- * Droits observés (sur le chantier de démo — les droits dépendent du rôle sur le chantier actif) :
+ * Droits observés (sur le chantier de démo - les droits dépendent du rôle sur le chantier actif) :
  *  - Direction : consulte et gère les modèles
  *  - Conducteur de travaux : "Gérer les modèles"
  *  - Chef de chantier : consulte et valide les checklists soumises
@@ -19,9 +19,9 @@ import { openModuleAs } from '../pages/RoleSession';
 
 const COLUMNS = ['Libellé', 'Corps de métier', 'Rempli par', 'Date', 'Statut', 'Actions'];
 
-test.describe('BuildNivo — 25. Checklists métier', () => {
+test.describe('BuildNivo - 25. Checklists métier', () => {
 
-  test('CHK-01 — Direction : registre des checklists et gestion des modèles (aucun accès restreint)', async ({ browser }) => {
+  test('CHK-01 - Direction : registre des checklists et gestion des modèles (aucun accès restreint)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/checklists');
     await expect(page.getByRole('heading', { name: 'Checklists métier', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('heading', { name: /accès restreint/i })).toHaveCount(0);
@@ -30,7 +30,7 @@ test.describe('BuildNivo — 25. Checklists métier', () => {
     await context.close();
   });
 
-  test('CHK-02 — Conducteur de travaux : registre (colonnes, filtre par corps de métier, modèles) et gestion des modèles', async ({ browser }) => {
+  test('CHK-02 - Conducteur de travaux : registre (colonnes, filtre par corps de métier, modèles) et gestion des modèles', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'conducteur', '/checklists');
     await expect(page.getByRole('heading', { name: 'Checklists métier', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/autocontrôle qualité rempli par corps de métier/i)).toBeVisible();
@@ -59,13 +59,13 @@ test.describe('BuildNivo — 25. Checklists métier', () => {
     await context.close();
   });
 
-  test('CHK-03 — Chef de chantier : détail d\'une checklist (corps de métier, date, rempli par, statut, questions)', async ({ browser }) => {
+  test('CHK-03 - Chef de chantier : détail d\'une checklist (corps de métier, date, rempli par, statut, questions)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'chef-chantier', '/checklists');
     await expect(page.getByRole('heading', { name: 'Checklists métier', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('button', { name: 'Gérer les modèles' })).toHaveCount(0);
 
     const detail = page.getByRole('button', { name: 'Détail' }).first();
-    test.skip(!(await detail.isVisible({ timeout: 10_000 }).catch(() => false)), 'CHK-03 — aucune checklist remplie à consulter.');
+    test.skip(!(await detail.isVisible({ timeout: 10_000 }).catch(() => false)), 'CHK-03 - aucune checklist remplie à consulter.');
     await detail.click();
 
     const dialog = page.getByRole('dialog').filter({ hasText: 'Questions' });
@@ -78,7 +78,7 @@ test.describe('BuildNivo — 25. Checklists métier', () => {
     await context.close();
   });
 
-  test('CHK-04 — Salarié ouvrier : "Remplir une checklist" propose les modèles du chantier ; annulation sans envoi', async ({ browser }) => {
+  test('CHK-04 - Salarié ouvrier : "Remplir une checklist" propose les modèles du chantier ; annulation sans envoi', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'salarie', '/checklists');
     await expect(page.getByRole('heading', { name: 'Checklists métier', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('button', { name: 'Gérer les modèles' })).toHaveCount(0);

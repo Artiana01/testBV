@@ -1,11 +1,11 @@
 /**
  * apps/launchpad/pages/ProfilePage.ts
  * ----------------------------------------
- * Page Object — Profil utilisateur Launchpad BV TECH
+ * Page Object - Profil utilisateur Launchpad BV TECH
  *
  * Scénarios couverts :
- *   E2E #2 — Modification profil (P1)
- *   E2E #3 — Changement mot de passe (P1)
+ *   E2E #2 - Modification profil (P1)
+ *   E2E #3 - Changement mot de passe (P1)
  *   Bug documenté : upload photo non fonctionnel
  */
 

@@ -68,7 +68,7 @@ export class CheckoutPage extends BasePage {
   }
 
   // =========================================================
-  // ÉTAPE 1 — ADRESSE DE LIVRAISON
+  // ÉTAPE 1 - ADRESSE DE LIVRAISON
   // =========================================================
 
   async fillShippingAddress(data: {
@@ -125,7 +125,7 @@ export class CheckoutPage extends BasePage {
   }
 
   // =========================================================
-  // ÉTAPE 2 — MODE DE LIVRAISON
+  // ÉTAPE 2 - MODE DE LIVRAISON
   // =========================================================
 
   async selectFirstDeliveryOption(): Promise<void> {
@@ -137,7 +137,7 @@ export class CheckoutPage extends BasePage {
   }
 
   // =========================================================
-  // ÉTAPE 3 — PAIEMENT
+  // ÉTAPE 3 - PAIEMENT
   // =========================================================
 
   /**

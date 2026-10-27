@@ -20,10 +20,10 @@ import { getRole, getRoles } from '../roles';
 
 const AUTH_DIR = path.resolve(__dirname, '../auth');
 
-test.describe('BuildNivo — 02. Connexion des rôles métier (RBAC prérequis)', () => {
+test.describe('BuildNivo - 02. Connexion des rôles métier (RBAC prérequis)', () => {
 
   for (const role of getRoles().filter(({ login, password }) => login && password)) {
-    test(`Connexion réussie — ${role.label} (${role.login})`, async ({ page }) => {
+    test(`Connexion réussie - ${role.label} (${role.login})`, async ({ page }) => {
       test.skip(
         fs.existsSync(path.join(AUTH_DIR, `${role.session}.failed`)),
         `Session ${role.label} non sauvegardée après les tentatives du setup; connexion ignorée.`,
@@ -43,7 +43,7 @@ test.describe('BuildNivo — 02. Connexion des rôles métier (RBAC prérequis)'
     });
   }
 
-  test('Superadmin — connexion et arrivée sur Chantiers', async ({ page }) => {
+  test('Superadmin - connexion et arrivée sur Chantiers', async ({ page }) => {
     const role = getRole('superadmin');
     test.skip(!role.login || !role.password, 'Identifiants superadmin absents de apps/buildnivo/.env.');
     test.skip(

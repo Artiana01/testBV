@@ -1,6 +1,6 @@
 -- ============================================================
--- schema.sql — Historisation des tests E2E Playwright
--- Référence documentaire — appliqué programmatiquement par db.js
+-- schema.sql - Historisation des tests E2E Playwright
+-- Référence documentaire - appliqué programmatiquement par db.js
 -- ============================================================
 
 -- ── Campagnes d'exécution ────────────────────────────────────

@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/auth.fixture';
 import saas1 from '../../apps/saas1';
 
-test.describe('@saas — Dashboard', () => {
+test.describe('@saas - Dashboard', () => {
   test.use({ baseURL: saas1.baseURL, appConfig: saas1 });
 
   test('dashboard loads with stats visible', async ({ authenticatedPage, dashboardPage }) => {

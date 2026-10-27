@@ -95,7 +95,7 @@ export default defineConfig({
       ],
       use: {
         ...devices['Desktop Chrome'],
-        // Pas de storageState — les tests gèrent eux-mêmes les connexions alternées
+        // Pas de storageState - les tests gèrent eux-mêmes les connexions alternées
       },
     },
 

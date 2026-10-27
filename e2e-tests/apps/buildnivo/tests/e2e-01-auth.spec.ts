@@ -1,7 +1,7 @@
 /**
  * e2e-01-auth.spec.ts
  * ---------------------
- * Section 01 du cahier de recette BuildNivo — Authentification & compte.
+ * Section 01 du cahier de recette BuildNivo - Authentification & compte.
  * Couvre : AUTH-01 à AUTH-06.
  *
  * Exécuté sans session préalable (projet "buildnivo-public").
@@ -13,12 +13,12 @@ import { LoginPage } from '../pages/LoginPage';
 const DIRECTION_EMAIL    = process.env.DIRECTION_EMAIL ?? 'harenakely@test.test';
 const DIRECTION_PASSWORD = process.env.DIRECTION_PASSWORD ?? 'Harena@123!!';
 // Compte distinct pour "Mot de passe oublié" : AUTH-04/06 martèlent DIRECTION_EMAIL et le throttle
-// (par compte) y persiste d'un run à l'autre — "Envoyer le lien" y répond alors "Trop de tentatives".
+// (par compte) y persiste d'un run à l'autre - "Envoyer le lien" y répond alors "Trop de tentatives".
 const FORGOT_PASSWORD_EMAIL = process.env.CONDUCTEUR_EMAIL ?? 'raivosoa@conduteur.test';
 
-test.describe('BuildNivo — 01. Authentification & compte', () => {
+test.describe('BuildNivo - 01. Authentification & compte', () => {
 
-  test('AUTH-02 — Connexion avec identifiants valides → tableau de bord, session active', async ({ page }) => {
+  test('AUTH-02 - Connexion avec identifiants valides → tableau de bord, session active', async ({ page }) => {
     test.setTimeout(150_000);
     const login = new LoginPage(page);
     await login.login(DIRECTION_EMAIL, DIRECTION_PASSWORD);
@@ -26,31 +26,31 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     await expect(page).not.toHaveURL(/\/connexion/);
   });
 
-  test('AUTH-04 — Connexion avec mot de passe incorrect → erreur explicite, aucun accès', async ({ page }) => {
+  test('AUTH-04 - Connexion avec mot de passe incorrect → erreur explicite, aucun accès', async ({ page }) => {
     const login = new LoginPage(page);
     await login.login(DIRECTION_EMAIL, 'MauvaisMotDePasse123!');
     await login.verifyLoginError();
     await expect(page).toHaveURL(/\/connexion/);
   });
 
-  test('AUTH-04b — Connexion avec email inexistant → erreur explicite, aucun accès', async ({ page }) => {
+  test('AUTH-04b - Connexion avec email inexistant → erreur explicite, aucun accès', async ({ page }) => {
     const login = new LoginPage(page);
     await login.login('inconnu-e2e-buildnivo@test.test', 'PeuImporte123!');
     await login.verifyLoginError();
     await expect(page).toHaveURL(/\/connexion/);
   });
 
-  test('AUTH-05 — Inscription avec un email déjà utilisé → refus explicite', async ({ page }) => {
+  test('AUTH-05 - Inscription avec un email déjà utilisé → refus explicite', async ({ page }) => {
     await page.goto('/inscription', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
     const emailField = page.locator('input[type="email"], input[name="email"]').first();
     // 'networkidle' est fragile sur cette app : on attend simplement le formulaire.
     await emailField.waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {});
-    const skipReason = 'Formulaire d\'inscription introuvable sur /inscription — vérifier le routing BuildNivo';
+    const skipReason = 'Formulaire d\'inscription introuvable sur /inscription - vérifier le routing BuildNivo';
     test.skip(!(await emailField.isVisible({ timeout: 5_000 }).catch(() => false)), skipReason);
 
     // Le champ email est validé en temps réel (appel API à la frappe) : dès qu'un email
-    // déjà utilisé est saisi, un message inline apparaît et le bouton reste désactivé —
+    // déjà utilisé est saisi, un message inline apparaît et le bouton reste désactivé -
     // il n'est pas nécessaire (ni possible) de soumettre le formulaire pour le constater.
     await page.locator('input[name="first_name"]').fill('E2E');
     await page.locator('input[name="last_name"]').fill('Test');
@@ -69,14 +69,14 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     await expect(submitBtn).toBeDisabled();
   });
 
-  // NB: utilise un compte autre que DIRECTION_EMAIL — AUTH-06 déclenche volontairement le throttle
+  // NB: utilise un compte autre que DIRECTION_EMAIL - AUTH-06 déclenche volontairement le throttle
   // de ce dernier, ce qui ferait échouer "Envoyer le lien" avec "Trop de tentatives" (observé : le
   // throttle est par compte, pas par test, et survit entre deux runs).
   test('Formulaire "Mot de passe oublié" accessible et fonctionnel (AUTH-03, étape 1)', async ({ page }) => {
     const login = new LoginPage(page);
     await login.navigateToForgotPassword();
 
-    // Le formulaire s'ouvre dans une modale par-dessus /connexion — le champ email doit
+    // Le formulaire s'ouvre dans une modale par-dessus /connexion - le champ email doit
     // être cherché dans la modale, pas sur la page (sinon le sélecteur générique
     // "input[id*=email]" résout vers le champ de login masqué derrière l'overlay).
     const modal = page.locator('.fixed.inset-0').first();
@@ -92,7 +92,7 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     await expect(confirmation.first()).toBeVisible({ timeout: 10_000 });
   });
 
-  test('AUTH-06 — Force-brute sur la connexion → throttle après tentatives répétées', async ({ page }) => {
+  test('AUTH-06 - Force-brute sur la connexion → throttle après tentatives répétées', async ({ page }) => {
     // Timeout par défaut (120s) trop juste une fois qu'on ajoute la dissipation du
     // throttle en fin de test (jusqu'à 120s) après les 7 tentatives + vérifications.
     test.setTimeout(240_000);
@@ -115,17 +115,17 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     const isThrottled = await throttleMsg.first().isVisible({ timeout: 8_000 }).catch(() => false);
 
     test.skip(!isThrottled,
-      'AUTH-06 — aucun message de throttle détecté après 7 tentatives : soit le seuil est plus élevé, ' +
+      'AUTH-06 - aucun message de throttle détecté après 7 tentatives : soit le seuil est plus élevé, ' +
       'soit le rate limiting n\'est pas encore implémenté côté BuildNivo (à consigner comme anomalie potentielle).'
     );
     expect(isThrottled).toBeTruthy();
 
-    // Ce test déclenche volontairement le throttle du compte DIRECTION_EMAIL — sans
+    // Ce test déclenche volontairement le throttle du compte DIRECTION_EMAIL - sans
     // dissipation avant la fin, le tout prochain test à utiliser ce compte (une autre
     // connexion, un lien de récupération...) hériterait du blocage et échouerait pour
-    // une raison sans rapport avec lui (observé : "Connexion réussie — Direction" et
+    // une raison sans rapport avec lui (observé : "Connexion réussie - Direction" et
     // le formulaire "mot de passe oublié" échouent tous deux ainsi selon l'ordre
-    // d'exécution). On revérifie en soumettant une vraie tentative de connexion —
+    // d'exécution). On revérifie en soumettant une vraie tentative de connexion -
     // un simple rechargement de /connexion efface le message d'erreur affiché sans que
     // le throttle serveur soit réellement retombé, ce qui faussait la détection.
     const DISSIPATION_BUDGET_MS = 120_000;
@@ -136,9 +136,9 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
       await login.fillLoginForm(DIRECTION_EMAIL, DIRECTION_PASSWORD);
       await login.submitLoginForm();
       if (!page.url().includes('/connexion')) break;
-      // NB : on ne sort plus sur la seule disparition du message de throttle (retiré — observé en
+      // NB : on ne sort plus sur la seule disparition du message de throttle (retiré - observé en
       // pratique : le message précis de throttleMsg peut cesser d'être visible dès la 1ère resoumission
-      // — probablement un message différent, ou un état transitoire — alors que le compte est encore
+      // - probablement un message différent, ou un état transitoire - alors que le compte est encore
       // bloqué et qu'on est toujours sur /connexion. Ça faisait sortir la boucle après une seule
       // itération de 15s au lieu des 120s prévus, laissant faussement croire à une dissipation. Seule
       // la vérification finale sur l'URL (après la boucle) fait foi désormais.
@@ -149,15 +149,15 @@ test.describe('BuildNivo — 01. Authentification & compte', () => {
     // ou une page encore en chargement au moment du check). Sans cette vérification, le test
     // passe silencieusement même quand la dissipation a échoué, et c'est alors le prochain test
     // à réutiliser ce compte qui hérite du blocage pour une raison qui n'a aucun rapport avec lui
-    // (voir commentaire plus haut — déjà observé). On échoue ici, bruyamment, avec un message qui
+    // (voir commentaire plus haut - déjà observé). On échoue ici, bruyamment, avec un message qui
     // pointe directement vers la cause.
     const dissipated = !page.url().includes('/connexion');
     if (!dissipated) {
       throw new Error(
-        `AUTH-06 — le throttle ne s'est pas dissipé après ${DISSIPATION_BUDGET_MS / 1000}s d'attente : ` +
+        `AUTH-06 - le throttle ne s'est pas dissipé après ${DISSIPATION_BUDGET_MS / 1000}s d'attente : ` +
         `le compte ${DIRECTION_EMAIL} semble toujours bloqué après une tentative de reconnexion avec les ` +
         'bons identifiants. Les tests suivants qui réutilisent ce compte (Direction, section 02, ' +
-        'self-heal des pages module...) vont très probablement échouer pour cette même raison — ce ' +
+        'self-heal des pages module...) vont très probablement échouer pour cette même raison - ce ' +
         "n'est pas un bug de leur côté. Si ce blocage est normalement plus long sur cet environnement, " +
         'augmenter DISSIPATION_BUDGET_MS ci-dessus.'
       );

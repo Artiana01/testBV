@@ -58,7 +58,7 @@ export default async function globalSetup(_config: FullConfig) {
   // Créer un placeholder vide pour la session client si le login a échoué.
   if (!fs.existsSync(CLIENT_SESSION)) {
     fs.writeFileSync(CLIENT_SESSION, JSON.stringify({ cookies: [], origins: [] }), 'utf-8');
-    console.log('   ⚠️   Placeholder client.json créé (session invalide — tests SC-05/SC-07 non authentifiés)');
+    console.log('   ⚠️   Placeholder client.json créé (session invalide - tests SC-05/SC-07 non authentifiés)');
   }
 
   console.log('\n🚀  Sessions prêtes. Lancement des tests Créer Ailleurs...\n');

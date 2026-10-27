@@ -1,4 +1,4 @@
-# 📋 Résumé d'Implémentation — Gestion de l'Historique des Tests
+# 📋 Résumé d'Implémentation - Gestion de l'Historique des Tests
 
 ## Vue d'ensemble
 
@@ -111,7 +111,7 @@ node scripts/clean-history.js --app playwright-report-bvtech
 
 ## 📚 Documentation Fournie
 
-### 1. **HISTORY_CLEANUP.md** — Guide Principal
+### 1. **HISTORY_CLEANUP.md** - Guide Principal
 - Objectifs et bénéfices
 - Structure des fichiers
 - Modes d'utilisation (interactif, automatisé, avancé)
@@ -121,7 +121,7 @@ node scripts/clean-history.js --app playwright-report-bvtech
 - Troubleshooting
 - Intégration CI/CD
 
-### 2. **ADVANCED_CLEANUP_USAGE.md** — Cas Avancés
+### 2. **ADVANCED_CLEANUP_USAGE.md** - Cas Avancés
 - Nettoyage par ancienneté
 - Archivage avant suppression
 - Sélection par app
@@ -132,7 +132,7 @@ node scripts/clean-history.js --app playwright-report-bvtech
 - Notifications Slack
 - Backups intelligent
 
-### 3. **README.md Section 11** — Intégration
+### 3. **README.md Section 11** - Intégration
 - Commandes rapides
 - Cas d'usage typiques
 - Lien vers documentation complète
@@ -279,14 +279,14 @@ npm run test:bvtech  # Régénérer rapports
 
 ## ✨ Points Forts
 
-✅ **Simplement d'usage** — Menu interactif intuitif  
-✅ **Flexible** — Modes auto et manuel  
-✅ **Documenté** — 2 guides complets + exemples  
-✅ **Safe** — Confirmations et backups  
-✅ **Production-ready** — Pour CI/CD  
-✅ **Extensible** — Configuration JSON  
-✅ **Performant** — Opérations rapides  
-✅ **Transparent** — Logs détaillés  
+✅ **Simplement d'usage** - Menu interactif intuitif  
+✅ **Flexible** - Modes auto et manuel  
+✅ **Documenté** - 2 guides complets + exemples  
+✅ **Safe** - Confirmations et backups  
+✅ **Production-ready** - Pour CI/CD  
+✅ **Extensible** - Configuration JSON  
+✅ **Performant** - Opérations rapides  
+✅ **Transparent** - Logs détaillés  
 
 ---
 

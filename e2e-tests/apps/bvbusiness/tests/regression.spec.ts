@@ -27,20 +27,20 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const BASE = process.env.BVBUSINESS_BASE_URL ?? 'https://staging.bluevalorisbusiness.com';
 
 // ═══════════════════════════════════════════════════════
-// RÉGRESSION — Authentification
+// RÉGRESSION - Authentification
 // ═══════════════════════════════════════════════════════
-test.describe('Régression — Authentification', () => {
+test.describe('Régression - Authentification', () => {
 
-  test('REG-01 — La connexion fonctionne avec les identifiants actifs', async ({ page }) => {
+  test('REG-01 - La connexion fonctionne avec les identifiants actifs', async ({ page }) => {
     test.setTimeout(60_000);
-    // storageState déjà appliqué — vérifier que la session est valide
+    // storageState déjà appliqué - vérifier que la session est valide
     await page.goto(`${BASE}/fr/dashboard`);
     await page.waitForLoadState('domcontentloaded');
     await expect(page).not.toHaveURL(/\/login/, { timeout: 45_000 });
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('REG-02 — La redirection post-login est correcte (pas de boucle)', async ({ page }) => {
+  test('REG-02 - La redirection post-login est correcte (pas de boucle)', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -52,7 +52,7 @@ test.describe('Régression — Authentification', () => {
     expect(url1).toBe(url2);
   });
 
-  test('REG-03 — Pas de page forgot-password (magic link — normal)', async ({ page }) => {
+  test('REG-03 - Pas de page forgot-password (magic link - normal)', async ({ page }) => {
     test.setTimeout(60_000);
     // BV Business utilise le magic link → pas de forgot-password, c'est attendu
     await page.goto(`${BASE}/fr/login`);
@@ -66,11 +66,11 @@ test.describe('Régression — Authentification', () => {
 });
 
 // ═══════════════════════════════════════════════════════
-// RÉGRESSION — Navigation
+// RÉGRESSION - Navigation
 // ═══════════════════════════════════════════════════════
-test.describe('Régression — Navigation', () => {
+test.describe('Régression - Navigation', () => {
 
-  test('REG-04 — Le menu admin est accessible depuis toutes les sections', async ({ page }) => {
+  test('REG-04 - Le menu admin est accessible depuis toutes les sections', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -78,7 +78,7 @@ test.describe('Régression — Navigation', () => {
     await expect(nav.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('REG-05 — L\'accès direct à /fr/dashboard ne redirige pas vers login', async ({ page }) => {
+  test('REG-05 - L\'accès direct à /fr/dashboard ne redirige pas vers login', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
     await page.waitForLoadState('domcontentloaded');
@@ -86,7 +86,7 @@ test.describe('Régression — Navigation', () => {
     await expect(page).not.toHaveURL(/\/login/, { timeout: 20_000 });
   });
 
-  test('REG-06 — Aucune section admin ne retourne une erreur 404', async ({ page }) => {
+  test('REG-06 - Aucune section admin ne retourne une erreur 404', async ({ page }) => {
     test.setTimeout(60_000);
     const sections = [
       '/fr/dashboard',
@@ -105,11 +105,11 @@ test.describe('Régression — Navigation', () => {
 });
 
 // ═══════════════════════════════════════════════════════
-// RÉGRESSION — Content Management
+// RÉGRESSION - Content Management
 // ═══════════════════════════════════════════════════════
-test.describe('Régression — Content Management', () => {
+test.describe('Régression - Content Management', () => {
 
-  test('REG-07 — La page CMS se charge sans erreur', async ({ page }) => {
+  test('REG-07 - La page CMS se charge sans erreur', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -118,7 +118,7 @@ test.describe('Régression — Content Management', () => {
     await expect(page.getByText(/404|500|error/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   });
 
-  test('REG-08 — La page CMS contient des éléments d\'interface', async ({ page }) => {
+  test('REG-08 - La page CMS contient des éléments d\'interface', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -131,11 +131,11 @@ test.describe('Régression — Content Management', () => {
 });
 
 // ═══════════════════════════════════════════════════════
-// RÉGRESSION — Packages & Pricing
+// RÉGRESSION - Packages & Pricing
 // ═══════════════════════════════════════════════════════
-test.describe('Régression — Packages & Pricing', () => {
+test.describe('Régression - Packages & Pricing', () => {
 
-  test('REG-09 — La page packages se charge et affiche du contenu', async ({ page }) => {
+  test('REG-09 - La page packages se charge et affiche du contenu', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
@@ -143,7 +143,7 @@ test.describe('Régression — Packages & Pricing', () => {
     await packagesPage.verifyPricesVisible();
   });
 
-  test('REG-10 — Aucune valeur "undefined" ou "null" dans les packages', async ({ page }) => {
+  test('REG-10 - Aucune valeur "undefined" ou "null" dans les packages', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
@@ -155,11 +155,11 @@ test.describe('Régression — Packages & Pricing', () => {
 });
 
 // ═══════════════════════════════════════════════════════
-// RÉGRESSION — Paiements
+// RÉGRESSION - Paiements
 // ═══════════════════════════════════════════════════════
-test.describe('Régression — Paiements', () => {
+test.describe('Régression - Paiements', () => {
 
-  test('REG-11 — La page paiements admin se charge sans erreur', async ({ page }) => {
+  test('REG-11 - La page paiements admin se charge sans erreur', async ({ page }) => {
     test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();
@@ -167,14 +167,14 @@ test.describe('Régression — Paiements', () => {
     await expect(page.getByText(/500|server error/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   });
 
-  test('REG-12 — L\'intégrité des données de transaction est préservée', async ({ page }) => {
+  test('REG-12 - L\'intégrité des données de transaction est préservée', async ({ page }) => {
     test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();
     await paymentsPage.verifyTransactionIntegrity();
   });
 
-  test('REG-13 — Pas de valeurs corrompues dans les transactions', async ({ page }) => {
+  test('REG-13 - Pas de valeurs corrompues dans les transactions', async ({ page }) => {
     test.setTimeout(60_000);
     const paymentsPage = new AdminPaymentsPage(page);
     await paymentsPage.goto();

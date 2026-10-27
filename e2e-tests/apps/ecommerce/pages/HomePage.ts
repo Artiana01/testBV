@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/pages/HomePage.ts
  * ----------------------------------
- * Page Object — Page d'accueil (/) — app Atelier
+ * Page Object - Page d'accueil (/) - app Atelier
  * Sélecteurs validés sur l'HTML réel.
  *
  * Structure confirmée :

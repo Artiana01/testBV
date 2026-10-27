@@ -1,14 +1,14 @@
 /**
  * e2e-11-achats.spec.ts
  * -------------------------
- * Section 12 du cahier de recette — Achats & fournisseurs.
+ * Section 12 du cahier de recette - Achats & fournisseurs.
  * Couvre : ACHAT-01 à ACHAT-04.
  */
 
 import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
 
-test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
+test.describe('BuildNivo - 12. Achats & fournisseurs', () => {
 
   test('Page Achats & livraisons accessible avec actions de création', async ({ page }) => {
     const mod = new ModulePage(page, '/achats');
@@ -17,12 +17,12 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
     await expect(page.getByText('Nouvelle commande').first()).toBeVisible();
   });
 
-  test('ACHAT-01 — Création d\'une commande fournisseur', async ({ page }) => {
+  test('ACHAT-01 - Création d\'une commande fournisseur', async ({ page }) => {
     const mod = new ModulePage(page, '/achats');
     await mod.goto();
 
     // Le tour guidé peut se (re)déclencher avec un délai APRÈS que les données réelles de la
-    // page aient fini de charger (observé jusqu'à ~40s pour Achats) — le double dismiss de
+    // page aient fini de charger (observé jusqu'à ~40s pour Achats) - le double dismiss de
     // gotoModule() peut donc être passé trop tôt. On revérifie juste avant le clic.
     await mod.dismissOnboardingTour();
     await page.getByText('Nouvelle commande', { exact: true }).first().click();
@@ -30,30 +30,30 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
     await page.waitForTimeout(1000);
 
     // La page a 6 <select> au total (switcher de chantier en en-tête + filtres derrière la
-    // modale + champs de la modale) — page.locator('select').first() attrapait le switcher
+    // modale + champs de la modale) - page.locator('select').first() attrapait le switcher
     // de chantier, pas le champ fournisseur. On identifie le bon select par son contenu
     // (option "Aucun fournisseur..." ou un vrai nom de fournisseur), à l'intérieur de la modale.
     const modal = page.locator('.fixed.inset-0').first();
     const fournisseurSelect = modal.locator('select').filter({ has: page.locator('option', { hasText: /fournisseur/i }) }).first();
     const hasFournisseurSelect = await fournisseurSelect.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasFournisseurSelect, 'ACHAT-01 — sélecteur de fournisseur introuvable dans le formulaire de commande.');
+    test.skip(!hasFournisseurSelect, 'ACHAT-01 - sélecteur de fournisseur introuvable dans le formulaire de commande.');
 
     // Le placeholder ("Aucun fournisseur rattaché. Cliquez sur + Nouveau") est une
-    // <option> comme les autres — il faut l'exclure explicitement, sinon selectOption()
+    // <option> comme les autres - il faut l'exclure explicitement, sinon selectOption()
     // le sélectionne silencieusement comme s'il s'agissait d'un vrai fournisseur.
     const options = await fournisseurSelect.locator('option').allTextContents();
     const realOptionIndex = options.findIndex(o => o.trim() && !/aucun|sélectionn|choisir/i.test(o));
     test.skip(realOptionIndex === -1,
-      'ACHAT-01 — aucun fournisseur rattaché à ce chantier dans les données de démo pour créer une commande ' +
+      'ACHAT-01 - aucun fournisseur rattaché à ce chantier dans les données de démo pour créer une commande ' +
       '(le chantier actif dépend du dernier chantier consulté par ce compte).'
     );
 
     await fournisseurSelect.selectOption({ index: realOptionIndex });
 
     // Objet + au moins une ligne d'article (désignation + prix > 0) sont également
-    // obligatoires — sans ça la soumission échoue avec "Désignation obligatoire" / "Prix
+    // obligatoires - sans ça la soumission échoue avec "Désignation obligatoire" / "Prix
     // unitaire obligatoire (>0)" même avec un fournisseur valide sélectionné.
-    await page.getByPlaceholder(/approvisionnement/i).fill('Commande E2E — matériaux de test');
+    await page.getByPlaceholder(/approvisionnement/i).fill('Commande E2E - matériaux de test');
     await page.getByPlaceholder(/désignation du produit/i).fill('Article de test E2E');
     await page.locator('input[type="number"]').nth(1).fill('10');
 
@@ -61,11 +61,11 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
     await submitBtn.click();
 
     // La confirmation de statut ("Envoyée au fournisseur") vit aussi dans un <option> caché
-    // du formulaire — le signal fiable de succès est la fermeture de la modale.
+    // du formulaire - le signal fiable de succès est la fermeture de la modale.
     await expect(modal).not.toBeVisible({ timeout: 10_000 });
   });
 
-  test('ACHAT-04 — Commande sans fournisseur sélectionné → validation refusée', async ({ page }) => {
+  test('ACHAT-04 - Commande sans fournisseur sélectionné → validation refusée', async ({ page }) => {
     const mod = new ModulePage(page, '/achats');
     await mod.goto();
 
@@ -76,7 +76,7 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
 
     const submitBtn = page.getByRole('button', { name: /créer|valider|enregistrer/i }).first();
     const hasSubmit = await submitBtn.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasSubmit, 'ACHAT-04 — bouton de validation de commande introuvable.');
+    test.skip(!hasSubmit, 'ACHAT-04 - bouton de validation de commande introuvable.');
 
     await submitBtn.click();
     await page.waitForTimeout(1000);
@@ -89,7 +89,7 @@ test.describe('BuildNivo — 12. Achats & fournisseurs', () => {
     expect(stillOpen || hasError).toBeTruthy();
   });
 
-  test('Nouveau fournisseur — le formulaire de création s\'ouvre', async ({ page }) => {
+  test('Nouveau fournisseur - le formulaire de création s\'ouvre', async ({ page }) => {
     // Achats est la page la plus lente de l'app (jusqu'à ~40s, parfois bien plus sous charge : le
     // rendu n'avait pas démarré au bout des 120s par défaut dans un run complet).
     test.setTimeout(240_000);

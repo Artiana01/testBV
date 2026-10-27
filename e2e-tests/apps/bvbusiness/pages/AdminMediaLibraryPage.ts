@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/AdminMediaLibraryPage.ts
  * ------------------------------------------------
- * Page Object — Media Library Admin BV Business
+ * Page Object - Media Library Admin BV Business
  * Couvre : upload fichier, vérification (SC-06)
  */
 
@@ -62,10 +62,10 @@ export class AdminMediaLibraryPage extends BasePage {
     if (await fileInput.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await fileInput.setInputFiles(testFilePath);
     } else {
-      // Certains boutons d'upload masquent l'input — tenter avec filechooser
+      // Certains boutons d'upload masquent l'input - tenter avec filechooser
       const uploadButton = this.page.locator(this.uploadBtn).first();
       if (!await uploadButton.isVisible({ timeout: 3_000 }).catch(() => false)) {
-        console.log('   ℹ️  Bouton upload non trouvé — vérifier URL/sélecteurs dans AdminMediaLibraryPage');
+        console.log('   ℹ️  Bouton upload non trouvé - vérifier URL/sélecteurs dans AdminMediaLibraryPage');
         return;
       }
       try {
@@ -75,7 +75,7 @@ export class AdminMediaLibraryPage extends BasePage {
         ]);
         await fileChooser.setFiles(testFilePath);
       } catch {
-        console.log('   ℹ️  File chooser non déclenché — le mécanisme d\'upload peut utiliser drag-and-drop ou une API directe');
+        console.log('   ℹ️  File chooser non déclenché - le mécanisme d\'upload peut utiliser drag-and-drop ou une API directe');
         return;
       }
     }

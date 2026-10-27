@@ -18,7 +18,7 @@ import { BasePage } from '../../../shared/pages/BasePage';
 
 export class LoginPage extends BasePage {
   // =========================================================
-  // SÉLECTEURS — À ADAPTER selon la structure HTML de l'app
+  // SÉLECTEURS - À ADAPTER selon la structure HTML de l'app
   // =========================================================
 
   // 👉 ADAPTER : Sélecteur du champ email (ici on cherche un input de type email)

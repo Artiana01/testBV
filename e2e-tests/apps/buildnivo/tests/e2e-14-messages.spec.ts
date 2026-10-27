@@ -1,15 +1,15 @@
 /**
  * e2e-14-messages.spec.ts
  * ---------------------------
- * Section 15 du cahier de recette — Messagerie & copilote IA.
- * Couvre : MSG-01 à MSG-04 (best-effort — les scénarios copilote IA et
+ * Section 15 du cahier de recette - Messagerie & copilote IA.
+ * Couvre : MSG-01 à MSG-04 (best-effort - les scénarios copilote IA et
  * mention/épinglage nécessitent une conversation existante).
  */
 
 import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
 
-test.describe('BuildNivo — 15. Messagerie & copilote IA', () => {
+test.describe('BuildNivo - 15. Messagerie & copilote IA', () => {
 
   test('Page Messages accessible avec filtres Toutes / Non lues', async ({ page }) => {
     const mod = new ModulePage(page, '/messages');
@@ -19,24 +19,24 @@ test.describe('BuildNivo — 15. Messagerie & copilote IA', () => {
     await expect(page.getByText('Non lues', { exact: true }).first()).toBeVisible();
   });
 
-  test('MSG-01 — Ouverture du compose "Nouveau message"', async ({ page }) => {
+  test('MSG-01 - Ouverture du compose "Nouveau message"', async ({ page }) => {
     const mod = new ModulePage(page, '/messages');
     await mod.goto();
 
     const newMsgBtn = page.getByRole('button', { name: /nouveau message/i }).first();
     const hasBtn = await newMsgBtn.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasBtn, 'MSG-01 — bouton "Nouveau message" introuvable.');
+    test.skip(!hasBtn, 'MSG-01 - bouton "Nouveau message" introuvable.');
 
     await newMsgBtn.click();
     await mod.dismissOnboardingTour();
     await page.waitForTimeout(1000);
 
     // "Nouveau message" ouvre d'abord une recherche de destinataire ("Démarrer une
-    // conversation" / "Rechercher une personne...") — pas directement une zone de texte.
+    // conversation" / "Rechercher une personne...") - pas directement une zone de texte.
     // Le champ de recherche est type="search", pas capté par input[type="text"].
     const modal = page.locator('.fixed.inset-0').first();
     const hasModal = await modal.isVisible({ timeout: 5_000 }).catch(() => false);
-    test.skip(!hasModal, 'MSG-01 — la fenêtre de démarrage de conversation ne s\'est pas ouverte.');
+    test.skip(!hasModal, 'MSG-01 - la fenêtre de démarrage de conversation ne s\'est pas ouverte.');
     await expect(modal.locator('input').first()).toBeVisible({ timeout: 8_000 });
   });
 
@@ -47,7 +47,7 @@ test.describe('BuildNivo — 15. Messagerie & copilote IA', () => {
   // donc une rafale via l'interface n'atteint jamais le serveur assez vite : le test la fait au niveau
   // API, comme le ferait un client automatisé (conversation 1:1 avec Raivosoa Andria, session Direction).
   // Les messages créés sont supprimés ensuite.
-  test('MSG-04 — Envoi de messages en rafale → throttle déclenché', async ({ page }) => {
+  test('MSG-04 - Envoi de messages en rafale → throttle déclenché', async ({ page }) => {
     const mod = new ModulePage(page, '/messages');
     await mod.goto();
     // Ouvrir la conversation déclenche un POST …/read, et un GET …/messages seulement si elle n'est

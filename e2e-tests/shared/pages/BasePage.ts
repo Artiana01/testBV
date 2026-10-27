@@ -20,7 +20,7 @@ export class BasePage {
   protected page: Page;
 
   /**
-   * Constructeur — reçoit l'objet `page` fourni par Playwright dans chaque test
+   * Constructeur - reçoit l'objet `page` fourni par Playwright dans chaque test
    * @param page - L'instance Page de Playwright
    */
   constructor(page: Page) {
@@ -70,7 +70,7 @@ export class BasePage {
 
   /**
    * Attend un certain nombre de millisecondes avant de continuer.
-   * À utiliser avec parcimonie — préférer waitForSelector ou waitForURL quand possible.
+   * À utiliser avec parcimonie - préférer waitForSelector ou waitForURL quand possible.
    *
    * @param ms - Nombre de millisecondes à attendre
    */

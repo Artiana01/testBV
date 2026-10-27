@@ -1,7 +1,7 @@
 /**
  * apps/buildnivo/pages/LoginPage.ts
  * -----------------------------------
- * Page Object — Authentification BuildNivo (/connexion, /inscription,
+ * Page Object - Authentification BuildNivo (/connexion, /inscription,
  * /mot-de-passe-oublie).
  *
  * Sélecteurs : le champ "login" accepte email OU nom d'utilisateur
@@ -44,7 +44,7 @@ export class LoginPage extends BasePage {
   /**
    * Le formulaire est rendu (visible) avant l'hydratation React : une saisie ou un clic trop précoces
    * sont ignorés. 'networkidle' le garantissait mais peut ne jamais se produire ici (websocket toujours
-   * ouvert) — on l'attend donc de façon bornée et tolérante, sans jamais faire échouer la navigation.
+   * ouvert) - on l'attend donc de façon bornée et tolérante, sans jamais faire échouer la navigation.
    */
   private async waitForHydration(): Promise<void> {
     await this.page.waitForLoadState('load', { timeout: 15_000 }).catch(() => {});
@@ -115,7 +115,7 @@ export class LoginPage extends BasePage {
    * toujours sur /connexion après le délai normal de 45s. Observé sur plusieurs comptes
    * différents selon les runs (pas uniquement après AUTH-06) : l'environnement de recette
    * a des lenteurs ponctuelles à la connexion qui se résolvent à une deuxième tentative.
-   * N'avale que ce cas précis — si on n'est plus sur /connexion (autre erreur inattendue),
+   * N'avale que ce cas précis - si on n'est plus sur /connexion (autre erreur inattendue),
    * ou si la deuxième tentative échoue aussi, l'erreur d'origine remonte normalement.
    */
   async verifyLoginSuccessWithRetry(login: string, password: string): Promise<void> {
@@ -166,7 +166,7 @@ export class LoginPage extends BasePage {
     // 30s, sur un seul locator combiné (une attente au lieu de deux en série) : le
     // message vient d'un appel API après soumission, pas d'une validation instantanée
     // côté client, et cet environnement de recette est parfois lent sous charge.
-    // IMPORTANT : .isVisible({ timeout }) n'attend jamais réellement — Playwright
+    // IMPORTANT : .isVisible({ timeout }) n'attend jamais réellement - Playwright
     // ignore cette option et renvoie l'état immédiat (piège classique de l'API). Il
     // faut .waitFor({ state: 'visible' }) pour un vrai polling jusqu'au timeout.
     const known = unconfirmedEmail.first().or(wrongCredentials.first());
@@ -174,12 +174,12 @@ export class LoginPage extends BasePage {
     if (!foundKnown) return undefined;
 
     if (await unconfirmedEmail.first().isVisible().catch(() => false)) {
-      return `Compte ${login} — email jamais confirmé sur cet environnement ("Adresse email non confirmée") : ` +
+      return `Compte ${login} - email jamais confirmé sur cet environnement ("Adresse email non confirmée") : ` +
         'le compte existe mais reste bloqué tant que la validation manuelle n\'est pas faite. ' +
         'Anomalie de provisionnement de données, pas un bug de test.';
     }
 
-    return `Compte ${login} — "Identifiants incorrects" avec le mot de passe de démo attendu : ` +
+    return `Compte ${login} - "Identifiants incorrects" avec le mot de passe de démo attendu : ` +
       'ce compte n\'est probablement pas provisionné (ou a un mot de passe différent) dans cet ' +
       'environnement. Anomalie de provisionnement de données, pas un bug de test.';
   }

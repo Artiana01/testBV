@@ -33,13 +33,13 @@ async function expectNewReportForm(page: Page) {
   await expect(dialog).toBeHidden();
 }
 
-test.describe('BuildNivo — 24. Signalements d\'anomalie', () => {
+test.describe('BuildNivo - 24. Signalements d\'anomalie', () => {
 
-  test('ANO-01 — Direction : consulte le registre (colonnes, filtres), sans création ni traitement', async ({ browser }) => {
+  test('ANO-01 - Direction : consulte le registre (colonnes, filtres), sans création ni traitement', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/anomalies');
     await expect(page.getByRole('heading', { name: "Signalements d'anomalie", level: 1 })).toBeVisible({ timeout: 30_000 });
     // NB : la page affiche brièvement "Accès restreint aux signalements" tant que les droits ne sont pas
-    // chargés (état transitoire constaté) — l'état stable de Direction est la consultation.
+    // chargés (état transitoire constaté) - l'état stable de Direction est la consultation.
     await expect(page.getByRole('heading', { name: /accès restreint/i })).toHaveCount(0);
     for (const col of COLUMNS) await expect(page.getByRole('columnheader', { name: col, exact: true }), `Colonne "${col}"`).toBeVisible();
     await expect(page.getByRole('button', { name: 'Nouveau signalement' })).toHaveCount(0);
@@ -57,7 +57,7 @@ test.describe('BuildNivo — 24. Signalements d\'anomalie', () => {
     });
     test.afterAll(async () => { await context?.close(); });
 
-    test('ANO-02 — Registre : colonnes, filtres Type et Statut, bouton "Nouveau signalement"', async () => {
+    test('ANO-02 - Registre : colonnes, filtres Type et Statut, bouton "Nouveau signalement"', async () => {
       await revisit(page, '/anomalies');
       await expect(page.getByRole('heading', { name: "Signalements d'anomalie", level: 1 })).toBeVisible({ timeout: 20_000 });
       await expect(page.getByText(/alertes sécurité et qualité remontées depuis le terrain/i)).toBeVisible();
@@ -72,15 +72,15 @@ test.describe('BuildNivo — 24. Signalements d\'anomalie', () => {
       for (const option of ['Nouveau', 'En cours', 'Traité']) await expect(statut.locator('option', { hasText: option })).toHaveCount(1);
     });
 
-    test('ANO-03 — "Nouveau signalement" : type, gravité, description, pièces jointes, géolocalisation ; annulation sans envoi', async () => {
+    test('ANO-03 - "Nouveau signalement" : type, gravité, description, pièces jointes, géolocalisation ; annulation sans envoi', async () => {
       await revisit(page, '/anomalies');
       await expectNewReportForm(page);
     });
 
-    test('ANO-04 — Détail d\'un signalement : type, gravité, auteur, destinataire, statut, description, pièce jointe', async () => {
+    test('ANO-04 - Détail d\'un signalement : type, gravité, auteur, destinataire, statut, description, pièce jointe', async () => {
       await revisit(page, '/anomalies');
       const detail = page.getByRole('button', { name: 'Détail' }).first();
-      test.skip(!(await detail.isVisible({ timeout: 10_000 }).catch(() => false)), 'ANO-04 — aucun signalement à consulter sur ce chantier.');
+      test.skip(!(await detail.isVisible({ timeout: 10_000 }).catch(() => false)), 'ANO-04 - aucun signalement à consulter sur ce chantier.');
       await detail.click();
 
       const dialog = page.getByRole('dialog').filter({ hasText: 'Détail du signalement' });
@@ -93,7 +93,7 @@ test.describe('BuildNivo — 24. Signalements d\'anomalie', () => {
     });
   });
 
-  test('ANO-05 — Conducteur de travaux : consulte et traite, mais ne crée pas de signalement', async ({ browser }) => {
+  test('ANO-05 - Conducteur de travaux : consulte et traite, mais ne crée pas de signalement', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'conducteur', '/anomalies');
     await expect(page.getByRole('heading', { name: "Signalements d'anomalie", level: 1 })).toBeVisible({ timeout: 20_000 });
     for (const col of COLUMNS) await expect(page.getByRole('columnheader', { name: col, exact: true }), `Colonne "${col}"`).toBeVisible();
@@ -101,7 +101,7 @@ test.describe('BuildNivo — 24. Signalements d\'anomalie', () => {
     await context.close();
   });
 
-  test('ANO-06 — Salarié ouvrier : peut créer un signalement (formulaire complet)', async ({ browser }) => {
+  test('ANO-06 - Salarié ouvrier : peut créer un signalement (formulaire complet)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'salarie', '/anomalies');
     await expect(page.getByRole('heading', { name: "Signalements d'anomalie", level: 1 })).toBeVisible({ timeout: 20_000 });
     await expectNewReportForm(page);

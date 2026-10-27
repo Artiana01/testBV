@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/profile.spec.ts
  * --------------------------------------
- * Tests E2E — Profil utilisateur
+ * Tests E2E - Profil utilisateur
  * Couvre : affichage des informations, modification du nom, mise à jour navbar.
  *
  * Nécessite d'être connecté.
@@ -18,7 +18,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // =====================================================================
-// PARCOURS 3.3 — Profil utilisateur
+// PARCOURS 3.3 - Profil utilisateur
 // =====================================================================
 test.describe('Profil utilisateur', () => {
 

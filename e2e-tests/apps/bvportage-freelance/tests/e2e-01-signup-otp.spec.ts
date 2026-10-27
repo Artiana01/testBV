@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-test.describe('E2E-01 — Inscription Freelance + OTP', () => {
+test.describe('E2E-01 - Inscription Freelance + OTP', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/fr/inscription', { waitUntil: 'domcontentloaded', timeout: 45_000 });
   });
@@ -48,7 +48,7 @@ test.describe('E2E-01 — Inscription Freelance + OTP', () => {
   });
 });
 
-test.describe('E2E-01 — OTP Validation', () => {
+test.describe('E2E-01 - OTP Validation', () => {
   test('OTP reçu et validation OK', async ({ page }) => {
     // Try possible OTP page paths
     const otpPaths = ['/fr/verification-otp', '/fr/otp', '/fr/verify', '/fr/activation', '/fr/verification'];
@@ -63,7 +63,7 @@ test.describe('E2E-01 — OTP Validation', () => {
           const count = await inputs.count();
           if (count > 0) {
             otpFound = true;
-            console.log(`Page OTP trouvée: ${url} — ${count} champ(s) OTP`);
+            console.log(`Page OTP trouvée: ${url} - ${count} champ(s) OTP`);
             expect(count).toBeGreaterThan(0);
             break;
           }
@@ -74,8 +74,8 @@ test.describe('E2E-01 — OTP Validation', () => {
     }
 
     if (!otpFound) {
-      console.log('Page OTP non accessible directement — OTP envoyé par email uniquement');
-      // Test passes — OTP page requires email token to be accessible
+      console.log('Page OTP non accessible directement - OTP envoyé par email uniquement');
+      // Test passes - OTP page requires email token to be accessible
       expect(true).toBeTruthy();
     }
   });

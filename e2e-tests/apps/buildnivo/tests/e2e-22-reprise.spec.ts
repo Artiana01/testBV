@@ -6,13 +6,13 @@
  * Documents → Analyse → Validation → Mise en service.
  * (Le guide affiché après la création d'un chantier est couvert par e2e-21-reprise-guide.spec.ts.)
  *
- * Partie A — parcours complet sur un chantier JETABLE créé par le test (supprimé en fin de run) :
+ * Partie A - parcours complet sur un chantier JETABLE créé par le test (supprimé en fin de run) :
  *   les actions qui modifient l'état (démarrer, déposer/retirer un document, recommencer) ne touchent
  *   jamais le chantier de démo partagé.
- * Partie B — droits par rôle, en lecture seule sur le chantier de démo.
+ * Partie B - droits par rôle, en lecture seule sur le chantier de démo.
  *
  * NE LANCE PAS "Lancer l'analyse" : c'est un vrai appel à l'IA distante. À ce jour il est de toute
- * façon inaccessible — l'indexation des documents échoue côté serveur (voir REPRISE-04).
+ * façon inaccessible - l'indexation des documents échoue côté serveur (voir REPRISE-04).
  */
 
 import { test, expect, Browser, BrowserContext, Page } from '@playwright/test';
@@ -49,7 +49,7 @@ async function openHistory(page: Page) {
 
 // Le chantier de démo est partagé : selon qu'une reprise y est en cours ou non, la page affiche soit le
 // parcours (Déposer / Recommencer), soit l'invitation "Démarrer la reprise". Les tests de droits par
-// rôle (lecture seule) ne doivent pas dépendre de cet état — ils vérifient l'action d'écriture
+// rôle (lecture seule) ne doivent pas dépendre de cet état - ils vérifient l'action d'écriture
 // disponible dans l'un ou l'autre cas.
 const depositButton = (page: Page) => page.getByRole('button', { name: 'Déposer les documents du chantier' });
 
@@ -64,10 +64,10 @@ async function expectRepriseHeading(page: Page) {
   await expect(page.getByRole('heading', { name: 'Reprise de chantier', level: 1 })).toBeVisible({ timeout: 30_000 });
 }
 
-test.describe('BuildNivo — 22. Reprise de chantier', () => {
+test.describe('BuildNivo - 22. Reprise de chantier', () => {
 
   // ===========================================================================================
-  // Partie A — chantier jetable, tests dépendants les uns des autres (état de la reprise)
+  // Partie A - chantier jetable, tests dépendants les uns des autres (état de la reprise)
   // ===========================================================================================
   test.describe('Parcours sur un chantier neuf', () => {
     test.describe.configure({ mode: 'serial' });
@@ -118,7 +118,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       fs.rmSync(FIXTURES_DIR, { recursive: true, force: true });
     });
 
-    test('REPRISE-01 — Avant démarrage : invitation à reprendre le chantier, rôle Responsable Reprise à désigner', async () => {
+    test('REPRISE-01 - Avant démarrage : invitation à reprendre le chantier, rôle Responsable Reprise à désigner', async () => {
       await expect(page.getByText("Reprendre une opération déjà démarrée", { exact: false })).toBeVisible();
       await expect(page.getByText("Généré par l'IA")).toBeVisible();
       await expect(page.getByRole('heading', { name: 'Reprendre ce chantier', level: 2 })).toBeVisible();
@@ -137,7 +137,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await expect(page.getByRole('link', { name: 'Désigner un Responsable Reprise' })).toHaveAttribute('href', '/equipes');
     });
 
-    test('REPRISE-02 — Démarrer la reprise ouvre l\'étape 1/4 "Documents" (analyse impossible sans document)', async () => {
+    test('REPRISE-02 - Démarrer la reprise ouvre l\'étape 1/4 "Documents" (analyse impossible sans document)', async () => {
       const created = page.waitForResponse(r => /\/reprise\/runs$/.test(r.url()) && r.request().method() === 'POST');
       await startButton(page).click();
       expect((await created).status(), 'La reprise doit être créée (POST /reprise/runs).').toBe(201);
@@ -162,7 +162,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await expect(restartButton(page)).toBeVisible();
     });
 
-    test('REPRISE-03 — Zone de dépôt : formats acceptés, fichiers multiples, dossier et lien Drive', async () => {
+    test('REPRISE-03 - Zone de dépôt : formats acceptés, fichiers multiples, dossier et lien Drive', async () => {
       await expect(page.getByText(/plans, comptes rendus, marchés, avenants, situations, planning/i)).toBeVisible();
       await expect(page.getByText('Choisir des fichiers')).toBeVisible();
       await expect(page.getByRole('button', { name: 'Choisir un dossier' })).toBeVisible();
@@ -188,7 +188,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await expect(dialog).toBeHidden();
     });
 
-    test('REPRISE-04 — Dépôt d\'un document : envoyé, listé avec son nom et compté', async () => {
+    test('REPRISE-04 - Dépôt d\'un document : envoyé, listé avec son nom et compté', async () => {
       const filePath = writeFixture(DOC_NAME, 'Compte rendu de chantier E2E\nTâche : couler la dalle du niveau 1 avant le 15 novembre.\nRéserve : fissure sur le mur côté nord.\n');
 
       const uploaded = page.waitForResponse(r => /\/reprise\/runs\/[^/]+\/documents$/.test(r.url()) && r.request().method() === 'POST');
@@ -203,7 +203,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await expect(page.getByText("Aucun document déposé pour l'instant.")).toHaveCount(0);
     });
 
-    test('REPRISE-05 — Indexation du document : il devient exploitable et "Lancer l\'analyse" s\'active', async () => {
+    test('REPRISE-05 - Indexation du document : il devient exploitable et "Lancer l\'analyse" s\'active', async () => {
       const failed = documentRow(page, DOC_NAME).getByText('Échec');
 
       // L'indexation est asynchrone : on attend un verdict (échec visible, ou analyse activée).
@@ -212,13 +212,13 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
         return (await launchAnalysis(page).isEnabled()) ? 'ready' : 'pending';
       }, { timeout: 90_000, intervals: [2_000] }).not.toBe('pending');
 
-      // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-10-08, tous les documents testés — .txt, .exe
-      // et les 15 PDF du chantier de démo) — PAS un problème de test : l'indexation échoue toujours avec
+      // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-10-08, tous les documents testés - .txt, .exe
+      // et les 15 PDF du chantier de démo) - PAS un problème de test : l'indexation échoue toujours avec
       // "The document reference or integrity check is invalid." ; "Lancer l'analyse" reste donc
       // désactivé et les étapes 2 à 4 (Analyse, Validation, Mise en service) sont inaccessibles. Le
       // test se remet à tourner tout seul dès qu'un document s'indexe correctement.
       test.fixme(await failed.isVisible(),
-        'REPRISE-05 — l\'indexation des documents échoue côté serveur ("The document reference or integrity ' +
+        'REPRISE-05 - l\'indexation des documents échoue côté serveur ("The document reference or integrity ' +
         'check is invalid.", constaté le 2026-10-08 sur tous les fichiers) : "Lancer l\'analyse" reste ' +
         'désactivé, les étapes 2 à 4 sont inaccessibles. Anomalie applicative réelle, pas un défaut de ce test.'
       );
@@ -227,7 +227,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await expect(page.getByText(/1 sur 1 document\(s\) prêt\(s\)/)).toBeVisible();
     });
 
-    test('REPRISE-06 — Retirer un document : confirmation inline, annulation sans effet, puis suppression', async () => {
+    test('REPRISE-06 - Retirer un document : confirmation inline, annulation sans effet, puis suppression', async () => {
       const row = documentRow(page, DOC_NAME);
 
       // 1) Annuler la confirmation laisse le document en place.
@@ -252,7 +252,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       if (response) expect(response.ok(), 'La suppression du document doit réussir côté serveur.').toBeTruthy();
     });
 
-    test('REPRISE-07 — Historique des reprises : la reprise en cours est consultable (sources, éléments, propositions)', async () => {
+    test('REPRISE-07 - Historique des reprises : la reprise en cours est consultable (sources, éléments, propositions)', async () => {
       await openHistory(page);
       await expect(page.getByText(/consultez les sources, les décisions et les éléments intégrés au chantier/i)).toBeVisible();
 
@@ -271,7 +271,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await expect(entry.getByRole('heading', { name: 'Documents sources' })).toBeHidden();
     });
 
-    test('REPRISE-08 — Recommencer une reprise : confirmation, annulation sans effet, puis remplacement (ancienne archivée)', async () => {
+    test('REPRISE-08 - Recommencer une reprise : confirmation, annulation sans effet, puis remplacement (ancienne archivée)', async () => {
       // 1) Annuler ne change rien : le parcours reste affiché.
       await restartButton(page).click();
       const dialog = page.getByRole('dialog', { name: 'Remplacer la reprise en cours ?' });
@@ -298,11 +298,11 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
   });
 
   // ===========================================================================================
-  // Partie B — droits par rôle, lecture seule sur le chantier de démo
+  // Partie B - droits par rôle, lecture seule sur le chantier de démo
   // ===========================================================================================
   test.describe('Droits par rôle', () => {
 
-    test('REPRISE-09 — Le lien "Reprise de chantier" de la barre latérale ouvre la page', async ({ browser }) => {
+    test('REPRISE-09 - Le lien "Reprise de chantier" de la barre latérale ouvre la page', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'direction', '/dashboard');
       await page.getByRole('link', { name: 'Reprise de chantier' }).click();
       await expect(page).toHaveURL(/\/reprise$/, { timeout: 20_000 });
@@ -310,7 +310,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await context.close();
     });
 
-    test('REPRISE-10 — Direction : peut démarrer/déposer et recommencer, bandeau de droits limités, Responsable Reprise désigné', async ({ browser }) => {
+    test('REPRISE-10 - Direction : peut démarrer/déposer et recommencer, bandeau de droits limités, Responsable Reprise désigné', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'direction', '/reprise');
       await expectRepriseHeading(page);
 
@@ -322,7 +322,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await context.close();
     });
 
-    test('REPRISE-11 — Conducteur de travaux : peut démarrer/déposer et recommencer, bandeau de droits limités à son profil', async ({ browser }) => {
+    test('REPRISE-11 - Conducteur de travaux : peut démarrer/déposer et recommencer, bandeau de droits limités à son profil', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'conducteur', '/reprise');
       await expectRepriseHeading(page);
 
@@ -332,7 +332,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await context.close();
     });
 
-    test('REPRISE-12 — Chef de chantier : peut démarrer/déposer et recommencer, sans bandeau de droits limités', async ({ browser }) => {
+    test('REPRISE-12 - Chef de chantier : peut démarrer/déposer et recommencer, sans bandeau de droits limités', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'chef-chantier', '/reprise');
       await expectRepriseHeading(page);
 
@@ -341,7 +341,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       await context.close();
     });
 
-    test('REPRISE-13 — Maître d\'ouvrage : lecture seule (aucun dépôt, retrait, remplacement ni analyse)', async ({ browser }) => {
+    test('REPRISE-13 - Maître d\'ouvrage : lecture seule (aucun dépôt, retrait, remplacement ni analyse)', async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'maitre-ouvrage', '/reprise');
       await expectRepriseHeading(page);
 
@@ -367,7 +367,7 @@ test.describe('BuildNivo — 22. Reprise de chantier', () => {
       ['intervenant-simple', 'Intervenant sans droit particulier'],
       ['salarie', 'Salarié ouvrier'],
     ]) {
-      test(`REPRISE-14 — ${label} : accès à /reprise refusé (redirigé vers le tableau de bord)`, async ({ browser }) => {
+      test(`REPRISE-14 - ${label} : accès à /reprise refusé (redirigé vers le tableau de bord)`, async ({ browser }) => {
         const { context, page } = await openModuleAs(browser, roleKey, '/reprise');
         await expect(page).toHaveURL(/\/dashboard$/, { timeout: 20_000 });
         await expect(page.getByRole('heading', { name: 'Reprise de chantier', level: 1 })).toHaveCount(0);

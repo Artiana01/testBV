@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/AdminUsersPage.ts
  * -----------------------------------------
- * Page Object — Gestion Utilisateurs Admin Emiragate
+ * Page Object - Gestion Utilisateurs Admin Emiragate
  * Couvre : liste, modification, suppression (SC-07)
  */
 
@@ -47,7 +47,7 @@ export class AdminUsersPage extends BasePage {
     const editVisible   = await this.page.locator(this.editBtn).first().isVisible({ timeout: 3_000 }).catch(() => false);
     const deleteVisible = await this.page.locator(this.deleteBtn).first().isVisible({ timeout: 3_000 }).catch(() => false);
     if (!editVisible && !deleteVisible) {
-      console.log('   ℹ️  Boutons Modifier/Supprimer non trouvés — vérifier sélecteurs');
+      console.log('   ℹ️  Boutons Modifier/Supprimer non trouvés - vérifier sélecteurs');
     }
   }
 

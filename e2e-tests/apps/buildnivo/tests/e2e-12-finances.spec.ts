@@ -1,7 +1,7 @@
 /**
  * e2e-12-finances.spec.ts
  * ---------------------------
- * Section 13 du cahier de recette — Finances & lots financiers.
+ * Section 13 du cahier de recette - Finances & lots financiers.
  * Couvre : FIN-01 à FIN-03 (best-effort).
  *
  * L'app n'expose aucune interface de création de "lot financier" (seul un
@@ -39,7 +39,7 @@ async function openEditForm(page: Page, chantier: string): Promise<{ modal: Loca
   return { modal, budget };
 }
 
-test.describe('BuildNivo — 13. Finances & lots financiers', () => {
+test.describe('BuildNivo - 13. Finances & lots financiers', () => {
 
   test('Page Finances accessible', async ({ page }) => {
     const mod = new ModulePage(page, '/finances');
@@ -48,7 +48,7 @@ test.describe('BuildNivo — 13. Finances & lots financiers', () => {
     await mod.verifyEmptyStateOrData();
   });
 
-  test('FIN-01 — Budget alloué au chantier : saisi dans la fiche chantier, reflété dans Finances', async ({ page }) => {
+  test('FIN-01 - Budget alloué au chantier : saisi dans la fiche chantier, reflété dans Finances', async ({ page }) => {
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
     const chantier = await firstTestChantierName(page);
@@ -85,7 +85,7 @@ test.describe('BuildNivo — 13. Finances & lots financiers', () => {
     }
   });
 
-  test('FIN-03 — Saisie d\'un budget négatif → validation refusée', async ({ page }) => {
+  test('FIN-03 - Saisie d\'un budget négatif → validation refusée', async ({ page }) => {
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
     const chantier = await firstTestChantierName(page);

@@ -45,7 +45,7 @@ export async function loginAndSave(opts: {
   } = opts;
 
   if (!email || !password) {
-    console.log(`   ℹ️   Credentials ${label} non configurés — session ignorée`);
+    console.log(`   ℹ️   Credentials ${label} non configurés - session ignorée`);
     return false;
   }
 
@@ -63,7 +63,7 @@ export async function loginAndSave(opts: {
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      console.log(`\n🔐  Connexion ${label} (${email})${attempt > 1 ? ` — essai ${attempt}` : ''}...`);
+      console.log(`\n🔐  Connexion ${label} (${email})${attempt > 1 ? ` - essai ${attempt}` : ''}...`);
 
       await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 });
       // Sur les SPA (BuildNivo…), remplir le formulaire avant la fin de l'hydratation fait
@@ -154,7 +154,7 @@ export async function loginAndSave(opts: {
       // On compare le pathname, pas l'URL complète : si le clic tombe avant que le
       // JS de la page n'ait attaché son gestionnaire de soumission, le navigateur
       // peut faire un fallback natif (GET) qui reste sur le même /login mais avec
-      // email/mot de passe ajoutés en query string — une URL "différente" en texte,
+      // email/mot de passe ajoutés en query string - une URL "différente" en texte,
       // mais qui n'indique aucune connexion réussie. Il ne faut pas la compter comme un succès.
       const startPath = new URL(actualLoginUrl).pathname;
       await page.waitForURL(
@@ -164,7 +164,7 @@ export async function loginAndSave(opts: {
 
       // Garde-fou supplémentaire : si on est repassé par ce même pathname avec des
       // identifiants en query string avant d'en sortir, la session obtenue n'est
-      // pas fiable — mieux vaut échouer explicitement que sauvegarder une session bidon.
+      // pas fiable - mieux vaut échouer explicitement que sauvegarder une session bidon.
       if (/[?&]password=/.test(page.url())) {
         throw new Error(`Soumission native détectée (credentials en query string) : ${page.url()}`);
       }
@@ -194,7 +194,7 @@ export async function loginAndSave(opts: {
         .isVisible({ timeout: 2_000 }).catch(() => false);
 
       if (isRateLimit && attempt < 2) {
-        console.warn('   🚫  Rate limiting détecté — pause 90s avant 2e essai...');
+        console.warn('   🚫  Rate limiting détecté - pause 90s avant 2e essai...');
         await page.waitForTimeout(90_000);
       } else if (attempt < 2) {
         await page.waitForTimeout(5_000);

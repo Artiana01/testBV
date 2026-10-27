@@ -23,7 +23,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { getRoles } from './apps/buildnivo/roles';
 
-// override:true — BASE_URL est un nom de variable partagé par toutes les apps du repo
+// override:true - BASE_URL est un nom de variable partagé par toutes les apps du repo
 // (bvtech, bvbusiness...). Si une session shell a déjà exporté BASE_URL pour une autre
 // app (ex: tests bvtech lancés plus tôt dans le même terminal), dotenv ne l'écrase pas
 // par défaut : sans override, BuildNivo hériterait silencieusement de la mauvaise URL.
@@ -47,7 +47,7 @@ export default defineConfig({
   globalSetup: './apps/buildnivo/global-setup.ts',
 
   // 120s : certaines pages (Achats...) mettent jusqu'à ~40s à charger leurs données sous
-  // charge — 90s laissait trop peu de marge à un test une fois la navigation comptée.
+  // charge - 90s laissait trop peu de marge à un test une fois la navigation comptée.
   timeout: 120_000,
   expect: { timeout: 15_000 },
 
@@ -74,7 +74,7 @@ export default defineConfig({
   },
 
   projects: [
-    // === Section 01 (Auth) + smoke multi-rôles — pas de session préalable
+    // === Section 01 (Auth) + smoke multi-rôles - pas de session préalable
     {
       name: 'buildnivo-public',
       testMatch: [
@@ -86,7 +86,7 @@ export default defineConfig({
       },
     },
 
-    // === Sections 03-15 — comptes authentifiés (Direction : accès le plus large)
+    // === Sections 03-15 - comptes authentifiés (Direction : accès le plus large)
     {
       name: 'buildnivo-direction',
       testMatch: [
@@ -116,6 +116,8 @@ export default defineConfig({
         '**/e2e-30-profil.spec.ts',
         '**/e2e-31-equipes.spec.ts',
         '**/e2e-32-parametres.spec.ts',
+        '**/e2e-34-avant-projet.spec.ts',
+        '**/e2e-35-extraction-devis-ia.spec.ts',
       ],
       use: {
         ...devices['Desktop Chrome'],
@@ -123,7 +125,7 @@ export default defineConfig({
       },
     },
 
-    // === Section 02 (RBAC) — compte à droits restreints pour vérifier les refus d'accès
+    // === Section 02 (RBAC) - compte à droits restreints pour vérifier les refus d'accès
     {
       name: 'buildnivo-rbac',
       testMatch: ['**/e2e-16-rbac.spec.ts'],
@@ -133,7 +135,7 @@ export default defineConfig({
       },
     },
 
-    // === Billing (Stripe Customer Portal) — compte "Propriétaire" (tenant-owner), seul rôle
+    // === Billing (Stripe Customer Portal) - compte "Propriétaire" (tenant-owner), seul rôle
     // avec le bouton "Gérer mon abonnement". Chaque test gère sa propre session via
     // browser.newContext({ storageState }) (pas de storageState au niveau du projet) car ce
     // n'est ni "public" (comptes 01/02) ni Direction/Intervenant simple (autres projets).
@@ -145,7 +147,7 @@ export default defineConfig({
       },
     },
 
-    // === Sécurité/Audit (BUILDNIVO-293) — plusieurs rôles non-Superadmin testés dans le même
+    // === Sécurité/Audit (BUILDNIVO-293) - plusieurs rôles non-Superadmin testés dans le même
     // fichier ; chaque test gère sa propre session via browser.newContext({ storageState })
     // (même raison que buildnivo-billing ci-dessus : ni un rôle unique ni les comptes publics).
     {
@@ -166,7 +168,7 @@ export default defineConfig({
       },
     },
 
-    // === Rapports IA — plusieurs rôles (Direction, Maître d'ouvrage) dans le même fichier ;
+    // === Rapports IA - plusieurs rôles (Direction, Maître d'ouvrage) dans le même fichier ;
     // même raison que buildnivo-billing/buildnivo-audit : chaque test gère sa propre session.
     {
       name: 'buildnivo-rapports-ia',

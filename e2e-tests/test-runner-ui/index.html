@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tests E2E — Bluevaloris</title>
+  <title>Tests E2E - Bluevaloris</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -663,102 +663,102 @@
 <script>
   // ── Données tests ──
   const TESTS_BVTECH = {
-    'e2e-01-signup':         'E2E-01 — Inscription (Signup)',
-    'e2e-02-login':          'E2E-02 — Connexion & Navigation',
-    'e2e-03-profile':        'E2E-03 — Profil Client',
-    'e2e-04-dashboard':      'E2E-04 — Dashboard Client',
-    'e2e-05-admin-login':    'E2E-05 — Connexion Admin',
-    'e2e-06-admin-users':    'E2E-06 — Gestion Utilisateurs (Admin)',
-    'e2e-07-admin-packs':    'E2E-07 — Gestion Packs (Admin)',
-    'e2e-08-admin-payments': 'E2E-08 — Paiements (Admin)',
-    'e2e-09-admin-contacts': 'E2E-09 — Contacts (Admin)',
+    'e2e-01-signup':         'E2E-01 - Inscription (Signup)',
+    'e2e-02-login':          'E2E-02 - Connexion & Navigation',
+    'e2e-03-profile':        'E2E-03 - Profil Client',
+    'e2e-04-dashboard':      'E2E-04 - Dashboard Client',
+    'e2e-05-admin-login':    'E2E-05 - Connexion Admin',
+    'e2e-06-admin-users':    'E2E-06 - Gestion Utilisateurs (Admin)',
+    'e2e-07-admin-packs':    'E2E-07 - Gestion Packs (Admin)',
+    'e2e-08-admin-payments': 'E2E-08 - Paiements (Admin)',
+    'e2e-09-admin-contacts': 'E2E-09 - Contacts (Admin)',
     'regression':            '🔄 Régression Complète',
   };
 
   const TESTS_BVBUSINESS = {
-    'e2e-01-signup':     'SC-01 — Inscription (Signup)',
-    'e2e-02-login':      'SC-02 — Login & Dashboard',
-    'e2e-03-packages':   'SC-03 — Packages & Pricing',
-    'e2e-04-navigation': 'SC-04 — Navigation Admin',
-    'e2e-05-content':    'SC-05 — Content Management',
-    'e2e-06-media':      'SC-06 — Media Library',
-    'e2e-07-regional':   'SC-07 — Contenu Régional',
-    'e2e-08-users':      'SC-08 — Gestion Utilisateurs',
-    'e2e-09-payments':   'SC-09 — Paiements Admin',
+    'e2e-01-signup':     'SC-01 - Inscription (Signup)',
+    'e2e-02-login':      'SC-02 - Login & Dashboard',
+    'e2e-03-packages':   'SC-03 - Packages & Pricing',
+    'e2e-04-navigation': 'SC-04 - Navigation Admin',
+    'e2e-05-content':    'SC-05 - Content Management',
+    'e2e-06-media':      'SC-06 - Media Library',
+    'e2e-07-regional':   'SC-07 - Contenu Régional',
+    'e2e-08-users':      'SC-08 - Gestion Utilisateurs',
+    'e2e-09-payments':   'SC-09 - Paiements Admin',
     'regression':        '🔄 Régression Complète',
   };
 
   const TESTS_BVINVEST = {
-    'e2e-01-login':           'SC-01 — Connexion utilisateur',
-    'e2e-02-member':          'SC-02 — Espace Membre',
-    'e2e-03-packages':        'SC-03 — Packages & Souscription',
-    'e2e-04-opportunities':   'SC-04/07 — Opportunités & Documents',
-    'e2e-05-kyc':             'SC-05 — Pipeline KYC/AML',
-    'e2e-06-profile':         'SC-06 — Profil Utilisateur',
-    'e2e-08-admin-access':    'SC-08 — Demandes d\'Accès (Admin)',
-    'e2e-09-admin-dashboard': 'SC-09 — Dashboard Admin',
-    'e2e-10-navigation':      'SC-10 — Navigation Globale',
-    'e2e-11-analytics':       'SC-11 — Analytics & Stats',
+    'e2e-01-login':           'SC-01 - Connexion utilisateur',
+    'e2e-02-member':          'SC-02 - Espace Membre',
+    'e2e-03-packages':        'SC-03 - Packages & Souscription',
+    'e2e-04-opportunities':   'SC-04/07 - Opportunités & Documents',
+    'e2e-05-kyc':             'SC-05 - Pipeline KYC/AML',
+    'e2e-06-profile':         'SC-06 - Profil Utilisateur',
+    'e2e-08-admin-access':    'SC-08 - Demandes d\'Accès (Admin)',
+    'e2e-09-admin-dashboard': 'SC-09 - Dashboard Admin',
+    'e2e-10-navigation':      'SC-10 - Navigation Globale',
+    'e2e-11-analytics':       'SC-11 - Analytics & Stats',
     'regression':             '🔄 Régression Complète',
   };
 
   const TESTS_EMIRAGATE = {
-    'e2e-01-login':     'SC-01 — Connexion Admin',
-    'e2e-02-dashboard': 'SC-02 — Dashboard Admin',
-    'e2e-03-conduit':   'SC-03 — Leads / Conduit',
-    'e2e-04-signup':    'SC-04 — Inscription Client',
-    'e2e-05-client':    'SC-05 — Connexion Client',
-    'e2e-06-profile':   'SC-06 — Profil Utilisateur',
-    'e2e-07-users':     'SC-07 — Gestion Utilisateurs',
-    'e2e-08-contacts':  'SC-08 — Gestion Contacts',
-    'e2e-09-analytics': 'SC-09 — Analytique',
-    'e2e-10-navigation':'SC-10/11 — Navigation & Déconnexion',
+    'e2e-01-login':     'SC-01 - Connexion Admin',
+    'e2e-02-dashboard': 'SC-02 - Dashboard Admin',
+    'e2e-03-conduit':   'SC-03 - Leads / Conduit',
+    'e2e-04-signup':    'SC-04 - Inscription Client',
+    'e2e-05-client':    'SC-05 - Connexion Client',
+    'e2e-06-profile':   'SC-06 - Profil Utilisateur',
+    'e2e-07-users':     'SC-07 - Gestion Utilisateurs',
+    'e2e-08-contacts':  'SC-08 - Gestion Contacts',
+    'e2e-09-analytics': 'SC-09 - Analytique',
+    'e2e-10-navigation':'SC-10/11 - Navigation & Déconnexion',
     'regression':       '🔄 Régression Complète',
   };
 
   const TESTS_BVPORTAGE = {
-    'e2e-01-signup-activation': 'E2E-01 — Inscription + OTP (Agence)',
-    'e2e-02-login-pack-subscription': 'E2E-02 — Login + Pack 159€',
-    'e2e-03-client-creation': 'E2E-03 — Client + Projet',
-    'e2e-04-mission-contract-kyc': 'E2E-04 — Mission + Contrat + KYC',
-    'e2e-05-contract-signature': 'E2E-05 — Signature Contrat',
-    'e2e-06-invoice-payment': 'E2E-06 — Facturation + Paiement',
-    'e2e-07-team-invitation': 'E2E-07 — Invitation Équipe',
-    'e2e-08-reversal': 'E2E-08 — Reversement',
+    'e2e-01-signup-activation': 'E2E-01 - Inscription + OTP (Agence)',
+    'e2e-02-login-pack-subscription': 'E2E-02 - Login + Pack 159€',
+    'e2e-03-client-creation': 'E2E-03 - Client + Projet',
+    'e2e-04-mission-contract-kyc': 'E2E-04 - Mission + Contrat + KYC',
+    'e2e-05-contract-signature': 'E2E-05 - Signature Contrat',
+    'e2e-06-invoice-payment': 'E2E-06 - Facturation + Paiement',
+    'e2e-07-team-invitation': 'E2E-07 - Invitation Équipe',
+    'e2e-08-reversal': 'E2E-08 - Reversement',
   };
 
   const TESTS_CREERAILLEURS = {
-    'e2e-01-navigation':  'SC-01 — Navigation & Accessibilité',
-    'e2e-02-cta':         'SC-02 — CTAs & Redirections',
-    'e2e-03-signup':      'SC-03 — Inscription',
-    'e2e-04-login':       'SC-04 — Connexion',
-    'e2e-05-tunnel':      'SC-05 — Tunnel de Vente',
-    'e2e-06-guest':       'SC-06 — Achat sans Compte',
-    'e2e-07-dashboard':   'SC-07 — Dashboard Utilisateur',
-    'e2e-08-admin':       'SC-08 — Dashboard Admin',
-    'e2e-09-multilingue': 'SC-09 — Multilingue FR/EN',
+    'e2e-01-navigation':  'SC-01 - Navigation & Accessibilité',
+    'e2e-02-cta':         'SC-02 - CTAs & Redirections',
+    'e2e-03-signup':      'SC-03 - Inscription',
+    'e2e-04-login':       'SC-04 - Connexion',
+    'e2e-05-tunnel':      'SC-05 - Tunnel de Vente',
+    'e2e-06-guest':       'SC-06 - Achat sans Compte',
+    'e2e-07-dashboard':   'SC-07 - Dashboard Utilisateur',
+    'e2e-08-admin':       'SC-08 - Dashboard Admin',
+    'e2e-09-multilingue': 'SC-09 - Multilingue FR/EN',
   };
 
   const TESTS_BVPORTAGE_FREELANCE = {
-    'e2e-01-signup-otp': 'E2E-01 — Inscription Freelance + OTP',
-    'e2e-02-pack-subscription': 'E2E-02 — Souscription Pack (79€)',
-    'e2e-03-project-client': 'E2E-03 — Création Projet + Client',
-    'e2e-04-mission-contract-signature': 'E2E-04 — Mission + Contrat + Signature',
-    'e2e-05-kyc-admin-validation': 'E2E-05 — KYC + Validation Admin',
-    'e2e-06-invoice-payment': 'E2E-06 — Facturation + Paiement',
-    'e2e-07-reset-password': 'E2E-07 — Reset Mot de passe',
-    'e2e-08-profile': 'E2E-08 — Gestion Profil',
-    'e2e-09-edge-cases': 'E2E-09 — Cas limites & comptes',
+    'e2e-01-signup-otp': 'E2E-01 - Inscription Freelance + OTP',
+    'e2e-02-pack-subscription': 'E2E-02 - Souscription Pack (79€)',
+    'e2e-03-project-client': 'E2E-03 - Création Projet + Client',
+    'e2e-04-mission-contract-signature': 'E2E-04 - Mission + Contrat + Signature',
+    'e2e-05-kyc-admin-validation': 'E2E-05 - KYC + Validation Admin',
+    'e2e-06-invoice-payment': 'E2E-06 - Facturation + Paiement',
+    'e2e-07-reset-password': 'E2E-07 - Reset Mot de passe',
+    'e2e-08-profile': 'E2E-08 - Gestion Profil',
+    'e2e-09-edge-cases': 'E2E-09 - Cas limites & comptes',
   };
 
   const TESTS_LAUNCHPAD = {
-    'e2e-01-signup':        'E2E-01 — Activation & Inscription (P0)',
-    'e2e-02-login':         'E2E-02 — Connexion & Dashboard (P0)',
-    'e2e-03-packs':         'E2E-03 — Achat Pack + Paiement (P0)',
-    'e2e-04-profile':       'E2E-04 — Profil Utilisateur (P1)',
-    'e2e-05-security':      'E2E-05 — Sécurité / Mot de passe (P1)',
-    'e2e-06-notifications': 'E2E-06 — Notifications & Emails (P1)',
-    'e2e-07-messaging':     'E2E-07 — Messagerie Client ↔ Admin (P2)',
+    'e2e-01-signup':        'E2E-01 - Activation & Inscription (P0)',
+    'e2e-02-login':         'E2E-02 - Connexion & Dashboard (P0)',
+    'e2e-03-packs':         'E2E-03 - Achat Pack + Paiement (P0)',
+    'e2e-04-profile':       'E2E-04 - Profil Utilisateur (P1)',
+    'e2e-05-security':      'E2E-05 - Sécurité / Mot de passe (P1)',
+    'e2e-06-notifications': 'E2E-06 - Notifications & Emails (P1)',
+    'e2e-07-messaging':     'E2E-07 - Messagerie Client ↔ Admin (P2)',
     'regression':           '🔄 Régression Complète',
   };
 
@@ -1010,7 +1010,7 @@
   }
 
   function escapeHtml(str) {
-    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return str.replace(/\u2014/g, '-').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   function clearOutput() {
@@ -1255,7 +1255,7 @@
         const label = scope === 'all' ? 'toutes les apps' : (APP_META[currentApp]?.label || currentApp);
         const msg = data.deleted === 0
           ? `ℹ️ Aucun résultat à supprimer pour ${label}`
-          : `✅ ${data.deleted} dossier(s) supprimé(s) — ${label}`;
+          : `✅ ${data.deleted} dossier(s) supprimé(s) - ${label}`;
         showToast(msg, 'success');
         // Rafraîchir le panneau screenshots
         setTimeout(() => {

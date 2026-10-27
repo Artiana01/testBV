@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/ClientDashboardPage.ts
  * ----------------------------------------------
- * Page Object — Dashboard Client Emiragate
+ * Page Object - Dashboard Client Emiragate
  * Couvre : accès espace client, KPIs client (SC-05)
  */
 
@@ -34,7 +34,7 @@ export class ClientDashboardPage extends BasePage {
     if (count > 0) {
       await expect(kpis.first()).toBeVisible({ timeout: 20_000 });
     } else {
-      console.log('   ℹ️  KPIs client non détectés — vérifier sélecteurs');
+      console.log('   ℹ️  KPIs client non détectés - vérifier sélecteurs');
     }
   }
 }

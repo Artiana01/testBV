@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/auth.spec.ts
  * -----------------------------------
- * Tests E2E — Authentification
+ * Tests E2E - Authentification
  * Couvre : inscription, connexion réussie, connexion échouée,
  *          mot de passe oublié, déconnexion, accès protégé.
  *
@@ -19,7 +19,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // =====================================================================
-// PARCOURS 2.1 — Inscription
+// PARCOURS 2.1 - Inscription
 // =====================================================================
 test.describe('Inscription', () => {
 
@@ -64,7 +64,7 @@ test.describe('Inscription', () => {
 });
 
 // =====================================================================
-// PARCOURS 2.2 — Connexion réussie
+// PARCOURS 2.2 - Connexion réussie
 // =====================================================================
 test.describe('Connexion réussie', () => {
 
@@ -96,7 +96,7 @@ test.describe('Connexion réussie', () => {
 });
 
 // =====================================================================
-// PARCOURS 2.3 — Connexion échouée
+// PARCOURS 2.3 - Connexion échouée
 // =====================================================================
 test.describe('Connexion échouée', () => {
 
@@ -142,7 +142,7 @@ test.describe('Connexion échouée', () => {
 });
 
 // =====================================================================
-// PARCOURS 2.4 — Mot de passe oublié
+// PARCOURS 2.4 - Mot de passe oublié
 // =====================================================================
 test.describe('Mot de passe oublié', () => {
 
@@ -162,7 +162,7 @@ test.describe('Mot de passe oublié', () => {
 });
 
 // =====================================================================
-// PARCOURS 2.5 — Déconnexion
+// PARCOURS 2.5 - Déconnexion
 // =====================================================================
 test.describe('Déconnexion', () => {
 

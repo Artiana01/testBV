@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import saas1 from '../../apps/saas1';
 
-test.describe('@saas — Authentication', () => {
+test.describe('@saas - Authentication', () => {
   test.use({ baseURL: saas1.baseURL });
 
   test('successful login redirects to dashboard', async ({ loginPage }) => {

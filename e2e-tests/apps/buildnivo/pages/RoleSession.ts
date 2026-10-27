@@ -2,7 +2,7 @@
  * apps/buildnivo/pages/RoleSession.ts
  * --------------------------------------
  * Ouvre un module BuildNivo avec la session d'un rôle précis (pas Direction).
- * AppShellPage.gotoModule() se reconnecte en Direction quand la session expire —
+ * AppShellPage.gotoModule() se reconnecte en Direction quand la session expire -
  * inacceptable pour un test qui doit s'exécuter avec les droits d'un autre rôle
  * (il changerait silencieusement de rôle). Ici la reconnexion se fait avec le
  * compte du rôle demandé, et la session rafraîchie est réécrite pour les tests
@@ -33,7 +33,7 @@ export async function openModuleAs(browser: Browser, roleKey: string, modulePath
 
   await page.goto(modulePath, { waitUntil: 'domcontentloaded', timeout: 45_000 }).catch(() => {});
   // La redirection vers /connexion d'une session expirée arrive côté client, après
-  // l'appel /api/auth/me — pas encore visible juste après domcontentloaded.
+  // l'appel /api/auth/me - pas encore visible juste après domcontentloaded.
   await page.waitForURL(/\/connexion/, { timeout: 8_000 }).catch(() => {});
   if (page.url().includes('/connexion')) {
     const login = new LoginPage(page);
@@ -53,7 +53,7 @@ export async function openModuleAs(browser: Browser, roleKey: string, modulePath
 /**
  * Recharge un module avec la session déjà ouverte par openModuleAs (même rôle, même contexte) :
  * permet à plusieurs tests d'un fichier de partager un contexte (une seule connexion) tout en
- * repartant d'une page propre — aucune modale ouverte par un test précédent ne survit au rechargement.
+ * repartant d'une page propre - aucune modale ouverte par un test précédent ne survit au rechargement.
  */
 export async function revisit(page: Page, modulePath: string): Promise<void> {
   await page.goto(modulePath, { waitUntil: 'domcontentloaded', timeout: 45_000 });
@@ -63,7 +63,7 @@ export async function revisit(page: Page, modulePath: string): Promise<void> {
   await shell.watchForOnboardingTour(3_000);
 }
 
-/** Date locale (AAAA-MM-JJ) à J+n — les champs date de l'app refusent le passé (min = aujourd'hui). */
+/** Date locale (AAAA-MM-JJ) à J+n - les champs date de l'app refusent le passé (min = aujourd'hui). */
 export function isoDateInDays(days: number): string {
   const d = new Date();
   d.setDate(d.getDate() + days);

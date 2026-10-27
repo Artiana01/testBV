@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/pages/SignupPage.ts
  * ------------------------------------
- * Page Object — Activation & Inscription Launchpad BV TECH
+ * Page Object - Activation & Inscription Launchpad BV TECH
  *
  * Flux spécifique Launchpad :
  *   1. Page d'accueil → bouton "Activer Launchpad"
@@ -139,7 +139,7 @@ export class SignupPage extends BasePage {
         { timeout: 8_000 }
       );
     } catch {
-      console.warn('Submit button still disabled — attempting click anyway');
+      console.warn('Submit button still disabled - attempting click anyway');
     }
     await submitBtn.first().click({ force: true });
     await this.page.waitForLoadState('domcontentloaded');

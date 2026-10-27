@@ -27,9 +27,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // ── 05.1 : vérifie uniquement le formulaire login admin (1 login) ──
-test.describe('E2E 05 — Login Admin + Accès Dashboard (CRITIQUE)', () => {
+test.describe('E2E 05 - Login Admin + Accès Dashboard (CRITIQUE)', () => {
 
-  test('05.1 — Connexion admin réussie avec identifiants valides', async ({ page }) => {
+  test('05.1 - Connexion admin réussie avec identifiants valides', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
 
@@ -47,7 +47,7 @@ test.describe('E2E 05 — Login Admin + Accès Dashboard (CRITIQUE)', () => {
 // ── 05.2-05.4 : session partagée via admin.json (AUCUN login supplémentaire) ──
 // globalSetup + 05.1 = déjà 2 logins admin → rate limit sur un 3e login.
 // On charge directement le storageState admin.json sauvegardé par le globalSetup.
-test.describe('E2E 05 — Dashboard Admin (session partagée)', () => {
+test.describe('E2E 05 - Dashboard Admin (session partagée)', () => {
   let sharedContext: BrowserContext;
   let sharedPage: Page;
 
@@ -66,25 +66,25 @@ test.describe('E2E 05 — Dashboard Admin (session partagée)', () => {
 
   test.afterAll(async () => {
     // sharedContext reste undefined si le beforeAll a skip avant de le créer
-    // (admin.json absent — voir BVTECH-LOGIN-CASSE)
+    // (admin.json absent - voir BVTECH-LOGIN-CASSE)
     await sharedContext?.close();
   });
 
-  test('05.2 — Accès au dashboard admin après connexion', async () => {
+  test('05.2 - Accès au dashboard admin après connexion', async () => {
     test.setTimeout(60_000);
     const adminDashboard = new AdminDashboardPage(sharedPage);
     await adminDashboard.goto();
     await adminDashboard.verifyAdminDashboardLoaded();
   });
 
-  test('05.3 — Les sections admin sont accessibles (sidebar)', async () => {
+  test('05.3 - Les sections admin sont accessibles (sidebar)', async () => {
     test.setTimeout(60_000);
     const adminDashboard = new AdminDashboardPage(sharedPage);
     await adminDashboard.goto();
     await adminDashboard.verifyAdminSections();
   });
 
-  test('05.4 — Les KPIs admin sont visibles', async () => {
+  test('05.4 - Les KPIs admin sont visibles', async () => {
     test.setTimeout(60_000);
     const adminDashboard = new AdminDashboardPage(sharedPage);
     await adminDashboard.goto();

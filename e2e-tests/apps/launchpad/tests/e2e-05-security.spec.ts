@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/tests/e2e-05-security.spec.ts
  * ----------------------------------------------
- * SCÉNARIO E2E #3 — Sécurité du compte (P1)
+ * SCÉNARIO E2E #3 - Sécurité du compte (P1)
  *
  * Étapes :
  *   1. Accéder aux paramètres de sécurité
@@ -29,9 +29,9 @@ const CLIENT_EMAIL    = process.env.TEST_EMAIL    ?? 'lilie@test.test';
 const CLIENT_PASSWORD = process.env.TEST_PASSWORD ?? 'lilie123!';
 const NEW_PASSWORD    = 'NewLaunch456!';
 
-test.describe('E2E 05 — Sécurité du compte (P1)', () => {
+test.describe('E2E 05 - Sécurité du compte (P1)', () => {
 
-  test('05.1 — Accéder aux paramètres de sécurité', async ({ page }) => {
+  test('05.1 - Accéder aux paramètres de sécurité', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -58,12 +58,12 @@ test.describe('E2E 05 — Sécurité du compte (P1)', () => {
         await expect(pwdSection.first()).toBeVisible();
         console.log('✅ Section mot de passe visible dans le profil');
       } else {
-        console.log('ℹ️  Section sécurité non trouvée — vérifier la navigation de l\'app');
+        console.log('ℹ️  Section sécurité non trouvée - vérifier la navigation de l\'app');
       }
     }
   });
 
-  test('05.2 — Le formulaire de changement de mot de passe est visible', async ({ page }) => {
+  test('05.2 - Le formulaire de changement de mot de passe est visible', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -95,7 +95,7 @@ test.describe('E2E 05 — Sécurité du compte (P1)', () => {
     console.log(`✅ ${await passwordInputs.count()} champ(s) mot de passe trouvé(s)`);
   });
 
-  test('05.3 — Modifier le mot de passe avec le mot de passe actuel correct', async ({ page }) => {
+  test('05.3 - Modifier le mot de passe avec le mot de passe actuel correct', async ({ page }) => {
     test.setTimeout(90_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -132,13 +132,13 @@ test.describe('E2E 05 — Sécurité du compte (P1)', () => {
       await profilePage.submitPasswordChange();
       console.log('✅ Mot de passe restauré');
     } catch {
-      console.warn('⚠️  Restauration du mot de passe échouée — vérifier manuellement');
+      console.warn('⚠️  Restauration du mot de passe échouée - vérifier manuellement');
     }
   });
 
-  test('05.4 — Connexion avec l\'ancien mot de passe doit échouer après changement', async ({ page }) => {
+  test('05.4 - Connexion avec l\'ancien mot de passe doit échouer après changement', async ({ page }) => {
     test.setTimeout(60_000);
-    // Ce test est dépendant de 05.3 — on suppose que le mdp a été changé
+    // Ce test est dépendant de 05.3 - on suppose que le mdp a été changé
     // Dans un pipeline continu, ce test serait conditionnel
     // Ici on vérifie juste que le mécanisme d'erreur fonctionne avec un mauvais mdp
     const loginPage = new LoginPage(page);
@@ -149,7 +149,7 @@ test.describe('E2E 05 — Sécurité du compte (P1)', () => {
     console.log('✅ Connexion avec mauvais mot de passe correctement rejetée');
   });
 
-  test('05.5 — Modification avec mauvais mot de passe actuel est refusée', async ({ page }) => {
+  test('05.5 - Modification avec mauvais mot de passe actuel est refusée', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);

@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/tests/e2e-07-messaging.spec.ts
  * -----------------------------------------------
- * SCÉNARIO E2E #5 — Messagerie Client ↔ Admin (P2)
+ * SCÉNARIO E2E #5 - Messagerie Client ↔ Admin (P2)
  *
  * Étapes :
  *   1. Client envoie un message
@@ -35,9 +35,9 @@ const CLIENT_PASSWORD = process.env.TEST_PASSWORD ?? 'lilie123!';
 const TEST_MESSAGE    = `Message E2E test ${Date.now()}`;
 const ADMIN_REPLY     = `Réponse admin E2E ${Date.now()}`;
 
-test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
+test.describe('E2E 07 - Messagerie Client ↔ Admin (P2)', () => {
 
-  test('07.1 — Client : la page messagerie est accessible', async ({ page }) => {
+  test('07.1 - Client : la page messagerie est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -53,7 +53,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     console.log('Page messagerie client:', url);
   });
 
-  test('07.2 — Client : le champ de saisie de message est visible', async ({ page }) => {
+  test('07.2 - Client : le champ de saisie de message est visible', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -66,7 +66,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     await messaging.verifyMessageInputVisible();
   });
 
-  test('07.3 — Client : envoyer un message', async ({ page }) => {
+  test('07.3 - Client : envoyer un message', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -84,7 +84,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     console.log('✅ Message envoyé:', msg);
   });
 
-  test('07.4 — Admin : la messagerie admin est accessible', async ({ page }) => {
+  test('07.4 - Admin : la messagerie admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -100,7 +100,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     console.log('Page messagerie admin:', url);
   });
 
-  test('07.5 — Admin : le message du client est visible', async ({ page }) => {
+  test('07.5 - Admin : le message du client est visible', async ({ page }) => {
     test.setTimeout(90_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -128,7 +128,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     console.log('✅ Message visible côté admin');
   });
 
-  test('07.6 — Admin : peut répondre à un message client', async ({ page }) => {
+  test('07.6 - Admin : peut répondre à un message client', async ({ page }) => {
     test.setTimeout(90_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -155,7 +155,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     console.log('✅ Admin a répondu:', adminReply);
   });
 
-  test('07.7 — Client : reçoit la réponse de l\'admin', async ({ page }) => {
+  test('07.7 - Client : reçoit la réponse de l\'admin', async ({ page }) => {
     test.setTimeout(120_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -191,7 +191,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     console.log('✅ Client reçoit la réponse admin');
   });
 
-  test('07.8 — [BUG P2] Suppression admin : vérifier la cohérence côté client', async ({ page }) => {
+  test('07.8 - [BUG P2] Suppression admin : vérifier la cohérence côté client', async ({ page }) => {
     test.setTimeout(120_000);
     const loginPage  = new LoginPage(page);
     const messaging  = new MessagingPage(page);
@@ -232,7 +232,7 @@ test.describe('E2E 07 — Messagerie Client ↔ Admin (P2)', () => {
     } else {
       console.log('✅ Message cohérent des deux côtés après suppression');
     }
-    // Test documenté — ne fait pas échouer le build, le bug est connu
+    // Test documenté - ne fait pas échouer le build, le bug est connu
   });
 
 });

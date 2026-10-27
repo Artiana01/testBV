@@ -1,7 +1,7 @@
 /**
  * e2e-10-reunions.spec.ts
  * ---------------------------
- * Section 11 du cahier de recette — Réunions & comptes rendus.
+ * Section 11 du cahier de recette - Réunions & comptes rendus.
  * Couvre : REU-01 à REU-03 (best-effort).
  */
 
@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
 import { openModuleAs, isoDateInDays } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 11. Réunions & comptes rendus', () => {
+test.describe('BuildNivo - 11. Réunions & comptes rendus', () => {
 
   test('Page Réunions & CR accessible', async ({ page }) => {
     const mod = new ModulePage(page, '/reunions');
@@ -19,9 +19,9 @@ test.describe('BuildNivo — 11. Réunions & comptes rendus', () => {
   });
 
   // Matrice RBAC de l'app (/matrix) : Réunions = "read" pour Direction, "write" pour Conducteur
-  // de travaux — la création se teste donc avec le Conducteur (bouton "Nouvelle réunion"),
+  // de travaux - la création se teste donc avec le Conducteur (bouton "Nouvelle réunion"),
   // Direction n'ayant délibérément que la consultation.
-  test('REU-01 — Création d\'une réunion avec convocation de participants (Conducteur de travaux)', async ({ browser }) => {
+  test('REU-01 - Création d\'une réunion avec convocation de participants (Conducteur de travaux)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'conducteur', '/reunions');
 
     await page.getByRole('button', { name: 'Nouvelle réunion' }).click();

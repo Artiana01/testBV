@@ -1,7 +1,7 @@
 /**
  * e2e-08-reserves.spec.ts
  * ---------------------------
- * Section 09 du cahier de recette — Réserves.
+ * Section 09 du cahier de recette - Réserves.
  * Couvre : RES-01 à RES-04 (best-effort).
  */
 
@@ -9,7 +9,7 @@ import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
 import { openModuleAs, isoDateInDays } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 09. Réserves', () => {
+test.describe('BuildNivo - 09. Réserves', () => {
 
   test('Page Réserves accessible avec filtres de statut', async ({ page }) => {
     const mod = new ModulePage(page, '/reserves');
@@ -22,8 +22,8 @@ test.describe('BuildNivo — 09. Réserves', () => {
   });
 
   // Matrice RBAC de l'app (/matrix) : Réserves = "read" pour Direction, "full" pour Conducteur de
-  // travaux — le bouton "Nouvelle réserve" n'existe (volontairement) que pour ce dernier.
-  test('RES-01 — Création d\'une réserve avec localisation et description (Conducteur de travaux)', async ({ browser }) => {
+  // travaux - le bouton "Nouvelle réserve" n'existe (volontairement) que pour ce dernier.
+  test('RES-01 - Création d\'une réserve avec localisation et description (Conducteur de travaux)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'conducteur', '/reserves');
 
     await page.getByRole('button', { name: 'Nouvelle réserve' }).click();
@@ -32,7 +32,7 @@ test.describe('BuildNivo — 09. Réserves', () => {
 
     const titre = `E2E Réserve ${Date.now()}`;
     await dialog.getByPlaceholder(/fissure cloison/i).fill(titre);
-    // Zone et Concerné sont des listes personnalisées (bouton "—" + listbox avec recherche).
+    // Zone et Concerné sont des listes personnalisées (bouton "-" + listbox avec recherche).
     await dialog.getByText('Zone *').locator('xpath=following::button[1]').click();
     await page.getByRole('listbox').getByRole('option', { name: 'Bâtiment Principal', exact: true }).click();
     await dialog.getByText('Concerné *').locator('xpath=following::button[1]').click();
@@ -60,7 +60,7 @@ test.describe('BuildNivo — 09. Réserves', () => {
     if (response.status() >= 500) {
       test.info().annotations.push({
         type: 'warning',
-        description: `Nettoyage impossible : PATCH …/resolve a répondu ${response.status()} — la réserve "${titre}" reste ouverte (anomalie serveur de recette).`,
+        description: `Nettoyage impossible : PATCH …/resolve a répondu ${response.status()} - la réserve "${titre}" reste ouverte (anomalie serveur de recette).`,
       });
     } else {
       await expect(row).toContainText(/levée/i, { timeout: 15_000 });
@@ -73,7 +73,7 @@ test.describe('BuildNivo — 09. Réserves', () => {
     const mod = new ModulePage(page, '/reserves');
     await mod.goto();
     // Filtres = <select> natifs : le texte affiché vient d'un <option> interne, que
-    // Playwright considère "hidden" — on vérifie donc la visibilité du <select> lui-même.
+    // Playwright considère "hidden" - on vérifie donc la visibilité du <select> lui-même.
     const lotSelect = page.locator('select').filter({ has: page.locator('option', { hasText: /tous les lots/i }) }).first();
     await expect(lotSelect).toBeVisible({ timeout: 10_000 });
     const zoneSelect = page.locator('select').filter({ has: page.locator('option', { hasText: /toutes les zones/i }) }).first();

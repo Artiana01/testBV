@@ -17,9 +17,9 @@ import { AdminDashboardPage } from '../pages/AdminDashboardPage';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-test.describe('SC-06 — Media Library Admin (IMPORTANT)', () => {
+test.describe('SC-06 - Media Library Admin (IMPORTANT)', () => {
 
-  test('06.1 — La Media Library est accessible', async ({ page }) => {
+  test('06.1 - La Media Library est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -28,14 +28,14 @@ test.describe('SC-06 — Media Library Admin (IMPORTANT)', () => {
     await expect(content.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('06.2 — Le bouton d\'upload est visible', async ({ page }) => {
+  test('06.2 - Le bouton d\'upload est visible', async ({ page }) => {
     test.setTimeout(60_000);
     const mediaPage = new AdminMediaLibraryPage(page);
     await mediaPage.goto();
     await mediaPage.verifyUploadButtonVisible();
   });
 
-  test('06.3 — Upload d\'une image fonctionne', async ({ page }) => {
+  test('06.3 - Upload d\'une image fonctionne', async ({ page }) => {
     test.setTimeout(60_000);
     const mediaPage = new AdminMediaLibraryPage(page);
     await mediaPage.goto();
@@ -43,7 +43,7 @@ test.describe('SC-06 — Media Library Admin (IMPORTANT)', () => {
     await mediaPage.verifyUploadSuccess();
   });
 
-  test('06.4 — La grille media contient des fichiers après upload', async ({ page }) => {
+  test('06.4 - La grille media contient des fichiers après upload', async ({ page }) => {
     test.setTimeout(60_000);
     const mediaPage = new AdminMediaLibraryPage(page);
     await mediaPage.goto();

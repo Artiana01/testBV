@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/tests/session-setup.spec.ts
  * ----------------------------------------
- * Initialisation session admin BV Business — Magic Link
+ * Initialisation session admin BV Business - Magic Link
  *
  * Usage : npm run session:bvbusiness
  *
@@ -33,13 +33,13 @@ function isConnected(url: string): boolean {
   );
 }
 
-test('Initialisation session admin — Magic Link', async ({ page, context }) => {
+test('Initialisation session admin - Magic Link', async ({ page, context }) => {
   test.setTimeout(10 * 60 * 1000);
 
   if (!fs.existsSync(AUTH_DIR)) fs.mkdirSync(AUTH_DIR, { recursive: true });
 
   console.log('\n════════════════════════════════════════════════════════════');
-  console.log('  BV Business — Initialisation de session');
+  console.log('  BV Business - Initialisation de session');
   console.log('════════════════════════════════════════════════════════════');
   console.log('  1. Cliquez "Continuer avec l\'adresse email" dans le navigateur');
   console.log('  2. Allez dans Mailpit/boîte mail → cliquez le lien de connexion');

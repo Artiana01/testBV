@@ -21,12 +21,12 @@ import * as fs from 'fs';
 
 dotenv.config({ path: path.resolve(__dirname, 'apps/bvtech/.env') });
 
-// client.json n'existe que si TEST_EMAIL est configuré — on le rend optionnel
+// client.json n'existe que si TEST_EMAIL est configuré - on le rend optionnel
 const clientSessionPath = path.resolve(__dirname, 'apps/bvtech/auth/client.json');
 const clientStorageState = fs.existsSync(clientSessionPath) ? clientSessionPath : undefined;
 
 // admin.json peut être absent tant que BVTECH-LOGIN-CASSE n'est pas corrigé côté site
-// (le login réel échoue, donc plus de session à sauvegarder) — sans ce garde-fou,
+// (le login réel échoue, donc plus de session à sauvegarder) - sans ce garde-fou,
 // Playwright plante au lancement (ENOENT) au lieu de laisser les tests se skip proprement.
 const adminSessionPath  = path.resolve(__dirname, 'apps/bvtech/auth/admin.json');
 const adminStorageState = fs.existsSync(adminSessionPath) ? adminSessionPath : undefined;
@@ -82,7 +82,7 @@ export default defineConfig({
       },
     },
 
-    // === Projet : Tests login flow (E2E 02, E2E 05) — connexion dans le test lui-même
+    // === Projet : Tests login flow (E2E 02, E2E 05) - connexion dans le test lui-même
     {
       name: 'bvtech-login-flow',
       testMatch: [

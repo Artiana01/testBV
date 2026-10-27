@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/AdminPacksPage.ts
  * --------------------------------------
- * Page Object — Gestion des Packs (admin)
+ * Page Object - Gestion des Packs (admin)
  * Couvre : liste des packs, modification, sauvegarde
  */
 
@@ -107,7 +107,7 @@ export class AdminPacksPage extends BasePage {
       await saveBtn.first().click();
       await this.page.waitForLoadState('domcontentloaded');
     } else {
-      console.log('ℹ️  Bouton save pack non trouvé — formulaire peut-être non ouvert');
+      console.log('ℹ️  Bouton save pack non trouvé - formulaire peut-être non ouvert');
     }
   }
 

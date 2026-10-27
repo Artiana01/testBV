@@ -24,9 +24,9 @@ import { AdminPacksPage } from '../pages/AdminPacksPage';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-test.describe('E2E 07 — Gestion des packs (IMPORTANT)', () => {
+test.describe('E2E 07 - Gestion des packs (IMPORTANT)', () => {
 
-  test('07.1 — Accéder à la liste des packs', async ({ page }) => {
+  test('07.1 - Accéder à la liste des packs', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -44,7 +44,7 @@ test.describe('E2E 07 — Gestion des packs (IMPORTANT)', () => {
     await packsPage.verifyPacksListVisible();
   });
 
-  test('07.2 — La liste contient au moins un pack', async ({ page }) => {
+  test('07.2 - La liste contient au moins un pack', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -64,7 +64,7 @@ test.describe('E2E 07 — Gestion des packs (IMPORTANT)', () => {
     expect(count).toBeGreaterThanOrEqual(1);
   });
 
-  test('07.3 — Modifier un pack et sauvegarder', async ({ page }) => {
+  test('07.3 - Modifier un pack et sauvegarder', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -81,7 +81,7 @@ test.describe('E2E 07 — Gestion des packs (IMPORTANT)', () => {
 
     // 2. Modifier un pack
     const editOpened = await packsPage.clickEditFirstPack();
-    test.skip(!editOpened, 'Formulaire édition pack non ouvert — vérifier la structure HTML');
+    test.skip(!editOpened, 'Formulaire édition pack non ouvert - vérifier la structure HTML');
 
     await packsPage.modifyPackField('name', 'Pack E2E Modifié');
 

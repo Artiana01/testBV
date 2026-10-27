@@ -222,7 +222,7 @@
 
 <header>
   <div class="logo">🎭 Tests E2E</div>
-  <span class="app-badge" id="appBadge">—</span>
+  <span class="app-badge" id="appBadge">-</span>
   <a class="hub-link" href="/" title="Retour au hub">⬅ Hub</a>
   <a class="hub-link" href="/history-page" title="Voir l'historique des tests" style="display:flex;align-items:center;gap:5px">📊 Historique</a>
   <span class="app-url" id="appUrl"></span>
@@ -301,7 +301,7 @@
 
   // ── Init couleur de l'app ──────────────────────────────────────────────────
   document.documentElement.style.setProperty('--accent', APP_CONFIG.color);
-  document.title = `Tests E2E — ${APP_CONFIG.label}`;
+  document.title = `Tests E2E - ${APP_CONFIG.label}`;
   document.getElementById('appBadge').textContent = APP_CONFIG.label;
   document.getElementById('appUrl').textContent   = APP_CONFIG.url;
 
@@ -423,7 +423,7 @@
       </div>
       <div class="fail-card-raw" id="${rawId}"><pre>${escapeHtml(raw || '')}</pre></div>`;
     document.getElementById('output').appendChild(card);
-    logLines.push({ type: 'fail', message: `${title} — ${reason}`, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) });
+    logLines.push({ type: 'fail', message: `${title} - ${reason}`, time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) });
     applyFilter();
     if (autoScroll) card.scrollIntoView({ block: 'end', behavior: 'smooth' });
   }
@@ -454,7 +454,7 @@
   }
 
   function escapeHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return str.replace(/\u2014/g,'-').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
   function clearOutput() {

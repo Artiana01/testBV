@@ -1,11 +1,11 @@
 /**
  * e2e-06-journal.spec.ts
  * --------------------------
- * Section 07 du cahier de recette — Journal de chantier.
+ * Section 07 du cahier de recette - Journal de chantier.
  * Couvre : JOUR-01 à JOUR-03 (best-effort).
  *
  * Le journal n'a plus de saisie manuelle : il est "composé automatiquement"
- * (présences, tâches, livraisons, incidents, météo, photos) — confirmé en direct
+ * (présences, tâches, livraisons, incidents, météo, photos) - confirmé en direct
  * pour Direction, Conducteur, Chef de chantier et Coordinateur SPS (le seul rôle
  * en "write" sur ce module dans la matrice RBAC de l'app n'a pas non plus de
  * champ de saisie). JOUR-01 vérifie donc qu'une action réelle du chantier crée
@@ -16,7 +16,7 @@ import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
 import { openModuleAs, isoDateInDays } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 07. Journal de chantier', () => {
+test.describe('BuildNivo - 07. Journal de chantier', () => {
 
   test('Page Journal de chantier accessible', async ({ page }) => {
     const mod = new ModulePage(page, '/journal');
@@ -25,7 +25,7 @@ test.describe('BuildNivo — 07. Journal de chantier', () => {
     await mod.verifyEmptyStateOrData();
   });
 
-  test('JOUR-01 — Une action du jour (création de tâche) est consignée automatiquement dans le journal', async ({ browser }) => {
+  test('JOUR-01 - Une action du jour (création de tâche) est consignée automatiquement dans le journal', async ({ browser }) => {
     const { context, page, shell } = await openModuleAs(browser, 'conducteur', '/taches');
 
     const titre = `E2E Journal ${Date.now()}`;

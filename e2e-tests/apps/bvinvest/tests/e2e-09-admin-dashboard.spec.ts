@@ -16,30 +16,30 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const BASE = process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com';
 
-test.describe('SC-09 — Dashboard Administrateur (IMPORTANT)', () => {
+test.describe('SC-09 - Dashboard Administrateur (IMPORTANT)', () => {
 
-  test('09.1 — Le dashboard admin est accessible', async ({ page }) => {
+  test('09.1 - Le dashboard admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminDashboardLoaded();
   });
 
-  test('09.2 — Les KPIs sont affichés', async ({ page }) => {
+  test('09.2 - Les KPIs sont affichés', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyKpisVisible();
   });
 
-  test('09.3 — La navigation admin est visible', async ({ page }) => {
+  test('09.3 - La navigation admin est visible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyAdminNavVisible();
   });
 
-  test('09.4 — La section gestion utilisateurs admin est accessible', async ({ page }) => {
+  test('09.4 - La section gestion utilisateurs admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -48,7 +48,7 @@ test.describe('SC-09 — Dashboard Administrateur (IMPORTANT)', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('09.5 — La section opportunités admin est accessible', async ({ page }) => {
+  test('09.5 - La section opportunités admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -56,7 +56,7 @@ test.describe('SC-09 — Dashboard Administrateur (IMPORTANT)', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('09.6 — La section documents admin est accessible', async ({ page }) => {
+  test('09.6 - La section documents admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -64,7 +64,7 @@ test.describe('SC-09 — Dashboard Administrateur (IMPORTANT)', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('09.7 — Aucune section admin ne retourne 404', async ({ page }) => {
+  test('09.7 - Aucune section admin ne retourne 404', async ({ page }) => {
     test.setTimeout(60_000);
     const sections = [
       '/fr/dashboard',

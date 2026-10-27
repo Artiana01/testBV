@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/pages/MessagingPage.ts
  * ----------------------------------------
- * Page Object — Messagerie Launchpad BV TECH
+ * Page Object - Messagerie Launchpad BV TECH
  *
  * Scénario E2E #5 (P2) :
  *   - Client envoie message → Admin reçoit → Admin répond → Client reçoit
@@ -27,7 +27,7 @@ export class MessagingPage extends BasePage {
       const hasContent = await this.page.locator('main, [class*="message"]').first().isVisible({ timeout: 3_000 }).catch(() => false);
       if (isNotLogin && hasContent) return;
     }
-    console.log('ℹ️  Page messagerie non trouvée — vérifier la route dans .env');
+    console.log('ℹ️  Page messagerie non trouvée - vérifier la route dans .env');
   }
 
   async gotoAdminMessages(): Promise<void> {

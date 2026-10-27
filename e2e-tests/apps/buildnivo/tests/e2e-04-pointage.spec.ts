@@ -1,9 +1,9 @@
 /**
  * e2e-04-pointage.spec.ts
  * ---------------------------
- * Section 05 du cahier de recette — Pointage & présences.
+ * Section 05 du cahier de recette - Pointage & présences.
  * Couvre : POINT-01 à POINT-05. Le pointage personnel ("Mon pointage") n'existe
- * que pour les rôles terrain (Ouvrier sous-traitant...) — Direction et Chef de
+ * que pour les rôles terrain (Ouvrier sous-traitant...) - Direction et Chef de
  * chantier n'ont pas cette section (contrôle/supervision uniquement) : POINT-01
  * et POINT-05 utilisent donc une session dédiée plutôt que celle du describe.
  */
@@ -15,7 +15,7 @@ import { openModuleAs } from '../pages/RoleSession';
 // Confirmé (inspection live, 2026-09-23) : ni Direction ni Chef de chantier n'ont de pointage
 // personnel sur /pointage (Direction : aucune section pointage ; Chef de chantier : vue
 // superviseur d'équipe uniquement, "Temps réel"/"Feuille de pointage"/"Export paie", pas de
-// "Mon pointage"). Le rôle "Ouvrier sous-traitant" a lui une section "Mon pointage" — c'est le
+// "Mon pointage"). Le rôle "Ouvrier sous-traitant" a lui une section "Mon pointage" - c'est le
 // rôle attendu pour POINT-01/POINT-05, pas Direction.
 function monPointage(page: Page) {
   return page.locator('div')
@@ -24,7 +24,7 @@ function monPointage(page: Page) {
     .last();
 }
 
-test.describe('BuildNivo — 05. Pointage & présences', () => {
+test.describe('BuildNivo - 05. Pointage & présences', () => {
 
   test('Page Pointage accessible, résumé du jour affiché', async ({ page }) => {
     const mod = new ModulePage(page, '/pointage');
@@ -42,7 +42,7 @@ test.describe('BuildNivo — 05. Pointage & présences', () => {
   // compte "vierge" (ils sautaient dès le 2e run de la journée).
   // NB: POINT-05 s'exécute avant POINT-01 pour couvrir, au 1er run du jour, l'état "Absent".
 
-  test('POINT-05 — Clock-out sans clock-in préalable → action refusée', async ({ browser }) => {
+  test('POINT-05 - Clock-out sans clock-in préalable → action refusée', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'ouvrier-sous-traitant', '/pointage');
     const card = monPointage(page);
     await expect(card).toBeVisible();
@@ -67,7 +67,7 @@ test.describe('BuildNivo — 05. Pointage & présences', () => {
     await context.close();
   });
 
-  test('POINT-01 — Clock-in en début de journée', async ({ browser }) => {
+  test('POINT-01 - Clock-in en début de journée', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'ouvrier-sous-traitant', '/pointage');
     const card = monPointage(page);
     await expect(card).toBeVisible();

@@ -17,7 +17,7 @@ import { Page, expect } from '@playwright/test';
 import { BasePage } from '../../../shared/pages/BasePage';
 
 export class SignupPage extends BasePage {
-  // ── Champs du formulaire — sélecteurs larges (name ET placeholder) ──────────
+  // ── Champs du formulaire - sélecteurs larges (name ET placeholder) ──────────
   readonly lastNameInput = this.page.locator(
     'input[name="last_name"], input[name="nom"], input[name="lastName"], input[placeholder*="votre nom" i]'
   ).first();
@@ -92,7 +92,7 @@ export class SignupPage extends BasePage {
     if (await option.isVisible({ timeout: 5_000 }).catch(() => false)) {
       await option.click().catch(() => {});
     } else {
-      console.log(`Option nationalité "${nationality}" non trouvée — sélecteur dropdown différent, champ ignoré`);
+      console.log(`Option nationalité "${nationality}" non trouvée - sélecteur dropdown différent, champ ignoré`);
     }
   }
 

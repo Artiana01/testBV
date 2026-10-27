@@ -1,6 +1,6 @@
 /**
  * Centralized selector constants.
- * Prefer data-testid attributes — they survive UI refactors.
+ * Prefer data-testid attributes - they survive UI refactors.
  * Add selectors here when a value is used in 2+ places.
  */
 

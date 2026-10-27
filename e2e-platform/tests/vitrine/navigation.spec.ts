@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import vitrine1 from '../../apps/vitrine1';
 
-test.describe('@vitrine — Navigation', () => {
+test.describe('@vitrine - Navigation', () => {
   test.use({ baseURL: vitrine1.baseURL });
 
   // Adapt these to your actual nav links

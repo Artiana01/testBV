@@ -20,7 +20,7 @@ export class SignupPage extends BasePage {
   }
 
   async fillSignupForm(name: string, email: string, password: string, civility: string = 'M.') {
-    // Last name — BV Portage uses placeholder "Saisir votre nom"
+    // Last name - BV Portage uses placeholder "Saisir votre nom"
     const lastNameLocator = this.page.locator([
       'input[name="last_name"]', 'input[name="lastName"]', 'input[name="nom"]',
       'input[placeholder*="votre nom" i]', 'input[placeholder*="nom" i]',
@@ -31,7 +31,7 @@ export class SignupPage extends BasePage {
       await lastNameLocator.fill(name);
     }
 
-    // First name — BV Portage uses placeholder "Saisir votre prénom"
+    // First name - BV Portage uses placeholder "Saisir votre prénom"
     const firstNameLocator = this.page.locator([
       'input[name="first_name"]', 'input[name="firstName"]', 'input[name="prenom"]',
       'input[placeholder*="votre pr" i]', 'input[placeholder*="prénom" i]', 'input[placeholder*="prenom" i]',
@@ -69,7 +69,7 @@ export class SignupPage extends BasePage {
       }
     }
 
-    // Email — use pressSequentially fallback for React controlled inputs
+    // Email - use pressSequentially fallback for React controlled inputs
     const emailLocator = this.page.locator('input[type="email"], input[name="email"], input[placeholder*="@"]').first();
     await emailLocator.waitFor({ state: 'visible', timeout: 10_000 });
     await emailLocator.click();
@@ -142,7 +142,7 @@ export class SignupPage extends BasePage {
       );
       return true;
     } catch {
-      // No redirect — check for a visible success message
+      // No redirect - check for a visible success message
     }
 
     const toastOrBanner = this.page.locator(

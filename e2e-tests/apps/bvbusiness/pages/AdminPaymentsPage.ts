@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/AdminPaymentsPage.ts
  * --------------------------------------------
- * Page Object — Gestion Paiements & Abonnements Admin BV Business
+ * Page Object - Gestion Paiements & Abonnements Admin BV Business
  */
 
 import { Page, expect } from '@playwright/test';

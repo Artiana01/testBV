@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/MemberSpacePage.ts
  * ----------------------------------------
- * Page Object — Espace Membre BV Invest
+ * Page Object - Espace Membre BV Invest
  * Couvre : accès espace privé, navigation interne (SC-02, SC-04)
  */
 

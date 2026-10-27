@@ -1,6 +1,6 @@
 /**
  * playwright.creerailleurs.config.ts
- * Configuration Playwright — Créer Ailleurs
+ * Configuration Playwright - Créer Ailleurs
  *
  * Lancement :
  *   npx playwright test --config=e2e-tests/playwright.creerailleurs.config.ts

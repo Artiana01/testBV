@@ -17,16 +17,16 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const BASE = process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com';
 
-test.describe('SC-04 — Opportunités d\'investissement (CRITIQUE)', () => {
+test.describe('SC-04 - Opportunités d\'investissement (CRITIQUE)', () => {
 
-  test('04.1 — La page opportunités est accessible', async ({ page }) => {
+  test('04.1 - La page opportunités est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.goto();
     await oppPage.verifyOpportunitiesLoaded();
   });
 
-  test('04.2 — L\'espace privé est accessible et contient des projets', async ({ page }) => {
+  test('04.2 - L\'espace privé est accessible et contient des projets', async ({ page }) => {
     test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.gotoPrivateSpace();
@@ -34,7 +34,7 @@ test.describe('SC-04 — Opportunités d\'investissement (CRITIQUE)', () => {
     await oppPage.verifyOpportunityCardsPresent();
   });
 
-  test('04.3 — Sélection d\'un projet affiche son détail', async ({ page }) => {
+  test('04.3 - Sélection d\'un projet affiche son détail', async ({ page }) => {
     test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.goto();
@@ -42,7 +42,7 @@ test.describe('SC-04 — Opportunités d\'investissement (CRITIQUE)', () => {
     await oppPage.verifyOpportunityDetailLoaded();
   });
 
-  test('04.4 — Accès conditionné selon le pack (data room)', async ({ page }) => {
+  test('04.4 - Accès conditionné selon le pack (data room)', async ({ page }) => {
     test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.goto();
@@ -52,9 +52,9 @@ test.describe('SC-04 — Opportunités d\'investissement (CRITIQUE)', () => {
 
 });
 
-test.describe('SC-07 — Accès aux documents', () => {
+test.describe('SC-07 - Accès aux documents', () => {
 
-  test('07.1 — Les documents sont visibles selon les droits', async ({ page }) => {
+  test('07.1 - Les documents sont visibles selon les droits', async ({ page }) => {
     test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.goto();
@@ -62,7 +62,7 @@ test.describe('SC-07 — Accès aux documents', () => {
     await oppPage.verifyDataRoomOrDocuments();
   });
 
-  test('07.2 — Bouton de téléchargement présent si droits suffisants', async ({ page }) => {
+  test('07.2 - Bouton de téléchargement présent si droits suffisants', async ({ page }) => {
     test.setTimeout(60_000);
     const oppPage = new OpportunitiesPage(page);
     await oppPage.goto();

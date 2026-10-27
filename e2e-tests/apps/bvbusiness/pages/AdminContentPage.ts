@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/AdminContentPage.ts
  * -------------------------------------------
- * Page Object — Gestion de Contenu Admin BV Business
+ * Page Object - Gestion de Contenu Admin BV Business
  * Couvre : édition Hero, Services, sauvegarde (SC-05)
  */
 
@@ -56,7 +56,7 @@ export class AdminContentPage extends BasePage {
     const field = this.page.locator(this.editableFields).first();
     const isVisible = await field.isVisible({ timeout: 20_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Aucun champ éditable trouvé — vérifier les sélecteurs CMS dans AdminContentPage');
+      console.log('   ℹ️  Aucun champ éditable trouvé - vérifier les sélecteurs CMS dans AdminContentPage');
       return;
     }
     await field.click();
@@ -68,7 +68,7 @@ export class AdminContentPage extends BasePage {
     const saveButton = this.page.locator(this.saveBtn).first();
     const isVisible = await saveButton.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton de sauvegarde non trouvé — vérifier les sélecteurs CMS dans AdminContentPage');
+      console.log('   ℹ️  Bouton de sauvegarde non trouvé - vérifier les sélecteurs CMS dans AdminContentPage');
       return;
     }
     await saveButton.click();
@@ -80,7 +80,7 @@ export class AdminContentPage extends BasePage {
       .or(this.page.getByText(/sauvegardé|saved|success|mis à jour|updated/i));
     const isVisible = await toast.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Toast de succès non visible — vérifier manuellement que la sauvegarde a fonctionné');
+      console.log('   ℹ️  Toast de succès non visible - vérifier manuellement que la sauvegarde a fonctionné');
     }
   }
 
@@ -88,7 +88,7 @@ export class AdminContentPage extends BasePage {
     const tabs = this.page.locator(this.sectionTabs);
     const count = await tabs.count();
     if (count === 0) {
-      console.log('   ℹ️  Aucun onglet de section trouvé — vérifier les sélecteurs dans AdminContentPage');
+      console.log('   ℹ️  Aucun onglet de section trouvé - vérifier les sélecteurs dans AdminContentPage');
       return;
     }
     expect(count).toBeGreaterThan(0);
@@ -102,7 +102,7 @@ export class AdminContentPage extends BasePage {
     const isVisible = await langSelector.isVisible({ timeout: 3_000 }).catch(() => false);
     // Ce test vérifie la présence d'un indicateur linguistique, pas obligatoire
     if (!isVisible) {
-      console.log('   ℹ️  Sélecteur de langue non trouvé dans le CMS — vérifier manuellement');
+      console.log('   ℹ️  Sélecteur de langue non trouvé dans le CMS - vérifier manuellement');
     }
   }
 }

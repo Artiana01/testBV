@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/SignupPage.ts
  * ------------------------------------
- * Page Object — Inscription Client Emiragate
+ * Page Object - Inscription Client Emiragate
  * Couvre : accès formulaire, remplissage, soumission (SC-04)
  */
 
@@ -35,7 +35,7 @@ export class SignupPage extends BasePage {
     const isSignupPage = /signup|register|inscription|créer/i.test(url)
       || await this.page.locator(this.emailInput).first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isSignupPage) {
-      console.log(`   ℹ️  URL signup : ${url} — vérifier URL dans SignupPage`);
+      console.log(`   ℹ️  URL signup : ${url} - vérifier URL dans SignupPage`);
     }
     await expect(this.page.locator('body')).toBeVisible();
   }

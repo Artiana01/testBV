@@ -1,7 +1,7 @@
 {
   "name": "e2e-tests",
   "version": "1.0.0",
-  "description": "Projet de tests E2E automatisés avec Playwright — utilisable sur plusieurs applications",
+  "description": "Projet de tests E2E automatisés avec Playwright - utilisable sur plusieurs applications",
   "scripts": {
     "start": "node test-runner-ui/start-all.js",
     "start:legacy": "node test-runner-ui/server.js",
@@ -114,6 +114,8 @@
     "test:buildnivo:messages": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-14-messages.spec.ts",
     "test:buildnivo:notifications": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-15-notifications.spec.ts",
     "test:buildnivo:rbac": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-16-rbac.spec.ts",
+    "test:buildnivo:avant-projet": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-34-avant-projet.spec.ts",
+    "test:buildnivo:devis-ia": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/e2e-35-extraction-devis-ia.spec.ts",
     "test:buildnivo:regression": "playwright test --config=playwright.buildnivo.config.ts apps/buildnivo/tests/regression.spec.ts",
     "test:buildnivo:report": "playwright show-report playwright-report-buildnivo",
     "ui": "node test-runner-ui/server.js",

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     triggers {
-        // ponytail: empty cron — activates on Forgejo notifyCommit push, never polls
+        // ponytail: empty cron - activates on Forgejo notifyCommit push, never polls
         pollSCM('')
     }
 

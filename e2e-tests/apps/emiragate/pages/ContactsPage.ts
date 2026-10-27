@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/ContactsPage.ts
  * ---------------------------------------
- * Page Object — Gestion Contacts Emiragate
+ * Page Object - Gestion Contacts Emiragate
  * Couvre : tableau, recherche (SC-08)
  */
 
@@ -34,7 +34,7 @@ export class ContactsPage extends BasePage {
     const table = this.page.locator('table, [role="table"], [class*="table"], [class*="grid"]');
     const isVisible = await table.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Tableau contacts non trouvé — vérifier URL/sélecteurs');
+      console.log('   ℹ️  Tableau contacts non trouvé - vérifier URL/sélecteurs');
     }
   }
 

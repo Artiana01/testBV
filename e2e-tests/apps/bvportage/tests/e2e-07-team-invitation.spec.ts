@@ -14,7 +14,7 @@ test.describe('E2E 07: Invitation membre équipe', () => {
       process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
-    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
+    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) - test ignoré');
 
     // Accéder au menu Équipe
     await agencyDashboardPage.clickTeamMenu();
@@ -37,7 +37,7 @@ test.describe('E2E 07: Invitation membre équipe', () => {
     await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     const hasInvitation = await page.locator('text=/invitation|agence|rejoindre/i').first().isVisible({ timeout: 8_000 }).catch(() => false);
-    test.skip(!hasInvitation, 'Lien d\'invitation factice inaccessible — test ignoré');
+    test.skip(!hasInvitation, 'Lien d\'invitation factice inaccessible - test ignoré');
 
     await expect(page.locator('text=/invitation|agence/i').first()).toBeVisible();
   });
@@ -48,7 +48,7 @@ test.describe('E2E 07: Invitation membre équipe', () => {
     await page.waitForLoadState('domcontentloaded').catch(() => {});
 
     const hasInvitForm = await page.locator('input[name="firstName"]').isVisible({ timeout: 8_000 }).catch(() => false);
-    test.skip(!hasInvitForm, 'Lien d\'invitation factice inaccessible — test ignoré');
+    test.skip(!hasInvitForm, 'Lien d\'invitation factice inaccessible - test ignoré');
 
     await expect(page.locator('text=/Vous êtes invité|rejoindre/i').first()).toBeVisible({ timeout: 5000 });
 
@@ -77,7 +77,7 @@ test.describe('E2E 07: Invitation membre équipe', () => {
       process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
-    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
+    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) - test ignoré');
 
     // Accéder au menu Équipe
     await agencyDashboardPage.clickTeamMenu();

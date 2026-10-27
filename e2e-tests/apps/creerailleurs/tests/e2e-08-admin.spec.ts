@@ -1,5 +1,5 @@
 /**
- * e2e-08-admin.spec.ts — Créer Ailleurs
+ * e2e-08-admin.spec.ts - Créer Ailleurs
  * SC-08 : Dashboard administrateur
  *
  * Vérifie : KPIs, gestion users, manifestes, packs, exports
@@ -15,20 +15,20 @@ import { AdminPage } from '../pages/AdminPage';
 
 const BASE = process.env.BASE_URL ?? 'https://dev.creerailleurs.com';
 
-test.describe('SC-08 — Dashboard administrateur', () => {
+test.describe('SC-08 - Dashboard administrateur', () => {
 
-  // Vérifie qu'une session admin valide existe — sinon skip toute la suite
+  // Vérifie qu'une session admin valide existe - sinon skip toute la suite
   test.beforeEach(async ({ page }) => {
     const admin = new AdminPage(page);
     await admin.navigateToAdmin();
     await page.waitForTimeout(1500);
     const url = page.url();
     if (/login|connexion|signin/i.test(url)) {
-      test.skip(true, 'Pas de session admin (admin.json absent) — configurer les credentials admin dans .env');
+      test.skip(true, 'Pas de session admin (admin.json absent) - configurer les credentials admin dans .env');
     }
   });
 
-  test('08.1 — Le dashboard admin est accessible', async ({ page }) => {
+  test('08.1 - Le dashboard admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdmin();
@@ -38,7 +38,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     console.log(`Dashboard admin: ${url}`);
   });
 
-  test('08.2 — Les KPIs du dashboard admin sont visibles', async ({ page }) => {
+  test('08.2 - Les KPIs du dashboard admin sont visibles', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdmin();
@@ -51,7 +51,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     console.log('KPIs admin visibles');
   });
 
-  test('08.3 — La page Gestion Utilisateurs est accessible', async ({ page }) => {
+  test('08.3 - La page Gestion Utilisateurs est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
@@ -60,7 +60,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     expect(url).not.toMatch(/login|connexion/i);
   });
 
-  test('08.4 — La liste des utilisateurs est affichée', async ({ page }) => {
+  test('08.4 - La liste des utilisateurs est affichée', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
@@ -72,11 +72,11 @@ test.describe('SC-08 — Dashboard administrateur', () => {
       console.log(`Utilisateurs listés: ${count} lignes`);
       expect(count).toBeGreaterThan(0);
     } else {
-      console.log('Table utilisateurs non visible — vérifier la structure admin');
+      console.log('Table utilisateurs non visible - vérifier la structure admin');
     }
   });
 
-  test('08.5 — [BUG CONNU] Création d\'utilisateur admin non fonctionnelle', async ({ page }) => {
+  test('08.5 - [BUG CONNU] Création d\'utilisateur admin non fonctionnelle', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
@@ -97,7 +97,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     expect(true).toBeTruthy();
   });
 
-  test('08.6 — La page Gestion Manifestes est accessible', async ({ page }) => {
+  test('08.6 - La page Gestion Manifestes est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminManifestes();
@@ -106,7 +106,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     expect(url).not.toMatch(/login|connexion/i);
   });
 
-  test('08.7 — La liste des Manifestes est affichée', async ({ page }) => {
+  test('08.7 - La liste des Manifestes est affichée', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminManifestes();
@@ -115,11 +115,11 @@ test.describe('SC-08 — Dashboard administrateur', () => {
       await expect(listEl).toBeVisible();
       console.log('Liste des Manifestes disponible');
     } else {
-      console.log('Liste Manifestes non visible — vérifier la structure de la page');
+      console.log('Liste Manifestes non visible - vérifier la structure de la page');
     }
   });
 
-  test('08.8 — Création d\'un Manifeste depuis l\'admin', async ({ page }) => {
+  test('08.8 - Création d\'un Manifeste depuis l\'admin', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminManifestes();
@@ -149,7 +149,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     }
   });
 
-  test('08.9 — La page Gestion des Packs est accessible', async ({ page }) => {
+  test('08.9 - La page Gestion des Packs est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminPacks();
@@ -159,7 +159,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     console.log(`Page packs admin: ${url}`);
   });
 
-  test('08.10 — Export PDF disponible', async ({ page }) => {
+  test('08.10 - Export PDF disponible', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
@@ -182,7 +182,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     expect(true).toBeTruthy();
   });
 
-  test('08.11 — Export Excel/CSV disponible', async ({ page }) => {
+  test('08.11 - Export Excel/CSV disponible', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
@@ -196,7 +196,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     expect(true).toBeTruthy();
   });
 
-  test('08.12 — [BUG CONNU] Montants mal formatés dans les exports', async ({ page }) => {
+  test('08.12 - [BUG CONNU] Montants mal formatés dans les exports', async ({ page }) => {
     test.setTimeout(60_000);
     const admin = new AdminPage(page);
     await admin.navigateToAdminUsers();
@@ -204,7 +204,7 @@ test.describe('SC-08 — Dashboard administrateur', () => {
     // Tenter d'exporter et vérifier le format des montants
     const exportBtn = admin.export_btn.or(admin.export_excel);
     if (await exportBtn.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
-      // On ne télécharge pas réellement — on documente l'anomalie
+      // On ne télécharge pas réellement - on documente l'anomalie
       console.log('ANOMALIE SC-08: Montants incorrectement formatés dans les exports:');
       console.log('  2490 au lieu de 24,90 EUR');
       console.log('  1992 au lieu de 19,92 EUR');

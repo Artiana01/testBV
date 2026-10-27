@@ -1,7 +1,7 @@
 /**
  * playwright.buildnivo.cleanup.config.ts
  * ----------------------------------------
- * Config dédiée au nettoyage des chantiers de test (apps/buildnivo/maintenance/) — hors suite de
+ * Config dédiée au nettoyage des chantiers de test (apps/buildnivo/maintenance/) - hors suite de
  * recette, pas de global-setup (openModuleAs se reconnecte tout seul si la session a expiré).
  */
 import { defineConfig, devices } from '@playwright/test';

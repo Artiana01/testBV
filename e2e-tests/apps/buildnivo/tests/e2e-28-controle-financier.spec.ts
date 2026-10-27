@@ -24,7 +24,7 @@ const REPORT_SECTIONS = [
   'Principaux documents et justificatifs', 'Date de la prochaine mise à jour',
 ];
 
-test.describe('BuildNivo — 28. Contrôle financier', () => {
+test.describe('BuildNivo - 28. Contrôle financier', () => {
   let context: BrowserContext;
   let page: Page;
 
@@ -34,7 +34,7 @@ test.describe('BuildNivo — 28. Contrôle financier', () => {
   });
   test.afterAll(async () => { await context?.close(); });
 
-  test('CTRL-01 — Sidebar : les 4 entrées du Contrôle financier sont proposées', async () => {
+  test('CTRL-01 - Sidebar : les 4 entrées du Contrôle financier sont proposées', async () => {
     await revisit(page, '/dashboard');
     await expect(page.getByRole('link', { name: "Synthèse de l'opération" })).toHaveAttribute('href', '/controle');
     await expect(page.getByRole('link', { name: 'Rapports périodiques' })).toHaveAttribute('href', '/controle/rapports');
@@ -42,10 +42,10 @@ test.describe('BuildNivo — 28. Contrôle financier', () => {
     await expect(page.getByRole('link', { name: 'Accès financiers' })).toHaveAttribute('href', '/controle/acces');
   });
 
-  test('CTRL-02 — Synthèse de l\'opération : synthèse publiée, ou message explicite sans donnée approximative', async () => {
+  test('CTRL-02 - Synthèse de l\'opération : synthèse publiée, ou message explicite sans donnée approximative', async () => {
     await revisit(page, '/controle');
     await expect(page.getByRole('heading', { name: "Synthèse de l'opération", level: 1 })).toBeVisible({ timeout: 20_000 });
-    // Soit une synthèse est rattachée, soit l'app l'indique — jamais de chiffres inventés.
+    // Soit une synthèse est rattachée, soit l'app l'indique - jamais de chiffres inventés.
     const empty = page.getByText('Aucune synthèse publiée pour cette opération');
     if (await empty.isVisible({ timeout: 5_000 }).catch(() => false)) {
       await expect(page.getByText(/aucune donnée approximative n'est affichée à la place/i)).toBeVisible();
@@ -53,7 +53,7 @@ test.describe('BuildNivo — 28. Contrôle financier', () => {
     await expect(page).not.toHaveURL(/\/connexion/);
   });
 
-  test('CTRL-03 — Rapports périodiques : 13 rubriques standardisées, versions, statut Brouillon / Publié', async () => {
+  test('CTRL-03 - Rapports périodiques : 13 rubriques standardisées, versions, statut Brouillon / Publié', async () => {
     await revisit(page, '/controle/rapports');
     await expect(page.getByRole('heading', { name: 'Rapports périodiques', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/préparé par l'IA, vérifié et validé par le promoteur avant publication/i)).toBeVisible();
@@ -66,7 +66,7 @@ test.describe('BuildNivo — 28. Contrôle financier', () => {
     }
   });
 
-  test('CTRL-04 — Rapports périodiques : un rapport publié est figé, un brouillon exige une vérification humaine', async () => {
+  test('CTRL-04 - Rapports périodiques : un rapport publié est figé, un brouillon exige une vérification humaine', async () => {
     await revisit(page, '/controle/rapports');
     await expect(page.getByRole('heading', { name: 'Rapports périodiques', level: 1 })).toBeVisible({ timeout: 20_000 });
 
@@ -84,7 +84,7 @@ test.describe('BuildNivo — 28. Contrôle financier', () => {
     }
   });
 
-  test('CTRL-05 — Justificatifs & historique : documents partagés, photos sélectionnées, rapports publiés, journal des accès', async () => {
+  test('CTRL-05 - Justificatifs & historique : documents partagés, photos sélectionnées, rapports publiés, journal des accès', async () => {
     await revisit(page, '/controle/justificatifs');
     await expect(page.getByRole('heading', { name: 'Justificatifs et historique', level: 1 })).toBeVisible({ timeout: 20_000 });
     for (const section of ['Documents partagés', "Photographies d'avancement", 'Historique des rapports publiés', 'Journal des accès']) {
@@ -99,7 +99,7 @@ test.describe('BuildNivo — 28. Contrôle financier', () => {
     await expect(page).toHaveURL(/\/controle\/acces$/, { timeout: 20_000 });
   });
 
-  test('CTRL-06 — Accès financiers : organisme, utilisateurs autorisés, blocs optionnels, documents partagés, journal', async () => {
+  test('CTRL-06 - Accès financiers : organisme, utilisateurs autorisés, blocs optionnels, documents partagés, journal', async () => {
     await revisit(page, '/controle/acces');
     await expect(page.getByRole('heading', { name: 'Accès contrôle financier', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/ouvrez un accès de suivi à un organisme financier/i)).toBeVisible();

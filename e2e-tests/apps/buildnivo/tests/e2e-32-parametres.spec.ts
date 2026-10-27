@@ -1,7 +1,7 @@
 /**
  * e2e-32-parametres.spec.ts
  * -------------------------
- * Module "Paramètres" (/parametres) : préférences de l'application — langue de l'interface, mode
+ * Module "Paramètres" (/parametres) : préférences de l'application - langue de l'interface, mode
  * découverte, abonnement (le flux Stripe du Propriétaire est couvert par e2e-17-billing) et à propos.
  *
  * Lecture seule : la langue n'est pas changée (préférence persistée du compte Direction partagé).
@@ -10,9 +10,9 @@
 import { test, expect } from '@playwright/test';
 import { openModuleAs } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 32. Paramètres', () => {
+test.describe('BuildNivo - 32. Paramètres', () => {
 
-  test('PARAM-01 — Direction : langue, mode découverte, abonnement en lecture (réservé au propriétaire), à propos', async ({ browser }) => {
+  test('PARAM-01 - Direction : langue, mode découverte, abonnement en lecture (réservé au propriétaire), à propos', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/parametres');
     await expect(page.getByRole('heading', { name: 'Paramètres', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText("Préférences de l'application")).toBeVisible();
@@ -34,7 +34,7 @@ test.describe('BuildNivo — 32. Paramètres', () => {
     await context.close();
   });
 
-  test('PARAM-02 — "Revoir la présentation des modules" relance le tour guidé', async ({ browser }) => {
+  test('PARAM-02 - "Revoir la présentation des modules" relance le tour guidé', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/parametres');
     await expect(page.getByRole('heading', { name: 'Mode découverte' })).toBeVisible({ timeout: 20_000 });
     // Le shell (AppShellPage) ferme automatiquement le tour dès que "Passer" apparaît : il disparaît donc

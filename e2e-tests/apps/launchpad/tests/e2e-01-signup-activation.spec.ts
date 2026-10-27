@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/tests/e2e-01-signup-activation.spec.ts
  * -------------------------------------------------------
- * SCÉNARIO E2E #1 — Partie 1 : Activation & Inscription (P0 CRITIQUE)
+ * SCÉNARIO E2E #1 - Partie 1 : Activation & Inscription (P0 CRITIQUE)
  *
  * Étapes :
  *   1. Accéder au site
@@ -25,9 +25,9 @@ import { SignupPage } from '../pages/SignupPage';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () => {
+test.describe('E2E 01 - Activation & Inscription Launchpad (P0 CRITIQUE)', () => {
 
-  test("01.1 — La page d'accueil est accessible", async ({ page }) => {
+  test("01.1 - La page d'accueil est accessible", async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoHomepage();
@@ -35,7 +35,7 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
     console.log('Page d\'accueil chargée:', page.url());
   });
 
-  test('01.2 — Le bouton "Activer Launchpad" est visible sur la page d\'accueil', async ({ page }) => {
+  test('01.2 - Le bouton "Activer Launchpad" est visible sur la page d\'accueil', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoHomepage();
@@ -44,14 +44,14 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
       .or(page.getByText(/activer launchpad/i));
     const found = await activateBtn.first().isVisible({ timeout: 10_000 }).catch(() => false);
     if (!found) {
-      console.log('ℹ️  Bouton "Activer Launchpad" non trouvé — le texte du CTA est peut-être différent sur cette version');
-      test.skip(true, 'CTA "Activer Launchpad" absent sur cette page — vérifier le texte réel du bouton');
+      console.log('ℹ️  Bouton "Activer Launchpad" non trouvé - le texte du CTA est peut-être différent sur cette version');
+      test.skip(true, 'CTA "Activer Launchpad" absent sur cette page - vérifier le texte réel du bouton');
       return;
     }
     await expect(activateBtn.first()).toBeVisible();
   });
 
-  test('01.3 — Cliquer sur "Activer Launchpad" redirige vers le formulaire d\'inscription', async ({ page }) => {
+  test('01.3 - Cliquer sur "Activer Launchpad" redirige vers le formulaire d\'inscription', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoHomepage();
@@ -60,7 +60,7 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
       .or(page.getByText(/activer launchpad/i));
     const found = await activateBtn.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!found) {
-      test.skip(true, 'CTA "Activer Launchpad" absent — test ignoré');
+      test.skip(true, 'CTA "Activer Launchpad" absent - test ignoré');
       return;
     }
     await activateBtn.first().click();
@@ -75,14 +75,14 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
     console.log('URL après activation:', currentUrl);
   });
 
-  test('01.4 — Le formulaire d\'inscription contient le champ Email', async ({ page }) => {
+  test('01.4 - Le formulaire d\'inscription contient le champ Email', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoSignup();
     await expect(page.locator('input[type="email"]').first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.5 — Le formulaire contient les champs Mot de passe', async ({ page }) => {
+  test('01.5 - Le formulaire contient les champs Mot de passe', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoSignup();
@@ -92,7 +92,7 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
     await expect(passwordFields.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.6 — Les champs du formulaire sont remplissables', async ({ page }) => {
+  test('01.6 - Les champs du formulaire sont remplissables', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoSignup();
@@ -108,7 +108,7 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
     }
   });
 
-  test('01.7 — Inscription complète : soumission du formulaire', async ({ page }) => {
+  test('01.7 - Inscription complète : soumission du formulaire', async ({ page }) => {
     test.setTimeout(90_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoSignup();
@@ -126,7 +126,7 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
     const recaptcha = page.locator('iframe[src*="recaptcha"], .g-recaptcha, [data-sitekey]');
     const hasRecaptcha = await recaptcha.first().isVisible({ timeout: 3_000 }).catch(() => false);
     if (hasRecaptcha) {
-      console.log('ℹ️  reCAPTCHA détecté — soumission automatisée impossible');
+      console.log('ℹ️  reCAPTCHA détecté - soumission automatisée impossible');
       test.skip(true, 'reCAPTCHA actif : soumission manuelle requise');
       return;
     }
@@ -143,10 +143,10 @@ test.describe('E2E 01 — Activation & Inscription Launchpad (P0 CRITIQUE)', () 
     const isNotOnSignup = !/signup|inscription/i.test(finalUrl);
     const hasSuccess = await page.getByText(/compte créé|inscription réussie|vérifiez|confirmation|succès/i).first().isVisible({ timeout: 5_000 }).catch(() => false);
     expect(isNotOnSignup || hasSuccess).toBeTruthy();
-    console.log('✅ Inscription soumise — URL finale:', finalUrl);
+    console.log('✅ Inscription soumise - URL finale:', finalUrl);
   });
 
-  test('01.8 — Un lien "Se connecter" est visible sur le formulaire d\'inscription', async ({ page }) => {
+  test('01.8 - Un lien "Se connecter" est visible sur le formulaire d\'inscription', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.gotoSignup();

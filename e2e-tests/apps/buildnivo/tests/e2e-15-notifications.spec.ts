@@ -1,7 +1,7 @@
 /**
  * e2e-15-notifications.spec.ts
  * ---------------------------------
- * Section 16 du cahier de recette — Notifications.
+ * Section 16 du cahier de recette - Notifications.
  * Couvre : NOTIF-01, NOTIF-02.
  * NOTIF-03 (accès aux notifications d'un tiers via manipulation d'URL) est
  * couvert dans e2e-16-rbac.spec.ts.
@@ -10,9 +10,9 @@
 import { test, expect } from '@playwright/test';
 import { AppShellPage } from '../pages/AppShellPage';
 
-test.describe('BuildNivo — 16. Notifications', () => {
+test.describe('BuildNivo - 16. Notifications', () => {
 
-  test('NOTIF-01 — Le compteur de notifications non-lues est visible', async ({ page }) => {
+  test('NOTIF-01 - Le compteur de notifications non-lues est visible', async ({ page }) => {
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
 
@@ -25,12 +25,12 @@ test.describe('BuildNivo — 16. Notifications', () => {
     await shell.gotoModule('/chantiers');
     await shell.openNotifications();
 
-    // Le panneau n'a ni role ARIA dédié ni classe "notification" — il s'identifie par son
+    // Le panneau n'a ni role ARIA dédié ni classe "notification" - il s'identifie par son
     // titre "Alertes prioritaires" (confirmé par capture d'écran, pas de sélecteur structurel fiable).
     await expect(page.getByText('Alertes prioritaires').first()).toBeVisible({ timeout: 8_000 });
   });
 
-  test('NOTIF-02 — "Tout marquer comme lu" remet le compteur à zéro', async ({ page }) => {
+  test('NOTIF-02 - "Tout marquer comme lu" remet le compteur à zéro', async ({ page }) => {
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
     await shell.openNotifications();
@@ -41,10 +41,10 @@ test.describe('BuildNivo — 16. Notifications', () => {
     // Confirmé (inspection live, 2026-09-23) : le panneau "Alertes prioritaires" affiche de
     // nombreuses notifications réelles (changements de statut de tâche, documents, visas...)
     // mais ne contient aucun texte "marquer" nulle part dans tout l'arbre d'accessibilité de la
-    // page — pas un souci de sélecteur, aucune action de lecture groupée trouvée dans l'UI.
+    // page - pas un souci de sélecteur, aucune action de lecture groupée trouvée dans l'UI.
     test.skip(!hasBtn,
-      'NOTIF-02 — aucun contrôle "Tout marquer comme lu" trouvé dans le panneau de notifications, ' +
-      'même avec de nombreuses notifications réelles affichées — possible absence de cette ' +
+      'NOTIF-02 - aucun contrôle "Tout marquer comme lu" trouvé dans le panneau de notifications, ' +
+      'même avec de nombreuses notifications réelles affichées - possible absence de cette ' +
       'fonctionnalité, à vérifier manuellement.'
     );
 
@@ -54,11 +54,11 @@ test.describe('BuildNivo — 16. Notifications', () => {
     await markAllReadBtn.first().click();
     const readAllResponse = await readAll;
 
-    // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-10-07, 4 essais sur 2 runs) — PAS un problème de
+    // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-10-07, 4 essais sur 2 runs) - PAS un problème de
     // test : PATCH /api/notifications/read-all répond 503 ; le compteur reste inchangé, même après
     // rechargement. Le test se remet à tourner tout seul dès que l'API répond sans erreur serveur.
     test.fixme(!!readAllResponse && readAllResponse.status() >= 500,
-      `NOTIF-02 — PATCH /api/notifications/read-all répond ${readAllResponse?.status()} : « Tout marquer ` +
+      `NOTIF-02 - PATCH /api/notifications/read-all répond ${readAllResponse?.status()} : « Tout marquer ` +
       'comme lu » n\'est pas pris en compte côté serveur (anomalie applicative réelle, pas un défaut de ce test).'
     );
     await page.waitForTimeout(1000);

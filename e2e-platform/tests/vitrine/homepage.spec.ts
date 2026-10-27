@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import vitrine1 from '../../apps/vitrine1';
 
-test.describe('@vitrine — Homepage', () => {
+test.describe('@vitrine - Homepage', () => {
   test.use({ baseURL: vitrine1.baseURL });
 
   test('homepage loads and shows hero section', async ({ homePage }) => {

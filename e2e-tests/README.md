@@ -1,4 +1,4 @@
-# E2E Tests — Projet Playwright
+# E2E Tests - Projet Playwright
 
 Projet de tests End-to-End automatisés avec Playwright et TypeScript.
 Conçu pour tester plusieurs applications différentes depuis un seul projet centralisé.
@@ -53,7 +53,7 @@ npm run test:report
 
 Voici les 4 étapes pour démarrer des tests sur une nouvelle application.
 
-### Étape 1 — Copier le template
+### Étape 1 - Copier le template
 
 ```bash
 # Copier le dossier app-template et renommer selon l'application
@@ -62,7 +62,7 @@ cp -r apps/app-template apps/nom-de-lapp
 
 Exemples de noms : `apps/saas-crm`, `apps/boutique-ecommerce`, `apps/vitrine-restaurant`
 
-### Étape 2 — Configurer le .env
+### Étape 2 - Configurer le .env
 
 ```bash
 # Dans le nouveau dossier de l'application
@@ -77,7 +77,7 @@ TEST_EMAIL=compte-de-test@email.com
 TEST_PASSWORD=motdepasse-de-test
 ```
 
-### Étape 3 — Lancer Codegen pour explorer l'app
+### Étape 3 - Lancer Codegen pour explorer l'app
 
 ```bash
 npm run codegen -- https://url-de-la-nouvelle-app.com
@@ -85,7 +85,7 @@ npm run codegen -- https://url-de-la-nouvelle-app.com
 
 Un navigateur Chrome s'ouvre. Naviguez dans l'application : chaque action que vous effectuez génère automatiquement du code Playwright dans la fenêtre à droite.
 
-### Étape 4 — Nettoyer et organiser le code généré
+### Étape 4 - Nettoyer et organiser le code généré
 
 Copiez le code généré depuis Codegen et organisez-le en Page Objects dans le bon dossier. Voir la section "Workflow complet" ci-dessous pour un exemple concret.
 
@@ -97,17 +97,17 @@ Copiez le code généré depuis Codegen et organisez-le en Page Objects dans le 
 
 > "Vérifier que l'utilisateur peut se connecter avec son email et son mot de passe, et qu'il est redirigé vers le tableau de bord."
 
-### Étape 1 — Recevoir le scénario
+### Étape 1 - Recevoir le scénario
 
 Le testeur vous transmet le scénario à automatiser (souvent en texte simple ou dans un fichier partagé).
 
-### Étape 2 — Lancer Codegen sur l'app
+### Étape 2 - Lancer Codegen sur l'app
 
 ```bash
 npm run codegen -- https://mon-saas.com
 ```
 
-### Étape 3 — Jouer le scénario dans Chrome
+### Étape 3 - Jouer le scénario dans Chrome
 
 Dans la fenêtre Chrome ouverte par Codegen :
 1. Aller sur `/login`
@@ -117,7 +117,7 @@ Dans la fenêtre Chrome ouverte par Codegen :
 
 Le code se génère automatiquement dans la fenêtre Codegen.
 
-### Étape 4 — Copier le code brut généré
+### Étape 4 - Copier le code brut généré
 
 **AVANT (code brut Codegen) :**
 
@@ -129,7 +129,7 @@ await page.locator('button[type="submit"]').click();
 await expect(page).toHaveURL('/dashboard');
 ```
 
-### Étape 5 — Organiser en Page Objects
+### Étape 5 - Organiser en Page Objects
 
 **APRÈS (code nettoyé en Page Object) :**
 
@@ -155,7 +155,7 @@ test('Connexion utilisateur valide', async ({ page }) => {
 });
 ```
 
-### Étape 6 — Lancer le test
+### Étape 6 - Lancer le test
 
 ```bash
 npm run test:nom-de-lapp
@@ -165,7 +165,7 @@ npm run test:nom-de-lapp
 
 ## 5. Outils Playwright disponibles
 
-### Codegen — Générer du code automatiquement
+### Codegen - Générer du code automatiquement
 
 ```bash
 # Desktop (résolution standard)
@@ -178,7 +178,7 @@ npm run codegen:mobile -- https://ton-app.com
 npx playwright codegen --output=apps/saas/tests/login.spec.ts https://ton-app.com
 ```
 
-### Debug — Déboguer un test qui échoue
+### Debug - Déboguer un test qui échoue
 
 ```bash
 # Lance les tests en mode debug (navigateur visible, pas à pas)
@@ -193,7 +193,7 @@ En mode debug, une fenêtre Playwright Inspector s'ouvre. Vous pouvez :
 - Voir les sélecteurs suggérés
 - Inspecter les éléments de la page
 
-### Inspector — Inspecter une page manuellement
+### Inspector - Inspecter une page manuellement
 
 ```bash
 PWDEBUG=1 npm test
@@ -248,13 +248,13 @@ login.spec.ts
 
 ## 7. Ajouter un nouveau test
 
-### Étape 1 — Ouvrir le fichier de test concerné
+### Étape 1 - Ouvrir le fichier de test concerné
 
 ```
 apps/mon-app/tests/login.spec.ts
 ```
 
-### Étape 2 — Ajouter un bloc `test()`
+### Étape 2 - Ajouter un bloc `test()`
 
 ```typescript
 test('Description claire du scénario', async ({ page }) => {
@@ -270,7 +270,7 @@ test('Description claire du scénario', async ({ page }) => {
 });
 ```
 
-### Étape 3 — Lancer le test pour vérifier
+### Étape 3 - Lancer le test pour vérifier
 
 ```bash
 npm run test:mon-app
@@ -286,33 +286,33 @@ Les sélecteurs indiquent à Playwright **quel élément cliquer ou remplir**. C
 
 | Priorité | Type | Exemple | Stabilité |
 |----------|------|---------|-----------|
-| 1 | `data-testid` | `getByTestId('login-btn')` | Excellente — ne change que si intentionnel |
-| 2 | Rôle ARIA | `getByRole('button', { name: 'Se connecter' })` | Très bonne — basée sur l'accessibilité |
-| 3 | Label | `getByLabel('Email')` | Bonne — pour les formulaires |
-| 4 | ID | `locator('#email')` | Acceptable — si stable |
-| 5 | Classe CSS | `locator('.btn-blue')` | Fragile — change souvent |
+| 1 | `data-testid` | `getByTestId('login-btn')` | Excellente - ne change que si intentionnel |
+| 2 | Rôle ARIA | `getByRole('button', { name: 'Se connecter' })` | Très bonne - basée sur l'accessibilité |
+| 3 | Label | `getByLabel('Email')` | Bonne - pour les formulaires |
+| 4 | ID | `locator('#email')` | Acceptable - si stable |
+| 5 | Classe CSS | `locator('.btn-blue')` | Fragile - change souvent |
 
 ### Exemples concrets
 
 ```typescript
-// ✅ Privilégier — sélecteurs sémantiques et stables
+// ✅ Privilégier - sélecteurs sémantiques et stables
 page.getByRole('button', { name: 'Se connecter' })
 page.getByLabel('Email')
 page.getByTestId('login-button')
 page.getByPlaceholder('votre@email.com')
 page.getByText('Bienvenue sur le tableau de bord')
 
-// ⚠️ Acceptable — sélecteurs par ID
+// ⚠️ Acceptable - sélecteurs par ID
 page.locator('#email')
 page.locator('#submit-btn')
 
-// ❌ Fragile — à éviter si possible
+// ❌ Fragile - à éviter si possible
 page.locator('.btn-primary-blue-v2')
 page.locator('div > span:nth-child(3)')
 page.locator('[class*="button"]')
 ```
 
-### Astuce — Utiliser Codegen pour trouver le meilleur sélecteur
+### Astuce - Utiliser Codegen pour trouver le meilleur sélecteur
 
 ```bash
 npm run codegen -- https://votre-app.com

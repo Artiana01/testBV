@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/pages/AdminDashboardPage.ts
  * --------------------------------------------
- * Page Object — Dashboard Admin Launchpad BV TECH
+ * Page Object - Dashboard Admin Launchpad BV TECH
  *
  * Couvre :
  *   - Navigation admin

@@ -2,7 +2,7 @@
  * playwright.bvbusiness.session.config.ts
  * -----------------------------------------
  * Config minimale pour initialiser la session admin BV Business.
- * Pas de globalSetup — ouvre directement le navigateur en mode visible.
+ * Pas de globalSetup - ouvre directement le navigateur en mode visible.
  *
  * Usage : npm run session:bvbusiness
  */

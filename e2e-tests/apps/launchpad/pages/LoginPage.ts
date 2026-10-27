@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/pages/LoginPage.ts
  * ------------------------------------
- * Page Object — Authentification Launchpad BV TECH
+ * Page Object - Authentification Launchpad BV TECH
  * Couvre : /fr/login
  */
 

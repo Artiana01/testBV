@@ -38,7 +38,7 @@ const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes pour recevoir et cliquer le lien
     fs.mkdirSync(AUTH_DIR, { recursive: true });
   }
 
-  console.log('\n🚀  BV Business — Initialisation de session admin');
+  console.log('\n🚀  BV Business - Initialisation de session admin');
   console.log('════════════════════════════════════════════════════');
   console.log(`   App     : ${BASE_URL}`);
   console.log(`   Email   : ${ADMIN_EMAIL}`);
@@ -46,7 +46,7 @@ const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes pour recevoir et cliquer le lien
   console.log('');
   console.log('   Instructions :');
   console.log('   1. Le navigateur va s\'ouvrir sur la page login');
-  console.log('   2. L\'email est pré-rempli — cliquez "Continuer avec l\'adresse email"');
+  console.log('   2. L\'email est pré-rempli - cliquez "Continuer avec l\'adresse email"');
   console.log('   3. Ouvrez votre boîte mail et cliquez le lien de connexion');
   console.log('      ⚠️  Ouvrez le lien dans CE navigateur (pas dans un autre)');
   console.log('   4. Une fois connecté, la session sera sauvegardée automatiquement');
@@ -85,7 +85,7 @@ const TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes pour recevoir et cliquer le lien
     console.log(`   ✅  Email pré-rempli : ${ADMIN_EMAIL}`);
     console.log('   👆  Cliquez maintenant "Continuer avec l\'adresse email" dans le navigateur\n');
   } catch {
-    console.warn('   ⚠️  Champ email non trouvé — remplissez manuellement dans le navigateur');
+    console.warn('   ⚠️  Champ email non trouvé - remplissez manuellement dans le navigateur');
   }
 
   // Attendre que l'utilisateur soit connecté (URL hors /login)

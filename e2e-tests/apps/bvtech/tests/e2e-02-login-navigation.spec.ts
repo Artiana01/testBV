@@ -23,11 +23,11 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 const CLIENT_EMAIL    = process.env.TEST_EMAIL    ?? 'diary@gmail.com';
 const CLIENT_PASSWORD = process.env.TEST_PASSWORD ?? 'Diary12345678';
 
-test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
+test.describe('E2E 02 - Login utilisateur + Navigation (CRITIQUE)', () => {
 
   // ── Tests sans connexion (vérifications de formulaire / erreurs) ──
 
-  test('02.1 — La page login est accessible et contient le formulaire', async ({ page }) => {
+  test('02.1 - La page login est accessible et contient le formulaire', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -36,7 +36,7 @@ test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
     await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
 
-  test('02.2 — Connexion réussie avec identifiants valides', async ({ page }) => {
+  test('02.2 - Connexion réussie avec identifiants valides', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.login(CLIENT_EMAIL, CLIENT_PASSWORD);
@@ -44,7 +44,7 @@ test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
     console.log('Connexion réussie pour:', CLIENT_EMAIL);
   });
 
-  test('02.3 — Connexion échouée avec mauvais mot de passe', async ({ page }) => {
+  test('02.3 - Connexion échouée avec mauvais mot de passe', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -53,7 +53,7 @@ test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
     await loginPage.verifyLoginError();
   });
 
-  test('02.4 — Connexion échouée avec email inexistant', async ({ page }) => {
+  test('02.4 - Connexion échouée avec email inexistant', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -64,8 +64,8 @@ test.describe('E2E 02 — Login utilisateur + Navigation (CRITIQUE)', () => {
 
 });
 
-// ── Tests de navigation — session partagée pour éviter le rate limiting ──
-test.describe('E2E 02 — Navigation après connexion', () => {
+// ── Tests de navigation - session partagée pour éviter le rate limiting ──
+test.describe('E2E 02 - Navigation après connexion', () => {
   let sharedContext: BrowserContext;
   let sharedPage: Page;
 
@@ -82,7 +82,7 @@ test.describe('E2E 02 — Navigation après connexion', () => {
     await sharedContext.close();
   });
 
-  test('02.5 — Navigation vers le profil après connexion', async () => {
+  test('02.5 - Navigation vers le profil après connexion', async () => {
     test.setTimeout(60_000);
     const dashboardPage = new DashboardPage(sharedPage);
     await dashboardPage.navigateToProfile();
@@ -90,7 +90,7 @@ test.describe('E2E 02 — Navigation après connexion', () => {
     await expect(sharedPage.getByRole('heading', { name: 'Profil utilisateur' })).toBeVisible({ timeout: 20_000 });
   });
 
-  test('02.6 — Navigation vers le plan/abonnement après connexion', async () => {
+  test('02.6 - Navigation vers le plan/abonnement après connexion', async () => {
     test.setTimeout(60_000);
     const dashboardPage = new DashboardPage(sharedPage);
     await dashboardPage.navigateToPlan();
@@ -100,7 +100,7 @@ test.describe('E2E 02 — Navigation après connexion', () => {
     await expect(planContent.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('02.7 — Le sidebar/menu de navigation est visible', async () => {
+  test('02.7 - Le sidebar/menu de navigation est visible', async () => {
     test.setTimeout(60_000);
     await sharedPage.goto(process.env.BASE_URL + '/fr/dashboard', { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await sharedPage.waitForTimeout(1000);

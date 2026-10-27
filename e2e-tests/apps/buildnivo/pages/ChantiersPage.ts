@@ -1,7 +1,7 @@
 /**
  * apps/buildnivo/pages/ChantiersPage.ts
  * ----------------------------------------
- * Page Object — /chantiers : liste des chantiers + création (PROJ-01, PROJ-04).
+ * Page Object - /chantiers : liste des chantiers + création (PROJ-01, PROJ-04).
  */
 
 import { Page, expect } from '@playwright/test';
@@ -50,7 +50,7 @@ export class ChantiersPage extends AppShellPage {
 
   async verifyChantierVisible(nom: string): Promise<void> {
     // Après création, le nom apparaît aussi comme <option> (masquée) dans le switcher de
-    // chantier de l'en-tête — getVisibleText() ignore cette correspondance cachée et cible
+    // chantier de l'en-tête - getVisibleText() ignore cette correspondance cachée et cible
     // la vraie carte affichée dans la liste.
     await expect(this.getVisibleText(nom).first()).toBeVisible({ timeout: 15_000 });
   }

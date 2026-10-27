@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/PackagesPage.ts
  * -------------------------------------
- * Page Object — Packages & Abonnements BV Invest
+ * Page Object - Packages & Abonnements BV Invest
  * Couvre : ACCESS / MEMBER, souscription, upgrade (SC-03)
  */
 
@@ -53,7 +53,7 @@ export class PackagesPage extends BasePage {
     const btn = this.page.locator(this.subscribeBtn);
     const isVisible = await btn.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton de souscription non trouvé — vérifier URL dans PackagesPage');
+      console.log('   ℹ️  Bouton de souscription non trouvé - vérifier URL dans PackagesPage');
     }
   }
 
@@ -61,7 +61,7 @@ export class PackagesPage extends BasePage {
     const btn = this.page.locator(this.subscribeBtn).first();
     const isVisible = await btn.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton de souscription non trouvé — ignorer');
+      console.log('   ℹ️  Bouton de souscription non trouvé - ignorer');
       return;
     }
     await btn.click();

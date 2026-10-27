@@ -1,7 +1,7 @@
 /**
  * e2e-21-reprise-guide.spec.ts
  * ----------------------------
- * BUILDNIVO-304 — Guide pratique de la Reprise de chantier après création.
+ * BUILDNIVO-304 - Guide pratique de la Reprise de chantier après création.
  */
 
 import { test, expect, Page } from '@playwright/test';
@@ -65,7 +65,7 @@ async function findProjectCard(page: Page, projectName: string) {
   return heading.locator('xpath=../../..');
 }
 
-test.describe('BuildNivo — BUILDNIVO-304. Guide de reprise après création', () => {
+test.describe('BuildNivo - BUILDNIVO-304. Guide de reprise après création', () => {
 
   test('Ouverture automatique, contenu, animation intégrée et lien plein écran', async ({ page }) => {
     const { guide } = await createProjectAndWaitForGuide(page);

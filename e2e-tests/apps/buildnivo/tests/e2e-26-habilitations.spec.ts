@@ -15,9 +15,9 @@ import { openModuleAs } from '../pages/RoleSession';
 
 const COLUMNS = ['Membre', 'Entreprise', 'Type', 'Obtenue le', 'Expire le', 'Justificatif', 'Actions'];
 
-test.describe('BuildNivo — 26. Habilitations', () => {
+test.describe('BuildNivo - 26. Habilitations', () => {
 
-  test('HAB-01 — Direction : gère le registre des habilitations (création possible, aucun accès restreint)', async ({ browser }) => {
+  test('HAB-01 - Direction : gère le registre des habilitations (création possible, aucun accès restreint)', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/habilitations');
     await expect(page.getByRole('heading', { name: 'Habilitations', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('heading', { name: /accès restreint/i })).toHaveCount(0);
@@ -27,7 +27,7 @@ test.describe('BuildNivo — 26. Habilitations', () => {
   });
 
   for (const [roleKey, label] of [['conducteur', 'Conducteur de travaux'], ['chef-chantier', 'Chef de chantier']] as const) {
-    test(`HAB-02 — ${label} : registre des habilitations du chantier (colonnes) sans création`, async ({ browser }) => {
+    test(`HAB-02 - ${label} : registre des habilitations du chantier (colonnes) sans création`, async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, roleKey, '/habilitations');
       await expect(page.getByRole('heading', { name: 'Habilitations', level: 1 })).toBeVisible({ timeout: 20_000 });
       await expect(page.getByText(/certifications et qualifications des membres du chantier/i)).toBeVisible();
@@ -37,7 +37,7 @@ test.describe('BuildNivo — 26. Habilitations', () => {
     });
   }
 
-  test('HAB-03 — Salarié ouvrier : "Nouvelle habilitation" (membre, type, dates, justificatif) ; annulation sans enregistrement', async ({ browser }) => {
+  test('HAB-03 - Salarié ouvrier : "Nouvelle habilitation" (membre, type, dates, justificatif) ; annulation sans enregistrement', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'salarie', '/habilitations');
     await expect(page.getByRole('heading', { name: 'Habilitations', level: 1 })).toBeVisible({ timeout: 20_000 });
     for (const col of COLUMNS) await expect(page.getByRole('columnheader', { name: col, exact: true }), `Colonne "${col}"`).toBeVisible();

@@ -17,9 +17,9 @@ const BASE         = process.env.EMIRAGATE_BASE_URL          ?? 'https://dev.blu
 const CLIENT_EMAIL = process.env.EMIRAGATE_CLIENT_EMAIL      ?? '';
 const CLIENT_PASS  = process.env.EMIRAGATE_CLIENT_PASSWORD   ?? '';
 
-test.describe('SC-05 — Connexion client (CRITIQUE)', () => {
+test.describe('SC-05 - Connexion client (CRITIQUE)', () => {
 
-  test('05.1 — Connexion réussie avec identifiants client', async ({ page }) => {
+  test('05.1 - Connexion réussie avec identifiants client', async ({ page }) => {
     test.setTimeout(60_000);
     test.skip(!CLIENT_EMAIL, 'EMIRAGATE_CLIENT_EMAIL non configuré dans .env');
     const loginPage = new LoginPage(page);
@@ -28,7 +28,7 @@ test.describe('SC-05 — Connexion client (CRITIQUE)', () => {
     console.log(`Connexion client réussie : ${CLIENT_EMAIL}`);
   });
 
-  test('05.2 — Accès au dashboard client après connexion', async ({ page }) => {
+  test('05.2 - Accès au dashboard client après connexion', async ({ page }) => {
     test.setTimeout(60_000);
     test.skip(!CLIENT_EMAIL, 'EMIRAGATE_CLIENT_EMAIL non configuré dans .env');
     const loginPage = new LoginPage(page);
@@ -38,7 +38,7 @@ test.describe('SC-05 — Connexion client (CRITIQUE)', () => {
     await dashboard.verifyClientDashboardLoaded();
   });
 
-  test('05.3 — Les KPIs client sont affichés', async ({ page }) => {
+  test('05.3 - Les KPIs client sont affichés', async ({ page }) => {
     test.setTimeout(60_000);
     // storageState client déjà appliqué par le projet Playwright
     const dashboard = new ClientDashboardPage(page);
@@ -47,7 +47,7 @@ test.describe('SC-05 — Connexion client (CRITIQUE)', () => {
     await dashboard.verifyKpisVisible();
   });
 
-  test('05.4 — Le dashboard client ne redirige pas vers login (session)', async ({ page }) => {
+  test('05.4 - Le dashboard client ne redirige pas vers login (session)', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new ClientDashboardPage(page);
     await dashboard.goto();

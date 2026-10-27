@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/KycPipelinePage.ts
  * ----------------------------------------
- * Page Object — Pipeline KYC/AML BV Invest
+ * Page Object - Pipeline KYC/AML BV Invest
  * Couvre : qualification, upload documents, NDA/Charte, validation (SC-05)
  */
 
@@ -42,7 +42,7 @@ export class KycPipelinePage extends BasePage {
       .or(this.page.getByText(/qualification|documents|nda|charte|validation/i));
     const isVisible = await steps.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Indicateurs d\'étapes KYC non trouvés — vérifier URL dans KycPipelinePage');
+      console.log('   ℹ️  Indicateurs d\'étapes KYC non trouvés - vérifier URL dans KycPipelinePage');
     }
   }
 
@@ -61,7 +61,7 @@ export class KycPipelinePage extends BasePage {
       .or(this.page.locator('[class*="upload"],[class*="dropzone"]'));
     const isVisible = await uploadArea.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Zone d\'upload non trouvée — peut ne pas être encore accessible');
+      console.log('   ℹ️  Zone d\'upload non trouvée - peut ne pas être encore accessible');
     }
   }
 
@@ -70,7 +70,7 @@ export class KycPipelinePage extends BasePage {
       .or(this.page.locator('[class*="nda"],[class*="charte"]'));
     const isVisible = await nda.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Section NDA/Charte non visible — peut être une étape ultérieure');
+      console.log('   ℹ️  Section NDA/Charte non visible - peut être une étape ultérieure');
     }
   }
 

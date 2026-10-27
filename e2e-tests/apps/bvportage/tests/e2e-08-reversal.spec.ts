@@ -15,7 +15,7 @@ test.describe('E2E 08: Reversement', () => {
       process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
-    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
+    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) - test ignoré');
 
     // Naviguer vers les paiements
     await page.goto('/fr/paiements');
@@ -35,7 +35,7 @@ test.describe('E2E 08: Reversement', () => {
       process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
-    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
+    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) - test ignoré');
 
     // Naviguer vers l'historique des reversements
     await page.goto('/fr/reversements');
@@ -57,7 +57,7 @@ test.describe('E2E 08: Reversement', () => {
       process.env.AGENCY_PASSWORD || 'Admin123!'
     );
 
-    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
+    test.skip(!(await loginPage.isLoggedIn()), 'Compte agence indisponible (credentials .env placeholder) - test ignoré');
 
     // Naviguer vers les reversements
     await page.goto('/fr/reversements');
@@ -81,7 +81,7 @@ test.describe('E2E 08: Reversement', () => {
     await page.locator('input[name="password"]').fill(process.env.AGENCY_PASSWORD || 'Admin123!');
     await page.locator('button[type="submit"]').click();
     await page.waitForLoadState('domcontentloaded').catch(() => {});
-    test.skip(/\/connexion|\/login/i.test(page.url()), 'Compte agence indisponible (credentials .env placeholder) — test ignoré');
+    test.skip(/\/connexion|\/login/i.test(page.url()), 'Compte agence indisponible (credentials .env placeholder) - test ignoré');
 
     // Naviguer vers les reversements
     await page.goto('/fr/reversements');

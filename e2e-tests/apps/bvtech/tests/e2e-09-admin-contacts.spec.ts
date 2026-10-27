@@ -25,9 +25,9 @@ import { AdminContactsPage } from '../pages/AdminContactsPage';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-test.describe('E2E 09 — Gestion des contacts (SECONDAIRE)', () => {
+test.describe('E2E 09 - Gestion des contacts (SECONDAIRE)', () => {
 
-  test('09.1 — Accéder à la liste des contacts', async ({ page }) => {
+  test('09.1 - Accéder à la liste des contacts', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -45,7 +45,7 @@ test.describe('E2E 09 — Gestion des contacts (SECONDAIRE)', () => {
     await contactsPage.verifyContactsListVisible();
   });
 
-  test('09.2 — Rechercher un message dans les contacts', async ({ page }) => {
+  test('09.2 - Rechercher un message dans les contacts', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -69,7 +69,7 @@ test.describe('E2E 09 — Gestion des contacts (SECONDAIRE)', () => {
     await expect(mainContent.first()).toBeVisible();
   });
 
-  test('09.3 — Navigation par pagination', async ({ page }) => {
+  test('09.3 - Navigation par pagination', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -95,7 +95,7 @@ test.describe('E2E 09 — Gestion des contacts (SECONDAIRE)', () => {
     await expect(mainContent.first()).toBeVisible();
   });
 
-  test('09.4 — La liste des contacts affiche des données', async ({ page }) => {
+  test('09.4 - La liste des contacts affiche des données', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);

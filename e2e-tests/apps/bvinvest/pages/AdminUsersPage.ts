@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/AdminUsersPage.ts
  * ----------------------------------------
- * Page Object — Gestion Utilisateurs Admin BV Invest
+ * Page Object - Gestion Utilisateurs Admin BV Invest
  * Couvre : liste, recherche, validation/rejet (SC-08)
  */
 
@@ -56,7 +56,7 @@ export class AdminUsersPage extends BasePage {
     const btn = this.page.locator(this.actionBtn);
     const count = await btn.count();
     if (count === 0) {
-      console.log('   ℹ️  Boutons d\'action non trouvés — vérifier URL/sélecteurs');
+      console.log('   ℹ️  Boutons d\'action non trouvés - vérifier URL/sélecteurs');
     }
   }
 }

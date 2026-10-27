@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/LoginPage.ts
  * ------------------------------------
- * Page Object — Authentification Emiragate
+ * Page Object - Authentification Emiragate
  * URL : /en/login
  */
 

@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/AdminPaymentsPage.ts
  * -----------------------------------------
- * Page Object — Consultation des Paiements (admin)
+ * Page Object - Consultation des Paiements (admin)
  * Couvre : liste des paiements, détails d'un paiement
  */
 
@@ -59,7 +59,7 @@ export class AdminPaymentsPage extends BasePage {
   async clickViewFirstPayment(): Promise<void> {
     // Vérifier qu'il y a des paiements avant de tenter de cliquer
     if (!(await this.hasPayments())) {
-      console.log('ℹ️  Table paiements vide — consultation ignorée');
+      console.log('ℹ️  Table paiements vide - consultation ignorée');
       return;
     }
 
@@ -82,7 +82,7 @@ export class AdminPaymentsPage extends BasePage {
   async verifyPaymentDetailsVisible(): Promise<void> {
     // Si table vide, on reste sur la liste → vérification optionnelle
     if (!(await this.hasPayments())) {
-      console.log('ℹ️  Aucun paiement — vérification des détails ignorée');
+      console.log('ℹ️  Aucun paiement - vérification des détails ignorée');
       return;
     }
     const detailsContent = this.page.getByText(/montant|amount|statut|status|id|référence|reference/i)

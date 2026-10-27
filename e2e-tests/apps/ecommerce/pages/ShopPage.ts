@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/pages/ShopPage.ts
  * ----------------------------------
- * Page Object — Page boutique (/shop) — app Atelier
+ * Page Object - Page boutique (/shop) - app Atelier
  * Sélecteurs validés sur l'HTML réel.
  *
  * Structure confirmée :
@@ -18,7 +18,7 @@ import { BasePage } from '../../../shared/pages/BasePage';
 
 export class ShopPage extends BasePage {
 
-  // Grille de produits — div avec class grid
+  // Grille de produits - div avec class grid
   private readonly productGrid  = '.grid.grid-cols-1.sm\\:grid-cols-2';
   // Chaque carte produit est un article ou un lien dans la grille
   private readonly productCard  = '.grid.grid-cols-1.sm\\:grid-cols-2 > *';
@@ -89,7 +89,7 @@ export class ShopPage extends BasePage {
   }
 
   // =========================================================
-  // RECHERCHE — placeholder="Search..."
+  // RECHERCHE - placeholder="Search..."
   // =========================================================
 
   async search(term: string): Promise<void> {
@@ -117,7 +117,7 @@ export class ShopPage extends BasePage {
   }
 
   // =========================================================
-  // FILTRES — Atelier utilise des boutons (pas des checkboxes)
+  // FILTRES - Atelier utilise des boutons (pas des checkboxes)
   // =========================================================
 
   async verifyFilterPanelVisible(): Promise<void> {
@@ -140,7 +140,7 @@ export class ShopPage extends BasePage {
    * La liste Atelier : All Products / Furniture / Lighting / Decor / Art Prints
    */
   async checkFirstCategory(): Promise<string> {
-    // Les boutons de catégorie sont dans l'aside — "All Products" est toujours le premier
+    // Les boutons de catégorie sont dans l'aside - "All Products" est toujours le premier
     const categoryBtns = this.page.locator('aside button');
     await categoryBtns.first().waitFor({ state: 'visible', timeout: 8_000 });
     // Cliquer sur le 2e bouton ("Furniture")
@@ -166,7 +166,7 @@ export class ShopPage extends BasePage {
    * Définit le prix maximum via le slider.
    */
   async setPriceMax(maxPrice: number): Promise<void> {
-    // Le slider est masqué (position:fixed, clip-path) — utiliser une interaction clavier
+    // Le slider est masqué (position:fixed, clip-path) - utiliser une interaction clavier
     const sliderInputs = this.page.locator('input[type="range"]');
     const count = await sliderInputs.count();
     if (count >= 2) {
@@ -191,7 +191,7 @@ export class ShopPage extends BasePage {
   }
 
   async verifyPriceRangeIndicatorVisible(): Promise<void> {
-    // Vérifier qu'une indication du range est affichée (ex: "0 € — 100 €")
+    // Vérifier qu'une indication du range est affichée (ex: "0 € - 100 €")
     await expect(
       this.page.getByText(/€|\$/).filter({ hasText: /\d/ }).first()
     ).toBeVisible();
@@ -205,7 +205,7 @@ export class ShopPage extends BasePage {
   }
 
   // =========================================================
-  // TRI — role="combobox"
+  // TRI - role="combobox"
   // =========================================================
 
   async verifySortSelectorVisible(): Promise<void> {

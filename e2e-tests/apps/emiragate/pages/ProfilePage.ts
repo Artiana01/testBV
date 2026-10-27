@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/ProfilePage.ts
  * ---------------------------------------
- * Page Object — Profil utilisateur Emiragate (Admin & Client)
+ * Page Object - Profil utilisateur Emiragate (Admin & Client)
  * Couvre : affichage infos, modification, déconnexion (SC-06)
  */
 
@@ -36,7 +36,7 @@ export class ProfilePage extends BasePage {
       .or(this.page.locator('form').first());
     const isVisible = await info.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Champs de profil non visibles — vérifier URL dans ProfilePage');
+      console.log('   ℹ️  Champs de profil non visibles - vérifier URL dans ProfilePage');
     }
   }
 
@@ -44,7 +44,7 @@ export class ProfilePage extends BasePage {
     const field = this.page.locator(this.nameInput).first();
     const isVisible = await field.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Champ Nom non trouvé — ignorer');
+      console.log('   ℹ️  Champ Nom non trouvé - ignorer');
       return;
     }
     await field.click();
@@ -68,7 +68,7 @@ export class ProfilePage extends BasePage {
       .or(this.page.getByText(/saved|sauvegardé|updated|mis à jour|success/i));
     const isVisible = await toast.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Message de succès non visible — vérifier manuellement');
+      console.log('   ℹ️  Message de succès non visible - vérifier manuellement');
     }
   }
 

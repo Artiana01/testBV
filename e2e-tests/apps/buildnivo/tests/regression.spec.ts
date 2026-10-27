@@ -1,7 +1,7 @@
 /**
  * regression.spec.ts
  * ----------------------
- * Suite de régression BuildNivo — parcours nominaux critiques, à exécuter à
+ * Suite de régression BuildNivo - parcours nominaux critiques, à exécuter à
  * chaque cycle de recette pour vérifier qu'aucune fonctionnalité clé n'a
  * régressé. Session : Direction (projet "buildnivo-regression").
  */
@@ -11,9 +11,9 @@ import { AppShellPage } from '../pages/AppShellPage';
 import { ModulePage } from '../pages/ModulePage';
 import { ChantiersPage } from '../pages/ChantiersPage';
 
-test.describe('BuildNivo — RÉGRESSION — Parcours critiques', () => {
+test.describe('BuildNivo - RÉGRESSION - Parcours critiques', () => {
 
-  test('RÉGRESSION — Session active, sidebar complète accessible', async ({ page }) => {
+  test('RÉGRESSION - Session active, sidebar complète accessible', async ({ page }) => {
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
     await shell.verifyAuthenticated();
@@ -27,7 +27,7 @@ test.describe('BuildNivo — RÉGRESSION — Parcours critiques', () => {
     }
   });
 
-  test('RÉGRESSION — Navigation à travers tous les modules sans erreur', async ({ page }) => {
+  test('RÉGRESSION - Navigation à travers tous les modules sans erreur', async ({ page }) => {
     // 15 routes, certaines (Achats...) mettent jusqu'à ~40s à charger leurs données sous
     // charge, et chaque gotoModule() coûte ~15-20s fixes (attente d'une éventuelle
     // redirection de session expirée + surveillance du tour guidé) : 300s a été dépassé
@@ -48,7 +48,7 @@ test.describe('BuildNivo — RÉGRESSION — Parcours critiques', () => {
     }
   });
 
-  test('RÉGRESSION — Navigation à travers les modules complémentaires sans erreur', async ({ page }) => {
+  test('RÉGRESSION - Navigation à travers les modules complémentaires sans erreur', async ({ page }) => {
     // Modules ajoutés après la première version du parcours ci-dessus (Projets, Reprise, Engins, Copilote,
     // Contrôle financier, Support, Profil). Séparé pour garder chaque test sous son timeout.
     test.setTimeout(600_000);
@@ -66,12 +66,12 @@ test.describe('BuildNivo — RÉGRESSION — Parcours critiques', () => {
     }
   });
 
-  test('RÉGRESSION — Création d\'un chantier reste fonctionnelle (PROJ-01)', async ({ page }) => {
+  test('RÉGRESSION - Création d\'un chantier reste fonctionnelle (PROJ-01)', async ({ page }) => {
     const chantiers = new ChantiersPage(page);
     await chantiers.goto();
 
     // Voir la note ANOMALIE dans e2e-03-chantiers.spec.ts (PROJ-01) : POST /api/projects
-    // répond parfois 403 pour le compte Direction, pas systématiquement — on tolère une
+    // répond parfois 403 pour le compte Direction, pas systématiquement - on tolère une
     // tentative supplémentaire avant de considérer que c'est un vrai blocage.
     let lastStatus: number | null = null;
     let nom = '';
@@ -99,13 +99,13 @@ test.describe('BuildNivo — RÉGRESSION — Parcours critiques', () => {
     }
 
     if (lastStatus !== null && lastStatus >= 400) {
-      throw new Error(`RÉGRESSION — POST /api/projects a répondu ${lastStatus} pour le compte Direction sur 2 tentatives. Voir ANOMALIE PROJ-01.`);
+      throw new Error(`RÉGRESSION - POST /api/projects a répondu ${lastStatus} pour le compte Direction sur 2 tentatives. Voir ANOMALIE PROJ-01.`);
     }
 
     await chantiers.verifyChantierVisible(nom);
   });
 
-  test('RÉGRESSION — Notifications accessibles depuis toutes les pages', async ({ page }) => {
+  test('RÉGRESSION - Notifications accessibles depuis toutes les pages', async ({ page }) => {
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
     await expect(shell.getNotificationsButton()).toBeVisible({ timeout: 10_000 });

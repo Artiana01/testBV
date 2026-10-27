@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/AdminDashboardPage.ts
  * -----------------------------------------
- * Page Object — Dashboard Admin BV Tech
+ * Page Object - Dashboard Admin BV Tech
  * Couvre : dashboard admin après connexion
  *
  * Éléments attendus :

@@ -89,10 +89,10 @@ export default async function globalSetup(_config: FullConfig) {
       } else {
         console.log('   📦  Session chargée depuis BVBUSINESS_SESSION (Railway). JWT valide.');
         console.log('   ✅  Lancement des tests...\n');
-        return; // Sauter la validation navigateur — PHPSESSID non portable entre IPs
+        return; // Sauter la validation navigateur - PHPSESSID non portable entre IPs
       }
     } catch {
-      console.log('   ⚠️   BVBUSINESS_SESSION invalide — ignorée.');
+      console.log('   ⚠️   BVBUSINESS_SESSION invalide - ignorée.');
     }
   }
 

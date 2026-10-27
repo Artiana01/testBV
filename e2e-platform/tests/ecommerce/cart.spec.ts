@@ -1,7 +1,7 @@
 import { test, expect } from '../../fixtures/base.fixture';
 import shop1 from '../../apps/shop1';
 
-test.describe('@ecommerce — Cart', () => {
+test.describe('@ecommerce - Cart', () => {
   test.use({ baseURL: shop1.baseURL });
 
   test('add a product to the cart', async ({ productPage, cartPage }) => {

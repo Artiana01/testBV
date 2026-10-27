@@ -15,9 +15,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const BASE = process.env.BVINVEST_BASE_URL ?? 'https://dev.bluevalorisinvest.com';
 
-test.describe('SC-10 — Navigation globale (SECONDAIRE)', () => {
+test.describe('SC-10 - Navigation globale (SECONDAIRE)', () => {
 
-  test('10.1 — La page d\'accueil est accessible', async ({ page }) => {
+  test('10.1 - La page d\'accueil est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr`);
     await page.waitForLoadState('domcontentloaded');
@@ -25,14 +25,14 @@ test.describe('SC-10 — Navigation globale (SECONDAIRE)', () => {
     await expect(page.getByText(/500|server error/i)).not.toBeVisible({ timeout: 3_000 }).catch(() => {});
   });
 
-  test('10.2 — La page login est accessible depuis l\'accueil', async ({ page }) => {
+  test('10.2 - La page login est accessible depuis l\'accueil', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/login`);
     await page.waitForLoadState('domcontentloaded');
     await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 20_000 });
   });
 
-  test('10.3 — Toutes les sections membres sont accessibles (storageState)', async ({ page }) => {
+  test('10.3 - Toutes les sections membres sont accessibles (storageState)', async ({ page }) => {
     test.setTimeout(60_000);
     const sections = [
       '/fr/member',
@@ -49,7 +49,7 @@ test.describe('SC-10 — Navigation globale (SECONDAIRE)', () => {
     }
   });
 
-  test('10.4 — Redirection stable (pas de boucle)', async ({ page }) => {
+  test('10.4 - Redirection stable (pas de boucle)', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
     await page.waitForLoadState('domcontentloaded');
@@ -60,7 +60,7 @@ test.describe('SC-10 — Navigation globale (SECONDAIRE)', () => {
     expect(url1).toBe(url2);
   });
 
-  test('10.5 — Navigation sans perte de session (storageState)', async ({ page }) => {
+  test('10.5 - Navigation sans perte de session (storageState)', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
     await page.waitForLoadState('domcontentloaded');

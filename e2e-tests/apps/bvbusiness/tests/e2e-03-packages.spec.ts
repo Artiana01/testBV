@@ -24,30 +24,30 @@ import { PackagesPage } from '../pages/PackagesPage';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-test.describe('SC-03 — Packages & Souscription (CRITIQUE)', () => {
+test.describe('SC-03 - Packages & Souscription (CRITIQUE)', () => {
 
-  test('03.1 — La page Packages est accessible', async ({ page }) => {
+  test('03.1 - La page Packages est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPackagesLoaded();
   });
 
-  test('03.2 — Les offres/packages sont affichés (cartes visibles)', async ({ page }) => {
+  test('03.2 - Les offres/packages sont affichés (cartes visibles)', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPackageCardsVisible();
   });
 
-  test('03.3 — Les prix sont affichés sur les offres', async ({ page }) => {
+  test('03.3 - Les prix sont affichés sur les offres', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
     await packagesPage.verifyPricesVisible();
   });
 
-  test('03.4 — La recherche de package fonctionne', async ({ page }) => {
+  test('03.4 - La recherche de package fonctionne', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
@@ -57,7 +57,7 @@ test.describe('SC-03 — Packages & Souscription (CRITIQUE)', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('03.5 — Clic sur "Souscrire" mène à la page de paiement', async ({ page }) => {
+  test('03.5 - Clic sur "Souscrire" mène à la page de paiement', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();
@@ -66,7 +66,7 @@ test.describe('SC-03 — Packages & Souscription (CRITIQUE)', () => {
     await packagesPage.verifySubscriptionPageOrModal();
   });
 
-  test('03.6 — Les données packages sont cohérentes (pas de valeurs nulles/vides)', async ({ page }) => {
+  test('03.6 - Les données packages sont cohérentes (pas de valeurs nulles/vides)', async ({ page }) => {
     test.setTimeout(60_000);
     const packagesPage = new PackagesPage(page);
     await packagesPage.goto();

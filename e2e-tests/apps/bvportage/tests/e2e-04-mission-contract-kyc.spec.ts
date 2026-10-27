@@ -19,7 +19,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
-    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) — configurer de vrais identifiants pour activer ce test');
+    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) - configurer de vrais identifiants pour activer ce test');
 
     // Accéder au menu Mission
     await agencyDashboardPage.clickMissionMenu();
@@ -51,7 +51,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
-    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) — configurer de vrais identifiants pour activer ce test');
+    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) - configurer de vrais identifiants pour activer ce test');
 
     // Accéder au menu Contrat
     await agencyDashboardPage.clickContractMenu();
@@ -79,7 +79,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     );
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
-    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) — configurer de vrais identifiants pour activer ce test');
+    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) - configurer de vrais identifiants pour activer ce test');
 
     // Accéder au menu KYC
     await agencyDashboardPage.clickKycMenu();
@@ -113,7 +113,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await page.locator('button[type="submit"]').click();
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
-    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) — configurer de vrais identifiants pour activer ce test');
+    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) - configurer de vrais identifiants pour activer ce test');
 
     // Naviguer vers la vérification KYC
     await page.goto('/fr/admin/kyc');
@@ -139,7 +139,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await page.locator('button[type="submit"]').click();
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
-    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) — configurer de vrais identifiants pour activer ce test');
+    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) - configurer de vrais identifiants pour activer ce test');
 
     // Naviguer vers KYC pour vérifier le statut
     await page.goto('/fr/kyc');
@@ -159,7 +159,7 @@ test.describe('E2E 04: Création Mission + Contrat + KYC', () => {
     await page.locator('button[type="submit"]').click();
 
     await page.waitForURL(url => !url.includes('/connexion'), { timeout: 30_000 }).catch(() => {});
-    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) — configurer de vrais identifiants pour activer ce test');
+    test.skip(/\/connexion|\/login|\/signin/i.test(page.url()), 'Compte de test indisponible (credentials .env placeholder) - configurer de vrais identifiants pour activer ce test');
 
     // Naviguer vers la vérification KYC
     await page.goto('/fr/admin/kyc');

@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/ConduitPage.ts
  * -------------------------------------
- * Page Object — Gestion des Leads (Conduit) Emiragate
+ * Page Object - Gestion des Leads (Conduit) Emiragate
  * Couvre : liste leads, actions voir/supprimer (SC-03)
  */
 
@@ -39,7 +39,7 @@ export class ConduitPage extends BasePage {
       await expect(rows.first()).toBeVisible({ timeout: 20_000 });
       console.log(`   ✅  ${count} lead(s) trouvé(s)`);
     } else {
-      console.log('   ℹ️  Aucun lead — liste vide ou sélecteurs à adapter');
+      console.log('   ℹ️  Aucun lead - liste vide ou sélecteurs à adapter');
     }
   }
 
@@ -47,7 +47,7 @@ export class ConduitPage extends BasePage {
     const btn = this.page.locator(this.viewBtn);
     const isVisible = await btn.first().isVisible({ timeout: 3_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton Voir non trouvé — vérifier sélecteurs');
+      console.log('   ℹ️  Bouton Voir non trouvé - vérifier sélecteurs');
     }
   }
 
@@ -55,7 +55,7 @@ export class ConduitPage extends BasePage {
     const btn = this.page.locator(this.deleteBtn);
     const isVisible = await btn.first().isVisible({ timeout: 3_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton Supprimer non trouvé — vérifier sélecteurs');
+      console.log('   ℹ️  Bouton Supprimer non trouvé - vérifier sélecteurs');
     }
   }
 

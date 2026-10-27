@@ -1,19 +1,19 @@
 /**
  * e2e-17-billing.spec.ts
  * ---------------------------
- * Billing — Intégration du Stripe Customer Portal pour upgrade/gestion
+ * Billing - Intégration du Stripe Customer Portal pour upgrade/gestion
  * d'abonnement, badge plan actuel et soft-gating (PlanUpgradeRequired).
  *
- * Compte : "Propriétaire" (tenant-owner, johnim@entreprise.test) — c'est le
+ * Compte : "Propriétaire" (tenant-owner, johnim@entreprise.test) - c'est le
  * SEUL rôle qui a le bouton "Gérer mon abonnement" sur /parametres. Confirmé
  * en direct : Direction voit bien la carte Abonnement avec la pastille
- * "Abonnement actif", mais SANS ce bouton — message affiché par l'app :
+ * "Abonnement actif", mais SANS ce bouton - message affiché par l'app :
  * "Seul le propriétaire de l'entreprise peut gérer l'abonnement." Le compte
  * tenant-owner doit en plus avoir terminé son onboarding (Entreprise → Premier
  * Chantier → Abonnement) pour disposer d'un abonnement actif ; sans ça, seule
  * l'étape d'onboarding s'affiche et /parametres redirige vers /onboarding.
  *
- * Stripe est en mode TEST (bandeau "Sandbox" visible sur le portail) — les
+ * Stripe est en mode TEST (bandeau "Sandbox" visible sur le portail) - les
  * scénarios ci-dessous vont jusqu'à la mutation réelle de l'abonnement
  * (changement de forfait avec proration), sans risque de paiement réel.
  */
@@ -23,7 +23,7 @@ import { AppShellPage } from '../pages/AppShellPage';
 import { openModuleAs } from '../pages/RoleSession';
 
 // Le portail Stripe suit la locale du navigateur (locale: 'fr-FR' dans ce config, voir
-// playwright.buildnivo.config.ts) et s'affiche donc en FRANÇAIS lors des vrais runs — confirmé en
+// playwright.buildnivo.config.ts) et s'affiche donc en FRANÇAIS lors des vrais runs - confirmé en
 // direct (ex. "Confirmer vos mises à jour", "Montant dû aujourd'hui"). Une exploration manuelle
 // antérieure sans cette locale explicite avait affiché la même page en anglais, d'où ces
 // regex bilingues : robuste dans les deux cas plutôt que de figer sur l'un des deux.
@@ -43,7 +43,7 @@ function parseEuroAmount(text: string | null): number {
   return parseInt(match[1] ?? match[2], 10);
 }
 
-// NB: pas AppShellPage.gotoModule() ici — son self-heal en cas de session expirée se
+// NB: pas AppShellPage.gotoModule() ici - son self-heal en cas de session expirée se
 // reconnecte en Direction ; openModuleAs() se reconnecte avec le compte "Propriétaire".
 
 /**
@@ -55,15 +55,15 @@ async function openStripePortal(page: Page): Promise<void> {
   const manageBtn = page.getByRole('button', { name: /gérer mon abonnement/i });
   await manageBtn.click();
   // 'commit' et pas 'load' : l'événement load du portail Stripe (scripts tiers, sandbox)
-  // arrive parfois bien après 20s alors que la page est déjà là — le vrai signal de
+  // arrive parfois bien après 20s alors que la page est déjà là - le vrai signal de
   // disponibilité est le bloc abonnement attendu juste après.
   await page.waitForURL(/stripe\.com/i, { timeout: 45_000, waitUntil: 'commit' });
   await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
   // Le portail Stripe affiche d'abord une coquille (logo + bandeau "Sandbox"/"Environnement de
   // test") avant que son contenu réel (abonnement, moyen de paiement...) ne s'hydrate quelques
-  // secondes après — 'networkidle' seul résout trop tôt (observé : capture d'écran de page blanche
+  // secondes après - 'networkidle' seul résout trop tôt (observé : capture d'écran de page blanche
   // juste après). "Powered by Stripe" fait partie du pied de page statique de la coquille
-  // elle-même, donc PAS un bon indicateur — on attend plutôt le bloc abonnement, qui n'apparaît
+  // elle-même, donc PAS un bon indicateur - on attend plutôt le bloc abonnement, qui n'apparaît
   // qu'une fois le contenu réel monté.
   await page.getByText(RE_CURRENT_SUB).waitFor({ state: 'visible', timeout: 60_000 });
 }
@@ -93,7 +93,7 @@ async function openPlanPicker(page: Page): Promise<PortalPlan[]> {
 // Forfait d'entrée de gamme visé pour redescendre : "Company Essential" à 99 €/mois, l'offre
 // d'origine du compte (historique de facturation du 17/09). Le portail propose aussi un
 // "Company Essential" à 59 € que l'app ne reconnaît pas (constaté le 2026-09-25 : carte
-// Abonnement sans ligne "Offre actuelle", quasiment tous les modules verrouillés) — évité ici,
+// Abonnement sans ligne "Offre actuelle", quasiment tous les modules verrouillés) - évité ici,
 // c'est une incohérence de configuration Stripe/app à traiter à part.
 function entryPlan(plans: PortalPlan[]): PortalPlan {
   const plan = plans.find(p => p.selectable && p.name === 'Company Essential' && p.price === 99);
@@ -119,21 +119,21 @@ async function confirmPlan(page: Page, plan: PortalPlan): Promise<void> {
 // module verrouillé. Les scénarios 2 et 4 redescendent donc au forfait d'entrée de gamme quand leur
 // précondition n'est plus remplie (downgrade immédiat, 0 € dû, confirmé en direct le 2026-09-25).
 
-test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
+test.describe('BuildNivo - 17. Billing (Stripe Customer Portal)', () => {
 
-  test('Scénario 1 — Carte Abonnement sur /parametres et accès au portail Stripe', async ({ browser }) => {
+  test('Scénario 1 - Carte Abonnement sur /parametres et accès au portail Stripe', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'tenant-owner', '/parametres');
 
     // Pastille verte "Abonnement actif"
     await expect(page.getByText(/^abonnement actif$/i).first()).toBeVisible({ timeout: 15_000 });
 
-    // Libellé du plan actuel — nom exact non figé ici : le Scénario 2 (et les runs répétés de
+    // Libellé du plan actuel - nom exact non figé ici : le Scénario 2 (et les runs répétés de
     // la suite) change le forfait à chaque exécution, donc seul le format "Offre actuelle : X"
     // est vérifié, pas une valeur précise.
     await expect(page.getByText(/offre actuelle\s*:/i).first()).toBeVisible();
 
     // Bouton "Gérer mon abonnement" avec icône carte bancaire (aria-hidden, non vérifiable par
-    // texte — sa présence est déjà garantie par le rôle du bouton lui-même).
+    // texte - sa présence est déjà garantie par le rôle du bouton lui-même).
     const manageBtn = page.getByRole('button', { name: /gérer mon abonnement/i });
     await expect(manageBtn).toBeVisible();
 
@@ -142,7 +142,7 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
     await context.close();
   });
 
-  test('Scénario 2 — Changement de forfait (upgrade) et calcul du prorata', async ({ browser }) => {
+  test('Scénario 2 - Changement de forfait (upgrade) et calcul du prorata', async ({ browser }) => {
     test.setTimeout(300_000);
     const { context, page } = await openModuleAs(browser, 'tenant-owner', '/parametres');
     await openStripePortal(page);
@@ -174,14 +174,14 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
     await context.close();
   });
 
-  test('Scénario 3 — Badge "Votre plan actuel" sur /tarifs', async ({ browser }) => {
+  test('Scénario 3 - Badge "Votre plan actuel" sur /tarifs', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'tenant-owner', '/tarifs');
     await page.waitForTimeout(2_000);
 
     // ANOMALIE OBSERVÉE (inspection live, 2026-09-23) : le badge "Votre plan actuel" apparaît sur
     // DEUX cartes simultanément pour ce compte (Company Essential ET Company Business), pas
     // seulement sur le forfait réellement souscrit. Peut être volontaire (una offre supérieure
-    // "couvre" une offre inférieure) ou un vrai bug d'affichage — pas tranché ici. On vérifie donc
+    // "couvre" une offre inférieure) ou un vrai bug d'affichage - pas tranché ici. On vérifie donc
     // seulement qu'il apparaît AU MOINS une fois (le cas "aucun badge du tout" serait, lui,
     // clairement anormal pour un compte abonné), sans exiger l'unicité.
     const badge = page.getByText(/votre plan actuel/i);
@@ -203,12 +203,12 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
     await anonContext.close();
   });
 
-  test('Scénario 4 — Soft gating : module non inclus dans l\'offre', async ({ browser }) => {
+  test('Scénario 4 - Soft gating : module non inclus dans l\'offre', async ({ browser }) => {
     test.setTimeout(300_000);
     const { context, page } = await openModuleAs(browser, 'tenant-owner', '/chantiers');
 
     // Module verrouillé = lien de la sidebar dont le texte se TERMINE par le badge "Pro"
-    // ("Journal de chantierPro"), casse respectée — un simple /pro/i attrapait "Photos &
+    // ("Journal de chantierPro"), casse respectée - un simple /pro/i attrapait "Photos &
     // problèmes", module pourtant inclus. Lequel est verrouillé dépend du forfait courant.
     const lockedLinks = page.getByRole('navigation').getByRole('link').filter({ hasText: /Pro$/ });
     if (!(await lockedLinks.first().isVisible({ timeout: 5_000 }).catch(() => false))) {
@@ -239,7 +239,7 @@ test.describe('BuildNivo — 17. Billing (Stripe Customer Portal)', () => {
         .toBeVisible();
     }
     // getByText() seul matche 2 éléments ici : le vrai titre <h1> ET un <div role="alert"
-    // id="__next-route-announcer__"> — l'annonceur de route Next.js qui duplique le texte de la
+    // id="__next-route-announcer__"> - l'annonceur de route Next.js qui duplique le texte de la
     // page pour les lecteurs d'écran à chaque navigation (violation de strict mode Playwright si
     // on ne précise pas le rôle). On cible donc explicitement le heading.
     await expect(page.getByRole('heading', { name: /n'est pas inclus dans votre offre/i })).toBeVisible();

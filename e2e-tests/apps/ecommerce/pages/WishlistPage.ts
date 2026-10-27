@@ -1,10 +1,10 @@
 /**
  * apps/ecommerce/pages/WishlistPage.ts
  * --------------------------------------
- * Page Object — Wishlist — app Atelier
+ * Page Object - Wishlist - app Atelier
  *
  * La wishlist Atelier est stockée en localStorage (Zustand persist).
- * Elle n'est PAS liée au compte utilisateur — la connexion n'est pas requise
+ * Elle n'est PAS liée au compte utilisateur - la connexion n'est pas requise
  * pour que la wishlist fonctionne, mais les tests l'utilisent quand même.
  *
  * Structure confirmée :
@@ -28,7 +28,7 @@ export class WishlistPage extends BasePage {
   async goto(): Promise<void> {
     await this.navigate('/wishlist');
     await this.waitForLoad();
-    // La page wishlist est un Client Component — attendre la fin du chargement
+    // La page wishlist est un Client Component - attendre la fin du chargement
     await this.page.waitForFunction(
       () => !document.querySelector('.animate-pulse'),
       { timeout: 8_000 }
@@ -45,7 +45,7 @@ export class WishlistPage extends BasePage {
    */
   async toggleWishlistOnFirstShopProduct(): Promise<void> {
     // Bouton wishlist des ProductCards : button.rounded-full avec Heart SVG
-    // Le shop est client-side — attendre qu'au moins un bouton soit présent
+    // Le shop est client-side - attendre qu'au moins un bouton soit présent
     const wishlistBtns = this.page.locator('main button.rounded-full').filter({
       has: this.page.locator('svg'),
     });
@@ -110,7 +110,7 @@ export class WishlistPage extends BasePage {
 
   /**
    * Supprime le premier article de la wishlist.
-   * Le bouton Trash est hidden (opacity-0) jusqu'au hover — on utilise force: true.
+   * Le bouton Trash est hidden (opacity-0) jusqu'au hover - on utilise force: true.
    */
   async removeFirstItem(): Promise<void> {
     // Cibler la première WishlistCard (div avec ghost-border et rounded-3xl)

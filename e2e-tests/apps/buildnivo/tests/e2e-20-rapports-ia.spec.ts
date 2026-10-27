@@ -1,21 +1,21 @@
 /**
  * e2e-20-rapports-ia.spec.ts
  * -----------------------
- * "Rapports IA" — comptes rendus de chantier (journalier / synthèse hebdo /
+ * "Rapports IA" - comptes rendus de chantier (journalier / synthèse hebdo /
  * relances) générés par un agent LLM distant (observé en direct : modèle
  * "gemini-3-flash-preview", avec un mode "fallback-local" en repli), validés
  * par un humain avant tout envoi.
  *
  * Couvre la structure de la page et la restriction de rôle (lecture seule
  * pour Maître d'ouvrage : pas de prompt système, pas de Générer/Modifier/
- * Régénérer — confirmé en comparant les rendus réels Direction vs MOA).
+ * Régénérer - confirmé en comparant les rendus réels Direction vs MOA).
  *
  * NE DÉCLENCHE PAS "Générer avec l'Agent IA" / "Régénérer" : ce sont de
  * vrais appels à un LLM distant qui écrivent par-dessus le rapport existant
  * du chantier actif (partagé avec d'autres tests/l'environnement de démo),
  * contrairement au Stripe Customer Portal (billing) dont le mode test avait
  * été confirmé explicitement avant d'automatiser le flux réel. Aucune
- * confirmation équivalente n'a été donnée ici — à ajouter si confirmé.
+ * confirmation équivalente n'a été donnée ici - à ajouter si confirmé.
  */
 
 import { test, expect, Page } from '@playwright/test';
@@ -24,7 +24,7 @@ import { openModuleAs } from '../pages/RoleSession';
 /**
  * L'API ai-reports du serveur de recette échoue par intermittence : le panneau affiche alors
  * "Impossible de charger le rapport." + un bouton "Réessayer" (observé ~1 run sur 4). On
- * fait comme un utilisateur — cliquer "Réessayer" — au plus 3 fois ; une vraie panne
+ * fait comme un utilisateur - cliquer "Réessayer" - au plus 3 fois ; une vraie panne
  * persistante fait toujours échouer le test.
  */
 async function waitForReportPanel(page: Page, loaded: ReturnType<Page['locator']>): Promise<void> {
@@ -36,9 +36,9 @@ async function waitForReportPanel(page: Page, loaded: ReturnType<Page['locator']
   }
 }
 
-test.describe('BuildNivo — Rapports IA', () => {
+test.describe('BuildNivo - Rapports IA', () => {
 
-  test('Direction — page complète : onglets, prompt système, actions Modifier/Régénérer, export PDF', async ({ browser }) => {
+  test('Direction - page complète : onglets, prompt système, actions Modifier/Régénérer, export PDF', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/rapports');
 
     await expect(page.getByRole('heading', { name: 'Rapports IA', level: 1 })).toBeVisible();
@@ -51,7 +51,7 @@ test.describe('BuildNivo — Rapports IA', () => {
     await expect(tabRelances).toBeVisible();
     await expect(tabJournalier).toHaveAttribute('aria-selected', 'true');
 
-    // Section prompt système — réservée aux rôles avec droit de génération.
+    // Section prompt système - réservée aux rôles avec droit de génération.
     await expect(page.getByRole('heading', { name: /directives.*prompt système/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /générer avec l.agent ia/i })).toBeVisible();
 
@@ -64,7 +64,7 @@ test.describe('BuildNivo — Rapports IA', () => {
     await context.close();
   });
 
-  test('Direction — changement d\'onglet : Synthèse hebdo et Relances affichent un contenu propre à l\'onglet', async ({ browser }) => {
+  test('Direction - changement d\'onglet : Synthèse hebdo et Relances affichent un contenu propre à l\'onglet', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/rapports');
 
     await page.getByRole('tab', { name: /synthèse hebdo/i }).click();
@@ -80,7 +80,7 @@ test.describe('BuildNivo — Rapports IA', () => {
     await waitForReportPanel(page, page.getByRole('button', { name: /^régénérer$/i }));
     // "Relances" : consigne de régénération partagée + liste de relances préparées par l'IA.
     // Chaque relance est éditable, et celles pas encore parties attendent une validation
-    // humaine explicite ("Valider l'envoi") — jamais d'envoi automatique ("Envoyée" sinon).
+    // humaine explicite ("Valider l'envoi") - jamais d'envoi automatique ("Envoyée" sinon).
     await expect(page.getByRole('button', { name: /^régénérer$/i })).toBeVisible();
     const relances = page.getByText(/^Relance\b/);
     if (await relances.count() > 0) {
@@ -94,12 +94,12 @@ test.describe('BuildNivo — Rapports IA', () => {
     await context.close();
   });
 
-  test('Maître d\'ouvrage — accès en lecture seule confirmé : pas de prompt système, pas de Générer/Modifier/Régénérer', async ({ browser }) => {
+  test('Maître d\'ouvrage - accès en lecture seule confirmé : pas de prompt système, pas de Générer/Modifier/Régénérer', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'maitre-ouvrage', '/rapports');
 
     // La page se charge bien pour ce rôle (contenu métier légitime), contrairement à
     // /admin/activity-logs (e2e-19) qui ne devrait jamais être accessible à personne d'autre
-    // que Superadmin — deux restrictions de nature différente, pas à confondre.
+    // que Superadmin - deux restrictions de nature différente, pas à confondre.
     await expect(page.getByRole('heading', { name: 'Rapports IA', level: 1 })).toBeVisible();
 
     await expect(page.getByRole('heading', { name: /directives.*prompt système/i })).toHaveCount(0);
@@ -113,7 +113,7 @@ test.describe('BuildNivo — Rapports IA', () => {
     await context.close();
   });
 
-  test('Direction — export PDF déclenche un téléchargement réel', async ({ browser }) => {
+  test('Direction - export PDF déclenche un téléchargement réel', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/rapports');
 
     const [download] = await Promise.all([

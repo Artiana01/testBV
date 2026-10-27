@@ -18,13 +18,13 @@
 - [x] Gestion des erreurs robuste
 
 ### Scripts NPM ✅
-- [x] `npm run clean` — Mode interactif
-- [x] `npm run clean:all` — Nettoyage complet
-- [x] `npm run clean:reports` — Rapports seulement
-- [x] `npm run clean:results` — Résultats seulement
-- [x] `npm run stats` — Statistiques
-- [x] `npm run help:cleanup` — Guide rapide
-- [x] `npm run verify:cleanup` — Vérification setup
+- [x] `npm run clean` - Mode interactif
+- [x] `npm run clean:all` - Nettoyage complet
+- [x] `npm run clean:reports` - Rapports seulement
+- [x] `npm run clean:results` - Résultats seulement
+- [x] `npm run stats` - Statistiques
+- [x] `npm run help:cleanup` - Guide rapide
+- [x] `npm run verify:cleanup` - Vérification setup
 
 ### Documentation ✅
 - [x] HISTORY_CLEANUP.md (guide complet, 300+ lignes)
@@ -158,9 +158,9 @@ npm run clean              # Utiliser
 ## 🎓 Guide d'Onboarding
 
 ### Pour Nouveaux Utilisateurs
-1. `npm run help:cleanup` — Voir les commandes
-2. `npm run stats` — Comprendre l'usage
-3. `npm run clean` — Menu interactif
+1. `npm run help:cleanup` - Voir les commandes
+2. `npm run stats` - Comprendre l'usage
+3. `npm run clean` - Menu interactif
 4. Lire QUICKSTART_CLEANUP.md si besoin
 
 ### Pour Administrateurs
@@ -201,11 +201,11 @@ npm run clean              # Utiliser
 ✅ **Fonctionnalité complètement implémentée et documentée**
 
 La gestion de l'historique des tests est :
-- **Prête à l'emploi** — Fonctionnelle immédiatement
-- **Bien documentée** — 4 guides complets
-- **Production-ready** — Testée et validée
-- **Scalable** — Supporte croissance
-- **Maintenable** — Code clair et modulaire
+- **Prête à l'emploi** - Fonctionnelle immédiatement
+- **Bien documentée** - 4 guides complets
+- **Production-ready** - Testée et validée
+- **Scalable** - Supporte croissance
+- **Maintenable** - Code clair et modulaire
 
 ### Prochaines Étapes
 1. ✅ Déploiement auprès de l'équipe

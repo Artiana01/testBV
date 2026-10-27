@@ -118,7 +118,7 @@ npx playwright test --grep @saas
 
 ## Selectors strategy
 
-- Prefer `data-testid` attributes (see `utils/selectors.ts`) — they survive CSS/text refactors.
+- Prefer `data-testid` attributes (see `utils/selectors.ts`) - they survive CSS/text refactors.
 - Fall back to ARIA roles (`getByRole`) for semantic elements.
 - Avoid CSS class selectors; avoid XPath.
 
@@ -136,7 +136,7 @@ Artifacts in CI are uploaded as `report-ecommerce`, `report-saas`, `report-vitri
 
 ---
 
-## CI/CD — GitHub Secrets to configure
+## CI/CD - GitHub Secrets to configure
 
 | Secret | Description |
 |---|---|

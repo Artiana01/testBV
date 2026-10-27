@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/ProfilePage.ts
  * -------------------------------------
- * Page Object — Profil utilisateur BV Invest
+ * Page Object - Profil utilisateur BV Invest
  * Couvre : modification profil, sauvegarde (SC-06)
  */
 
@@ -38,7 +38,7 @@ export class ProfilePage extends BasePage {
       .or(this.page.locator(this.phoneInput));
     const isVisible = await field.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Champs de profil non trouvés — vérifier URL dans ProfilePage');
+      console.log('   ℹ️  Champs de profil non trouvés - vérifier URL dans ProfilePage');
     }
   }
 
@@ -46,7 +46,7 @@ export class ProfilePage extends BasePage {
     const nameField = this.page.locator(this.nameInput).first();
     const isVisible = await nameField.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Champ Nom non trouvé — mise à jour ignorée');
+      console.log('   ℹ️  Champ Nom non trouvé - mise à jour ignorée');
       return;
     }
     await nameField.click();
@@ -58,7 +58,7 @@ export class ProfilePage extends BasePage {
     const btn = this.page.locator(this.saveBtn).first();
     const isVisible = await btn.isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Bouton de sauvegarde non trouvé — ignorer');
+      console.log('   ℹ️  Bouton de sauvegarde non trouvé - ignorer');
       return;
     }
     await btn.click();
@@ -70,7 +70,7 @@ export class ProfilePage extends BasePage {
       .or(this.page.getByText(/sauvegardé|saved|mis à jour|updated|success/i));
     const isVisible = await toast.first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('   ℹ️  Message de succès non visible — vérifier manuellement');
+      console.log('   ℹ️  Message de succès non visible - vérifier manuellement');
     }
   }
 }

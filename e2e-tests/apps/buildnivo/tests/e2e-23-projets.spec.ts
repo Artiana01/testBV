@@ -5,14 +5,14 @@
  * distinct de la liste des chantiers. Page de recherche + filtres + pagination, et formulaire
  * "Nouveau projet".
  *
- * Lecture seule : le formulaire "Nouveau projet" (pleine page) est ouvert puis annulé — aucun projet n'est créé
+ * Lecture seule : le formulaire "Nouveau projet" (pleine page) est ouvert puis annulé - aucun projet n'est créé
  * (il n'existe pas de suppression de projet dans l'UI, ce serait de la donnée jetable permanente).
  */
 
 import { test, expect, BrowserContext, Page } from '@playwright/test';
 import { openModuleAs, revisit } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 23. Projets', () => {
+test.describe('BuildNivo - 23. Projets', () => {
   let context: BrowserContext;
   let page: Page;
 
@@ -25,7 +25,7 @@ test.describe('BuildNivo — 23. Projets', () => {
     await context?.close();
   });
 
-  test('PRJ-01 — Page Projets : titre, recherche, filtres Phase / Statut / Responsable / Société / dates, pagination', async () => {
+  test('PRJ-01 - Page Projets : titre, recherche, filtres Phase / Statut / Responsable / Société / dates, pagination', async () => {
     await revisit(page, '/projets');
 
     await expect(page.getByRole('heading', { name: 'Projets', level: 1 })).toBeVisible({ timeout: 20_000 });
@@ -52,13 +52,13 @@ test.describe('BuildNivo — 23. Projets', () => {
     await expect(page.getByText('Par page')).toBeVisible();
   });
 
-  test('PRJ-02 — Recherche sans résultat : message "Aucun projet pour ces critères."', async () => {
+  test('PRJ-02 - Recherche sans résultat : message "Aucun projet pour ces critères."', async () => {
     await revisit(page, '/projets');
     await page.getByPlaceholder(/rechercher par nom, référence, client ou lieu/i).fill(`zz-introuvable-${Date.now()}`);
     await expect(page.getByText('Aucun projet pour ces critères.')).toBeVisible({ timeout: 15_000 });
   });
 
-  test('PRJ-03 — "Nouveau projet" : formulaire par sections (identification, société, localisation, opération, unités), annulation sans création', async () => {
+  test('PRJ-03 - "Nouveau projet" : formulaire par sections (identification, société, localisation, opération, unités), annulation sans création', async () => {
     await revisit(page, '/projets');
     await page.getByRole('button', { name: 'Nouveau projet' }).click();
 

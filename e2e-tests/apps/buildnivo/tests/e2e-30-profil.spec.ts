@@ -4,7 +4,7 @@
  * Module "Mon profil" (/mon-profil) : identité de l'utilisateur et de son entreprise (indépendamment
  * des chantiers), sécurité du mot de passe et liste de ses chantiers avec son rôle.
  *
- * Lecture seule : "Modifier" et "Changer le mot de passe" sont ouverts puis annulés — jamais
+ * Lecture seule : "Modifier" et "Changer le mot de passe" sont ouverts puis annulés - jamais
  * enregistrés (modifier le compte Direction partagé ou son mot de passe casserait tous les autres tests).
  */
 
@@ -12,7 +12,7 @@ import { test, expect, BrowserContext, Page } from '@playwright/test';
 import { openModuleAs, revisit } from '../pages/RoleSession';
 import { getRole } from '../roles';
 
-test.describe('BuildNivo — 30. Mon profil', () => {
+test.describe('BuildNivo - 30. Mon profil', () => {
   let context: BrowserContext;
   let page: Page;
 
@@ -22,7 +22,7 @@ test.describe('BuildNivo — 30. Mon profil', () => {
   });
   test.afterAll(async () => { await context?.close(); });
 
-  test('PROF-01 — Identité : nom, email du compte connecté, entreprise, matricule, poste, statut', async () => {
+  test('PROF-01 - Identité : nom, email du compte connecté, entreprise, matricule, poste, statut', async () => {
     await revisit(page, '/mon-profil');
     await expect(page.getByRole('heading', { name: 'Mon profil', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/votre identité et votre entreprise, indépendamment des chantiers/i)).toBeVisible();
@@ -35,7 +35,7 @@ test.describe('BuildNivo — 30. Mon profil', () => {
     await expect(page.getByText(getRole('direction').login, { exact: true })).toBeVisible();
   });
 
-  test('PROF-02 — "Modifier" : prénom, nom, nom d\'utilisateur, téléphone ; annulation sans enregistrement', async () => {
+  test('PROF-02 - "Modifier" : prénom, nom, nom d\'utilisateur, téléphone ; annulation sans enregistrement', async () => {
     await revisit(page, '/mon-profil');
     await page.getByRole('button', { name: 'Modifier', exact: true }).click();
 
@@ -51,7 +51,7 @@ test.describe('BuildNivo — 30. Mon profil', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('PROF-03 — "Changer le mot de passe" : ancien, nouveau et confirmation, règles de complexité ; annulation sans changement', async () => {
+  test('PROF-03 - "Changer le mot de passe" : ancien, nouveau et confirmation, règles de complexité ; annulation sans changement', async () => {
     await revisit(page, '/mon-profil');
     await expect(page.getByRole('heading', { name: 'Sécurité & Mot de passe' })).toBeVisible({ timeout: 20_000 });
     await page.getByRole('button', { name: 'Changer le mot de passe' }).click();
@@ -74,7 +74,7 @@ test.describe('BuildNivo — 30. Mon profil', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('PROF-04 — Mes chantiers : chantier, rôle et statut de chaque rattachement', async () => {
+  test('PROF-04 - Mes chantiers : chantier, rôle et statut de chaque rattachement', async () => {
     await revisit(page, '/mon-profil');
     await expect(page.getByRole('heading', { name: 'Mes chantiers' })).toBeVisible({ timeout: 20_000 });
     for (const col of ['Chantier', 'Rôle', 'Statut']) {

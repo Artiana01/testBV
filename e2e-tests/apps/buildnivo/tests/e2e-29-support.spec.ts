@@ -10,7 +10,7 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
 import { openModuleAs, revisit } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 29. Support & aide', () => {
+test.describe('BuildNivo - 29. Support & aide', () => {
   let context: BrowserContext;
   let page: Page;
 
@@ -20,7 +20,7 @@ test.describe('BuildNivo — 29. Support & aide', () => {
   });
   test.afterAll(async () => { await context?.close(); });
 
-  test('SUP-01 — Page Support : disponibilité du service, onglets "Mes demandes" / "Centre d\'aide", filtres de statut', async () => {
+  test('SUP-01 - Page Support : disponibilité du service, onglets "Mes demandes" / "Centre d\'aide", filtres de statut', async () => {
     await revisit(page, '/support');
     await expect(page.getByRole('heading', { name: 'Support & aide', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/disponibilité sur 90 jours/i)).toBeVisible();
@@ -38,7 +38,7 @@ test.describe('BuildNivo — 29. Support & aide', () => {
     await expect(page.getByRole('button', { name: 'Nouvelle demande' })).toBeVisible();
   });
 
-  test('SUP-02 — Recherche d\'un ticket sans résultat', async () => {
+  test('SUP-02 - Recherche d\'un ticket sans résultat', async () => {
     await revisit(page, '/support');
     const search = page.getByPlaceholder('Rechercher un ticket...');
     await expect(search).toBeVisible({ timeout: 20_000 });
@@ -48,7 +48,7 @@ test.describe('BuildNivo — 29. Support & aide', () => {
     await expect(page.getByRole('button', { name: /SAV-\d{4}-\d+/ })).toHaveCount(0, { timeout: 10_000 });
   });
 
-  test('SUP-03 — "Nouvelle demande" : sujet, catégories, description, délai de réponse ; annulation sans envoi', async () => {
+  test('SUP-03 - "Nouvelle demande" : sujet, catégories, description, délai de réponse ; annulation sans envoi', async () => {
     await revisit(page, '/support');
     await page.getByRole('button', { name: 'Nouvelle demande' }).click();
 
@@ -69,7 +69,7 @@ test.describe('BuildNivo — 29. Support & aide', () => {
     await expect(dialog).toBeHidden();
   });
 
-  test('SUP-04 — Centre d\'aide : questions fréquentes par catégorie, recherche, contact de l\'équipe', async () => {
+  test('SUP-04 - Centre d\'aide : questions fréquentes par catégorie, recherche, contact de l\'équipe', async () => {
     await revisit(page, '/support');
     await page.getByRole('tab', { name: /centre d'aide/i }).click();
 

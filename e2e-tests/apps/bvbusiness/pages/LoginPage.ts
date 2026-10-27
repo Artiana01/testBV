@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/LoginPage.ts
  * ------------------------------------
- * Page Object — Authentification Magic Link BV Business
+ * Page Object - Authentification Magic Link BV Business
  *
  * Flux réel :
  *   1. Saisir l'adresse email

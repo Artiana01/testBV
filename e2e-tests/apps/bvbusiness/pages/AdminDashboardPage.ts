@@ -1,7 +1,7 @@
 /**
  * apps/bvbusiness/pages/AdminDashboardPage.ts
  * ---------------------------------------------
- * Page Object — Dashboard Admin BV Business
+ * Page Object - Dashboard Admin BV Business
  * Couvre : navigation admin, KPIs admin (SC-02 admin, SC-04)
  */
 

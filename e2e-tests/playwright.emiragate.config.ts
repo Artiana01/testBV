@@ -1,7 +1,7 @@
 /**
  * playwright.emiragate.config.ts
  * --------------------------------
- * Configuration Playwright — Emiragate (BV Install)
+ * Configuration Playwright - Emiragate (BV Install)
  * URL : https://dev.bluevalorisinstall.com  (préfixe /en/)
  *
  * Projets :

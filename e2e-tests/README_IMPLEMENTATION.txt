@@ -271,14 +271,14 @@ R: npm run help:cleanup  ou  INDEX_CLEANUP.md
 
 ✨ POINTS FORTS
 
-✅ Simpler d'utilisation     — Menu interactif intuitif
-✅ Bien documenté            — 7 guides complets
-✅ Production-ready          — Testé et validé
-✅ Sécurisé                  — Confirmations systématiques
-✅ Flexible                  — Modes manual et automatisé
-✅ Extensible                — Configuration JSON
-✅ Cross-platform            — Windows, Mac, Linux
-✅ Sans dépendances          — Node.js natif seulement
+✅ Simpler d'utilisation     - Menu interactif intuitif
+✅ Bien documenté            - 7 guides complets
+✅ Production-ready          - Testé et validé
+✅ Sécurisé                  - Confirmations systématiques
+✅ Flexible                  - Modes manual et automatisé
+✅ Extensible                - Configuration JSON
+✅ Cross-platform            - Windows, Mac, Linux
+✅ Sans dépendances          - Node.js natif seulement
 
 ════════════════════════════════════════════════════════════════════════════
 

@@ -4,7 +4,7 @@
  * Page Object générique pour les modules "métier" de BuildNivo (Pointage,
  * Tâches, Journal, Photos, Réserves, Visas, Réunions, Achats, Finances,
  * Documents, Messages...). Ces modules partagent la même coquille (sidebar +
- * en-tête + contenu) — cette classe évite de dupliquer un Page Object par
+ * en-tête + contenu) - cette classe évite de dupliquer un Page Object par
  * module pour des pages dont on ne connaît pas encore tous les sélecteurs
  * internes en détail.
  *
@@ -26,7 +26,7 @@ export class ModulePage extends AppShellPage {
   async goto(): Promise<void> {
     await this.gotoModule(this.path);
     // Ramène systématiquement sur le chantier de démo seedé (fournisseurs, documents,
-    // réserves...) — au cas où un test précédent (création de chantier) aurait fait
+    // réserves...) - au cas où un test précédent (création de chantier) aurait fait
     // basculer le compte sur un chantier vide fraîchement créé.
     await this.ensureDemoChantierSelected();
   }
@@ -37,7 +37,7 @@ export class ModulePage extends AppShellPage {
 
   /**
    * Cherche un bouton d'action (ex: "Nouvelle tâche", "Ajouter une photo") par
-   * texte/aria-label approximatif. Retourne `null` si introuvable — à utiliser
+   * texte/aria-label approximatif. Retourne `null` si introuvable - à utiliser
    * avec `test.skip` plutôt que de faire échouer un scénario sur un libellé
    * d'UI qui peut varier.
    */
@@ -58,7 +58,7 @@ export class ModulePage extends AppShellPage {
   }
 
   async verifyEmptyStateOrData(): Promise<void> {
-    // Le module doit soit afficher un état vide explicite, soit des données —
+    // Le module doit soit afficher un état vide explicite, soit des données -
     // dans tous les cas la zone de contenu doit être rendue (pas de crash/blanc).
     const empty = this.getEmptyState();
     const hasEmpty = await empty.isVisible({ timeout: 5_000 }).catch(() => false);

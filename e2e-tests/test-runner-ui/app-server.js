@@ -2,7 +2,7 @@
  * app-server.js
  * Serveur générique pour une seule app Playwright.
  * Lancé par start-all.js avec APP_KEY et PORT en variables d'environnement.
- * Chaque instance est totalement isolée — aucun partage de state entre apps.
+ * Chaque instance est totalement isolée - aucun partage de state entre apps.
  */
 
 const http = require('http');
@@ -43,15 +43,15 @@ const REGISTRY = {
     config: 'playwright.bvtech.config.ts',
     color:  '#6366f1',
     tests: {
-      'e2e-01-signup':         { file: 'apps/bvtech/tests/e2e-01-signup.spec.ts',           label: 'E2E-01 — Inscription (Signup)' },
-      'e2e-02-login':          { file: 'apps/bvtech/tests/e2e-02-login-navigation.spec.ts',  label: 'E2E-02 — Connexion & Navigation' },
-      'e2e-03-profile':        { file: 'apps/bvtech/tests/e2e-03-profile.spec.ts',           label: 'E2E-03 — Profil Client' },
-      'e2e-04-dashboard':      { file: 'apps/bvtech/tests/e2e-04-dashboard.spec.ts',         label: 'E2E-04 — Dashboard Client' },
-      'e2e-05-admin-login':    { file: 'apps/bvtech/tests/e2e-05-admin-login.spec.ts',       label: 'E2E-05 — Connexion Admin' },
-      'e2e-06-admin-users':    { file: 'apps/bvtech/tests/e2e-06-admin-users.spec.ts',       label: 'E2E-06 — Gestion Utilisateurs (Admin)' },
-      'e2e-07-admin-packs':    { file: 'apps/bvtech/tests/e2e-07-admin-packs.spec.ts',       label: 'E2E-07 — Gestion Packs (Admin)' },
-      'e2e-08-admin-payments': { file: 'apps/bvtech/tests/e2e-08-admin-payments.spec.ts',    label: 'E2E-08 — Paiements (Admin)' },
-      'e2e-09-admin-contacts': { file: 'apps/bvtech/tests/e2e-09-admin-contacts.spec.ts',    label: 'E2E-09 — Contacts (Admin)' },
+      'e2e-01-signup':         { file: 'apps/bvtech/tests/e2e-01-signup.spec.ts',           label: 'E2E-01 - Inscription (Signup)' },
+      'e2e-02-login':          { file: 'apps/bvtech/tests/e2e-02-login-navigation.spec.ts',  label: 'E2E-02 - Connexion & Navigation' },
+      'e2e-03-profile':        { file: 'apps/bvtech/tests/e2e-03-profile.spec.ts',           label: 'E2E-03 - Profil Client' },
+      'e2e-04-dashboard':      { file: 'apps/bvtech/tests/e2e-04-dashboard.spec.ts',         label: 'E2E-04 - Dashboard Client' },
+      'e2e-05-admin-login':    { file: 'apps/bvtech/tests/e2e-05-admin-login.spec.ts',       label: 'E2E-05 - Connexion Admin' },
+      'e2e-06-admin-users':    { file: 'apps/bvtech/tests/e2e-06-admin-users.spec.ts',       label: 'E2E-06 - Gestion Utilisateurs (Admin)' },
+      'e2e-07-admin-packs':    { file: 'apps/bvtech/tests/e2e-07-admin-packs.spec.ts',       label: 'E2E-07 - Gestion Packs (Admin)' },
+      'e2e-08-admin-payments': { file: 'apps/bvtech/tests/e2e-08-admin-payments.spec.ts',    label: 'E2E-08 - Paiements (Admin)' },
+      'e2e-09-admin-contacts': { file: 'apps/bvtech/tests/e2e-09-admin-contacts.spec.ts',    label: 'E2E-09 - Contacts (Admin)' },
       'regression':            { file: 'apps/bvtech/tests/regression.spec.ts',               label: 'Régression Complète' },
     },
   },
@@ -61,15 +61,15 @@ const REGISTRY = {
     config: 'playwright.bvbusiness.config.ts',
     color:  '#0ea5e9',
     tests: {
-      'e2e-01-signup':     { file: 'apps/bvbusiness/tests/e2e-01-signup.spec.ts',           label: 'SC-01 — Inscription (Signup)' },
-      'e2e-02-login':      { file: 'apps/bvbusiness/tests/e2e-02-login-dashboard.spec.ts',  label: 'SC-02 — Login & Dashboard' },
-      'e2e-03-packages':   { file: 'apps/bvbusiness/tests/e2e-03-packages.spec.ts',         label: 'SC-03 — Packages & Pricing' },
-      'e2e-04-navigation': { file: 'apps/bvbusiness/tests/e2e-04-navigation.spec.ts',       label: 'SC-04 — Navigation Admin' },
-      'e2e-05-content':    { file: 'apps/bvbusiness/tests/e2e-05-admin-content.spec.ts',    label: 'SC-05 — Content Management' },
-      'e2e-06-media':      { file: 'apps/bvbusiness/tests/e2e-06-admin-media.spec.ts',      label: 'SC-06 — Media Library' },
-      'e2e-07-regional':   { file: 'apps/bvbusiness/tests/e2e-07-regional-content.spec.ts', label: 'SC-07 — Contenu Régional' },
-      'e2e-08-users':      { file: 'apps/bvbusiness/tests/e2e-08-admin-users.spec.ts',      label: 'SC-08 — Gestion Utilisateurs' },
-      'e2e-09-payments':   { file: 'apps/bvbusiness/tests/e2e-09-admin-payments.spec.ts',   label: 'SC-09 — Paiements Admin' },
+      'e2e-01-signup':     { file: 'apps/bvbusiness/tests/e2e-01-signup.spec.ts',           label: 'SC-01 - Inscription (Signup)' },
+      'e2e-02-login':      { file: 'apps/bvbusiness/tests/e2e-02-login-dashboard.spec.ts',  label: 'SC-02 - Login & Dashboard' },
+      'e2e-03-packages':   { file: 'apps/bvbusiness/tests/e2e-03-packages.spec.ts',         label: 'SC-03 - Packages & Pricing' },
+      'e2e-04-navigation': { file: 'apps/bvbusiness/tests/e2e-04-navigation.spec.ts',       label: 'SC-04 - Navigation Admin' },
+      'e2e-05-content':    { file: 'apps/bvbusiness/tests/e2e-05-admin-content.spec.ts',    label: 'SC-05 - Content Management' },
+      'e2e-06-media':      { file: 'apps/bvbusiness/tests/e2e-06-admin-media.spec.ts',      label: 'SC-06 - Media Library' },
+      'e2e-07-regional':   { file: 'apps/bvbusiness/tests/e2e-07-regional-content.spec.ts', label: 'SC-07 - Contenu Régional' },
+      'e2e-08-users':      { file: 'apps/bvbusiness/tests/e2e-08-admin-users.spec.ts',      label: 'SC-08 - Gestion Utilisateurs' },
+      'e2e-09-payments':   { file: 'apps/bvbusiness/tests/e2e-09-admin-payments.spec.ts',   label: 'SC-09 - Paiements Admin' },
       'regression':        { file: 'apps/bvbusiness/tests/regression.spec.ts',              label: 'Régression Complète' },
     },
   },
@@ -79,16 +79,16 @@ const REGISTRY = {
     config: 'playwright.bvinvest.config.ts',
     color:  '#10b981',
     tests: {
-      'e2e-01-login':           { file: 'apps/bvinvest/tests/e2e-01-login.spec.ts',           label: 'SC-01 — Connexion utilisateur' },
-      'e2e-02-member':          { file: 'apps/bvinvest/tests/e2e-02-member-space.spec.ts',     label: 'SC-02 — Espace Membre' },
-      'e2e-03-packages':        { file: 'apps/bvinvest/tests/e2e-03-packages.spec.ts',         label: 'SC-03 — Packages & Souscription' },
-      'e2e-04-opportunities':   { file: 'apps/bvinvest/tests/e2e-04-opportunities.spec.ts',    label: "SC-04/07 — Opportunités & Documents" },
-      'e2e-05-kyc':             { file: 'apps/bvinvest/tests/e2e-05-kyc-pipeline.spec.ts',     label: 'SC-05 — Pipeline KYC/AML' },
-      'e2e-06-profile':         { file: 'apps/bvinvest/tests/e2e-06-profile.spec.ts',          label: 'SC-06 — Profil Utilisateur' },
-      'e2e-08-admin-access':    { file: 'apps/bvinvest/tests/e2e-08-admin-access.spec.ts',     label: "SC-08 — Demandes d'Accès (Admin)" },
-      'e2e-09-admin-dashboard': { file: 'apps/bvinvest/tests/e2e-09-admin-dashboard.spec.ts',  label: 'SC-09 — Dashboard Admin' },
-      'e2e-10-navigation':      { file: 'apps/bvinvest/tests/e2e-10-navigation.spec.ts',       label: 'SC-10 — Navigation Globale' },
-      'e2e-11-analytics':       { file: 'apps/bvinvest/tests/e2e-11-analytics.spec.ts',        label: 'SC-11 — Analytics & Stats' },
+      'e2e-01-login':           { file: 'apps/bvinvest/tests/e2e-01-login.spec.ts',           label: 'SC-01 - Connexion utilisateur' },
+      'e2e-02-member':          { file: 'apps/bvinvest/tests/e2e-02-member-space.spec.ts',     label: 'SC-02 - Espace Membre' },
+      'e2e-03-packages':        { file: 'apps/bvinvest/tests/e2e-03-packages.spec.ts',         label: 'SC-03 - Packages & Souscription' },
+      'e2e-04-opportunities':   { file: 'apps/bvinvest/tests/e2e-04-opportunities.spec.ts',    label: "SC-04/07 - Opportunités & Documents" },
+      'e2e-05-kyc':             { file: 'apps/bvinvest/tests/e2e-05-kyc-pipeline.spec.ts',     label: 'SC-05 - Pipeline KYC/AML' },
+      'e2e-06-profile':         { file: 'apps/bvinvest/tests/e2e-06-profile.spec.ts',          label: 'SC-06 - Profil Utilisateur' },
+      'e2e-08-admin-access':    { file: 'apps/bvinvest/tests/e2e-08-admin-access.spec.ts',     label: "SC-08 - Demandes d'Accès (Admin)" },
+      'e2e-09-admin-dashboard': { file: 'apps/bvinvest/tests/e2e-09-admin-dashboard.spec.ts',  label: 'SC-09 - Dashboard Admin' },
+      'e2e-10-navigation':      { file: 'apps/bvinvest/tests/e2e-10-navigation.spec.ts',       label: 'SC-10 - Navigation Globale' },
+      'e2e-11-analytics':       { file: 'apps/bvinvest/tests/e2e-11-analytics.spec.ts',        label: 'SC-11 - Analytics & Stats' },
       'regression':             { file: 'apps/bvinvest/tests/regression.spec.ts',              label: 'Régression Complète' },
     },
   },
@@ -98,16 +98,16 @@ const REGISTRY = {
     config: 'playwright.emiragate.config.ts',
     color:  '#f59e0b',
     tests: {
-      'e2e-01-login':      { file: 'apps/emiragate/tests/e2e-01-admin-login.spec.ts',    label: 'SC-01 — Connexion Admin' },
-      'e2e-02-dashboard':  { file: 'apps/emiragate/tests/e2e-02-admin-dashboard.spec.ts',label: 'SC-02 — Dashboard Admin' },
-      'e2e-03-conduit':    { file: 'apps/emiragate/tests/e2e-03-conduit.spec.ts',        label: 'SC-03 — Leads / Conduit' },
-      'e2e-04-signup':     { file: 'apps/emiragate/tests/e2e-04-signup.spec.ts',         label: 'SC-04 — Inscription Client' },
-      'e2e-05-client':     { file: 'apps/emiragate/tests/e2e-05-client-login.spec.ts',   label: 'SC-05 — Connexion Client' },
-      'e2e-06-profile':    { file: 'apps/emiragate/tests/e2e-06-profile.spec.ts',        label: 'SC-06 — Profil Utilisateur' },
-      'e2e-07-users':      { file: 'apps/emiragate/tests/e2e-07-admin-users.spec.ts',    label: 'SC-07 — Gestion Utilisateurs' },
-      'e2e-08-contacts':   { file: 'apps/emiragate/tests/e2e-08-contacts.spec.ts',       label: 'SC-08 — Gestion Contacts' },
-      'e2e-09-analytics':  { file: 'apps/emiragate/tests/e2e-09-analytics.spec.ts',      label: 'SC-09 — Analytique' },
-      'e2e-10-navigation': { file: 'apps/emiragate/tests/e2e-10-navigation.spec.ts',     label: 'SC-10/11 — Navigation & Déconnexion' },
+      'e2e-01-login':      { file: 'apps/emiragate/tests/e2e-01-admin-login.spec.ts',    label: 'SC-01 - Connexion Admin' },
+      'e2e-02-dashboard':  { file: 'apps/emiragate/tests/e2e-02-admin-dashboard.spec.ts',label: 'SC-02 - Dashboard Admin' },
+      'e2e-03-conduit':    { file: 'apps/emiragate/tests/e2e-03-conduit.spec.ts',        label: 'SC-03 - Leads / Conduit' },
+      'e2e-04-signup':     { file: 'apps/emiragate/tests/e2e-04-signup.spec.ts',         label: 'SC-04 - Inscription Client' },
+      'e2e-05-client':     { file: 'apps/emiragate/tests/e2e-05-client-login.spec.ts',   label: 'SC-05 - Connexion Client' },
+      'e2e-06-profile':    { file: 'apps/emiragate/tests/e2e-06-profile.spec.ts',        label: 'SC-06 - Profil Utilisateur' },
+      'e2e-07-users':      { file: 'apps/emiragate/tests/e2e-07-admin-users.spec.ts',    label: 'SC-07 - Gestion Utilisateurs' },
+      'e2e-08-contacts':   { file: 'apps/emiragate/tests/e2e-08-contacts.spec.ts',       label: 'SC-08 - Gestion Contacts' },
+      'e2e-09-analytics':  { file: 'apps/emiragate/tests/e2e-09-analytics.spec.ts',      label: 'SC-09 - Analytique' },
+      'e2e-10-navigation': { file: 'apps/emiragate/tests/e2e-10-navigation.spec.ts',     label: 'SC-10/11 - Navigation & Déconnexion' },
       'regression':        { file: 'apps/emiragate/tests/regression.spec.ts',            label: 'Régression Complète' },
     },
   },
@@ -117,14 +117,14 @@ const REGISTRY = {
     config: 'playwright.bvportage.config.ts',
     color:  '#ec4899',
     tests: {
-      'e2e-01-signup-activation':     { file: 'apps/bvportage/tests/e2e-01-signup-activation.spec.ts',       label: 'E2E-01 — Inscription + OTP (Agence)' },
-      'e2e-02-login-pack-subscription':{ file: 'apps/bvportage/tests/e2e-02-login-pack-subscription.spec.ts', label: 'E2E-02 — Login + Pack 159€' },
-      'e2e-03-client-creation':       { file: 'apps/bvportage/tests/e2e-03-client-creation.spec.ts',          label: 'E2E-03 — Client + Projet' },
-      'e2e-04-mission-contract-kyc':  { file: 'apps/bvportage/tests/e2e-04-mission-contract-kyc.spec.ts',     label: 'E2E-04 — Mission + Contrat + KYC' },
-      'e2e-05-contract-signature':    { file: 'apps/bvportage/tests/e2e-05-contract-signature.spec.ts',       label: 'E2E-05 — Signature Contrat' },
-      'e2e-06-invoice-payment':       { file: 'apps/bvportage/tests/e2e-06-invoice-payment.spec.ts',          label: 'E2E-06 — Facturation + Paiement' },
-      'e2e-07-team-invitation':       { file: 'apps/bvportage/tests/e2e-07-team-invitation.spec.ts',          label: 'E2E-07 — Invitation Équipe' },
-      'e2e-08-reversal':              { file: 'apps/bvportage/tests/e2e-08-reversal.spec.ts',                 label: 'E2E-08 — Reversement' },
+      'e2e-01-signup-activation':     { file: 'apps/bvportage/tests/e2e-01-signup-activation.spec.ts',       label: 'E2E-01 - Inscription + OTP (Agence)' },
+      'e2e-02-login-pack-subscription':{ file: 'apps/bvportage/tests/e2e-02-login-pack-subscription.spec.ts', label: 'E2E-02 - Login + Pack 159€' },
+      'e2e-03-client-creation':       { file: 'apps/bvportage/tests/e2e-03-client-creation.spec.ts',          label: 'E2E-03 - Client + Projet' },
+      'e2e-04-mission-contract-kyc':  { file: 'apps/bvportage/tests/e2e-04-mission-contract-kyc.spec.ts',     label: 'E2E-04 - Mission + Contrat + KYC' },
+      'e2e-05-contract-signature':    { file: 'apps/bvportage/tests/e2e-05-contract-signature.spec.ts',       label: 'E2E-05 - Signature Contrat' },
+      'e2e-06-invoice-payment':       { file: 'apps/bvportage/tests/e2e-06-invoice-payment.spec.ts',          label: 'E2E-06 - Facturation + Paiement' },
+      'e2e-07-team-invitation':       { file: 'apps/bvportage/tests/e2e-07-team-invitation.spec.ts',          label: 'E2E-07 - Invitation Équipe' },
+      'e2e-08-reversal':              { file: 'apps/bvportage/tests/e2e-08-reversal.spec.ts',                 label: 'E2E-08 - Reversement' },
     },
   },
   bvportageFreelance: {
@@ -133,15 +133,15 @@ const REGISTRY = {
     config: 'playwright.bvportage-freelance.config.ts',
     color:  '#d946ef',
     tests: {
-      'e2e-01-signup-otp':              { file: 'apps/bvportage-freelance/tests/e2e-01-signup-otp.spec.ts',                label: 'E2E-01 — Inscription Freelance + OTP' },
-      'e2e-02-pack-subscription':        { file: 'apps/bvportage-freelance/tests/e2e-02-pack-subscription.spec.ts',        label: 'E2E-02 — Souscription Pack (79€)' },
-      'e2e-03-project-client':           { file: 'apps/bvportage-freelance/tests/e2e-03-project-client.spec.ts',           label: 'E2E-03 — Création Projet + Client' },
-      'e2e-04-mission-contract-signature':{ file: 'apps/bvportage-freelance/tests/e2e-04-mission-contract-signature.spec.ts', label: 'E2E-04 — Mission + Contrat + Signature' },
-      'e2e-05-kyc-admin-validation':     { file: 'apps/bvportage-freelance/tests/e2e-05-kyc-admin-validation.spec.ts',     label: 'E2E-05 — KYC + Validation Admin' },
-      'e2e-06-invoice-payment':          { file: 'apps/bvportage-freelance/tests/e2e-06-invoice-payment.spec.ts',          label: 'E2E-06 — Facturation + Paiement' },
-      'e2e-07-reset-password':           { file: 'apps/bvportage-freelance/tests/e2e-07-reset-password.spec.ts',           label: 'E2E-07 — Reset Mot de passe' },
-      'e2e-08-profile':                  { file: 'apps/bvportage-freelance/tests/e2e-08-profile.spec.ts',                  label: 'E2E-08 — Gestion Profil' },
-      'e2e-09-edge-cases':               { file: 'apps/bvportage-freelance/tests/e2e-09-edge-cases.spec.ts',               label: 'E2E-09 — Cas limites & comptes' },
+      'e2e-01-signup-otp':              { file: 'apps/bvportage-freelance/tests/e2e-01-signup-otp.spec.ts',                label: 'E2E-01 - Inscription Freelance + OTP' },
+      'e2e-02-pack-subscription':        { file: 'apps/bvportage-freelance/tests/e2e-02-pack-subscription.spec.ts',        label: 'E2E-02 - Souscription Pack (79€)' },
+      'e2e-03-project-client':           { file: 'apps/bvportage-freelance/tests/e2e-03-project-client.spec.ts',           label: 'E2E-03 - Création Projet + Client' },
+      'e2e-04-mission-contract-signature':{ file: 'apps/bvportage-freelance/tests/e2e-04-mission-contract-signature.spec.ts', label: 'E2E-04 - Mission + Contrat + Signature' },
+      'e2e-05-kyc-admin-validation':     { file: 'apps/bvportage-freelance/tests/e2e-05-kyc-admin-validation.spec.ts',     label: 'E2E-05 - KYC + Validation Admin' },
+      'e2e-06-invoice-payment':          { file: 'apps/bvportage-freelance/tests/e2e-06-invoice-payment.spec.ts',          label: 'E2E-06 - Facturation + Paiement' },
+      'e2e-07-reset-password':           { file: 'apps/bvportage-freelance/tests/e2e-07-reset-password.spec.ts',           label: 'E2E-07 - Reset Mot de passe' },
+      'e2e-08-profile':                  { file: 'apps/bvportage-freelance/tests/e2e-08-profile.spec.ts',                  label: 'E2E-08 - Gestion Profil' },
+      'e2e-09-edge-cases':               { file: 'apps/bvportage-freelance/tests/e2e-09-edge-cases.spec.ts',               label: 'E2E-09 - Cas limites & comptes' },
     },
   },
   creerailleurs: {
@@ -150,15 +150,15 @@ const REGISTRY = {
     config: 'playwright.creerailleurs.config.ts',
     color:  '#f97316',
     tests: {
-      'e2e-01-navigation':  { file: 'apps/creerailleurs/tests/e2e-01-navigation.spec.ts',       label: 'SC-01 — Navigation & Accessibilité' },
-      'e2e-02-cta':         { file: 'apps/creerailleurs/tests/e2e-02-cta-redirections.spec.ts',  label: 'SC-02 — CTAs & Redirections' },
-      'e2e-03-signup':      { file: 'apps/creerailleurs/tests/e2e-03-signup.spec.ts',            label: 'SC-03 — Inscription' },
-      'e2e-04-login':       { file: 'apps/creerailleurs/tests/e2e-04-login.spec.ts',             label: 'SC-04 — Connexion' },
-      'e2e-05-tunnel':      { file: 'apps/creerailleurs/tests/e2e-05-tunnel-vente.spec.ts',      label: 'SC-05 — Tunnel de Vente' },
-      'e2e-06-guest':       { file: 'apps/creerailleurs/tests/e2e-06-achat-sans-compte.spec.ts', label: 'SC-06 — Achat sans Compte' },
-      'e2e-07-dashboard':   { file: 'apps/creerailleurs/tests/e2e-07-dashboard-user.spec.ts',    label: 'SC-07 — Dashboard Utilisateur' },
-      'e2e-08-admin':       { file: 'apps/creerailleurs/tests/e2e-08-admin.spec.ts',             label: 'SC-08 — Dashboard Admin' },
-      'e2e-09-multilingue': { file: 'apps/creerailleurs/tests/e2e-09-multilingue.spec.ts',       label: 'SC-09 — Multilingue FR/EN' },
+      'e2e-01-navigation':  { file: 'apps/creerailleurs/tests/e2e-01-navigation.spec.ts',       label: 'SC-01 - Navigation & Accessibilité' },
+      'e2e-02-cta':         { file: 'apps/creerailleurs/tests/e2e-02-cta-redirections.spec.ts',  label: 'SC-02 - CTAs & Redirections' },
+      'e2e-03-signup':      { file: 'apps/creerailleurs/tests/e2e-03-signup.spec.ts',            label: 'SC-03 - Inscription' },
+      'e2e-04-login':       { file: 'apps/creerailleurs/tests/e2e-04-login.spec.ts',             label: 'SC-04 - Connexion' },
+      'e2e-05-tunnel':      { file: 'apps/creerailleurs/tests/e2e-05-tunnel-vente.spec.ts',      label: 'SC-05 - Tunnel de Vente' },
+      'e2e-06-guest':       { file: 'apps/creerailleurs/tests/e2e-06-achat-sans-compte.spec.ts', label: 'SC-06 - Achat sans Compte' },
+      'e2e-07-dashboard':   { file: 'apps/creerailleurs/tests/e2e-07-dashboard-user.spec.ts',    label: 'SC-07 - Dashboard Utilisateur' },
+      'e2e-08-admin':       { file: 'apps/creerailleurs/tests/e2e-08-admin.spec.ts',             label: 'SC-08 - Dashboard Admin' },
+      'e2e-09-multilingue': { file: 'apps/creerailleurs/tests/e2e-09-multilingue.spec.ts',       label: 'SC-09 - Multilingue FR/EN' },
     },
   },
   launchpad: {
@@ -167,13 +167,13 @@ const REGISTRY = {
     config: 'playwright.launchpad.config.ts',
     color:  '#14b8a6',
     tests: {
-      'e2e-01-signup':       { file: 'apps/launchpad/tests/e2e-01-signup-activation.spec.ts',  label: 'E2E-01 — Activation & Inscription (P0)' },
-      'e2e-02-login':        { file: 'apps/launchpad/tests/e2e-02-login-dashboard.spec.ts',    label: 'E2E-02 — Connexion & Dashboard (P0)' },
-      'e2e-03-packs':        { file: 'apps/launchpad/tests/e2e-03-pack-purchase.spec.ts',      label: 'E2E-03 — Achat Pack + Paiement (P0)' },
-      'e2e-04-profile':      { file: 'apps/launchpad/tests/e2e-04-profile.spec.ts',            label: 'E2E-04 — Profil Utilisateur (P1)' },
-      'e2e-05-security':     { file: 'apps/launchpad/tests/e2e-05-security.spec.ts',           label: 'E2E-05 — Sécurité / Mot de passe (P1)' },
-      'e2e-06-notifications':{ file: 'apps/launchpad/tests/e2e-06-notifications.spec.ts',      label: 'E2E-06 — Notifications & Emails (P1)' },
-      'e2e-07-messaging':    { file: 'apps/launchpad/tests/e2e-07-messaging.spec.ts',          label: 'E2E-07 — Messagerie Client ↔ Admin (P2)' },
+      'e2e-01-signup':       { file: 'apps/launchpad/tests/e2e-01-signup-activation.spec.ts',  label: 'E2E-01 - Activation & Inscription (P0)' },
+      'e2e-02-login':        { file: 'apps/launchpad/tests/e2e-02-login-dashboard.spec.ts',    label: 'E2E-02 - Connexion & Dashboard (P0)' },
+      'e2e-03-packs':        { file: 'apps/launchpad/tests/e2e-03-pack-purchase.spec.ts',      label: 'E2E-03 - Achat Pack + Paiement (P0)' },
+      'e2e-04-profile':      { file: 'apps/launchpad/tests/e2e-04-profile.spec.ts',            label: 'E2E-04 - Profil Utilisateur (P1)' },
+      'e2e-05-security':     { file: 'apps/launchpad/tests/e2e-05-security.spec.ts',           label: 'E2E-05 - Sécurité / Mot de passe (P1)' },
+      'e2e-06-notifications':{ file: 'apps/launchpad/tests/e2e-06-notifications.spec.ts',      label: 'E2E-06 - Notifications & Emails (P1)' },
+      'e2e-07-messaging':    { file: 'apps/launchpad/tests/e2e-07-messaging.spec.ts',          label: 'E2E-07 - Messagerie Client ↔ Admin (P2)' },
       'regression':          { file: 'apps/launchpad/tests/regression.spec.ts',               label: 'Régression Complète' },
     },
   },
@@ -183,39 +183,41 @@ const REGISTRY = {
     config: 'playwright.buildnivo.config.ts',
     color:  '#2563eb',
     tests: {
-      'e2e-01-auth':          { file: 'apps/buildnivo/tests/e2e-01-auth.spec.ts',          label: '01 — Authentification & compte' },
-      'e2e-02-roles-login':   { file: 'apps/buildnivo/tests/e2e-02-roles-login.spec.ts',   label: '02 — Connexion des 13 rôles métier' },
-      'e2e-03-chantiers':     { file: 'apps/buildnivo/tests/e2e-03-chantiers.spec.ts',     label: '03 — Chantiers, zones & lots' },
-      'e2e-04-pointage':      { file: 'apps/buildnivo/tests/e2e-04-pointage.spec.ts',      label: '05 — Pointage & présences' },
-      'e2e-05-taches':        { file: 'apps/buildnivo/tests/e2e-05-taches.spec.ts',        label: '06 — Tâches (Kanban)' },
-      'e2e-06-journal':       { file: 'apps/buildnivo/tests/e2e-06-journal.spec.ts',       label: '07 — Journal de chantier' },
-      'e2e-07-photos':        { file: 'apps/buildnivo/tests/e2e-07-photos.spec.ts',        label: '08 — Photos & problèmes' },
-      'e2e-08-reserves':      { file: 'apps/buildnivo/tests/e2e-08-reserves.spec.ts',      label: '09 — Réserves' },
-      'e2e-09-visas':         { file: 'apps/buildnivo/tests/e2e-09-visas.spec.ts',         label: '10 — Visas de plans' },
-      'e2e-10-reunions':      { file: 'apps/buildnivo/tests/e2e-10-reunions.spec.ts',      label: '11 — Réunions & comptes rendus' },
-      'e2e-11-achats':        { file: 'apps/buildnivo/tests/e2e-11-achats.spec.ts',        label: '12 — Achats & fournisseurs' },
-      'e2e-12-finances':      { file: 'apps/buildnivo/tests/e2e-12-finances.spec.ts',      label: '13 — Finances & lots financiers' },
-      'e2e-13-documents':     { file: 'apps/buildnivo/tests/e2e-13-documents.spec.ts',     label: '14 — Documents (GED)' },
-      'e2e-14-messages':      { file: 'apps/buildnivo/tests/e2e-14-messages.spec.ts',      label: '15 — Messagerie & copilote IA' },
-      'e2e-15-notifications': { file: 'apps/buildnivo/tests/e2e-15-notifications.spec.ts', label: '16 — Notifications' },
-      'e2e-21-reprise-guide': { file: 'apps/buildnivo/tests/e2e-21-reprise-guide.spec.ts', label: '17 — Reprise de chantier' },
-      'e2e-22-reprise':       { file: 'apps/buildnivo/tests/e2e-22-reprise.spec.ts',       label: '17 — Reprise de chantier (parcours & droits)' },
-      'e2e-16-rbac':          { file: 'apps/buildnivo/tests/e2e-16-rbac.spec.ts',          label: '02 — RBAC (accès refusé)' },
-      'e2e-17-billing':       { file: 'apps/buildnivo/tests/e2e-17-billing.spec.ts',       label: '18 — Billing (Stripe Customer Portal)' },
-      'e2e-18-carnet':        { file: 'apps/buildnivo/tests/e2e-18-carnet-entretien.spec.ts', label: "19 — Carnet d'entretien engins" },
-      'e2e-19-audit':         { file: 'apps/buildnivo/tests/e2e-19-supervision-audit.spec.ts', label: '20 — Sécurité / Audit (console de supervision)' },
-      'e2e-20-rapports-ia':   { file: 'apps/buildnivo/tests/e2e-20-rapports-ia.spec.ts',   label: '21 — Rapports IA' },
-      'e2e-23-projets':       { file: 'apps/buildnivo/tests/e2e-23-projets.spec.ts',       label: '22 — Projets' },
-      'e2e-24-anomalies':     { file: 'apps/buildnivo/tests/e2e-24-anomalies.spec.ts',     label: "23 — Signalements d'anomalie" },
-      'e2e-25-checklists':    { file: 'apps/buildnivo/tests/e2e-25-checklists.spec.ts',    label: '24 — Checklists métier' },
-      'e2e-26-habilitations': { file: 'apps/buildnivo/tests/e2e-26-habilitations.spec.ts', label: '25 — Habilitations' },
-      'e2e-27-copilote':      { file: 'apps/buildnivo/tests/e2e-27-copilote.spec.ts',      label: '26 — Copilote IA' },
-      'e2e-28-controle':      { file: 'apps/buildnivo/tests/e2e-28-controle-financier.spec.ts', label: '27 — Contrôle financier' },
-      'e2e-29-support':       { file: 'apps/buildnivo/tests/e2e-29-support.spec.ts',       label: '28 — Support & aide' },
-      'e2e-30-profil':        { file: 'apps/buildnivo/tests/e2e-30-profil.spec.ts',        label: '29 — Mon profil' },
-      'e2e-31-equipes':       { file: 'apps/buildnivo/tests/e2e-31-equipes.spec.ts',       label: '30 — Équipes & sociétés' },
-      'e2e-32-parametres':    { file: 'apps/buildnivo/tests/e2e-32-parametres.spec.ts',    label: '31 — Paramètres' },
-      'e2e-33-administration':{ file: 'apps/buildnivo/tests/e2e-33-administration.spec.ts', label: '32 — Administration plateforme (Superadmin)' },
+      'e2e-01-auth':          { file: 'apps/buildnivo/tests/e2e-01-auth.spec.ts',          label: '01 - Authentification & compte' },
+      'e2e-02-roles-login':   { file: 'apps/buildnivo/tests/e2e-02-roles-login.spec.ts',   label: '02 - Connexion des 13 rôles métier' },
+      'e2e-03-chantiers':     { file: 'apps/buildnivo/tests/e2e-03-chantiers.spec.ts',     label: '03 - Chantiers, zones & lots' },
+      'e2e-04-pointage':      { file: 'apps/buildnivo/tests/e2e-04-pointage.spec.ts',      label: '05 - Pointage & présences' },
+      'e2e-05-taches':        { file: 'apps/buildnivo/tests/e2e-05-taches.spec.ts',        label: '06 - Tâches (Kanban)' },
+      'e2e-06-journal':       { file: 'apps/buildnivo/tests/e2e-06-journal.spec.ts',       label: '07 - Journal de chantier' },
+      'e2e-07-photos':        { file: 'apps/buildnivo/tests/e2e-07-photos.spec.ts',        label: '08 - Photos & problèmes' },
+      'e2e-08-reserves':      { file: 'apps/buildnivo/tests/e2e-08-reserves.spec.ts',      label: '09 - Réserves' },
+      'e2e-09-visas':         { file: 'apps/buildnivo/tests/e2e-09-visas.spec.ts',         label: '10 - Visas de plans' },
+      'e2e-10-reunions':      { file: 'apps/buildnivo/tests/e2e-10-reunions.spec.ts',      label: '11 - Réunions & comptes rendus' },
+      'e2e-11-achats':        { file: 'apps/buildnivo/tests/e2e-11-achats.spec.ts',        label: '12 - Achats & fournisseurs' },
+      'e2e-12-finances':      { file: 'apps/buildnivo/tests/e2e-12-finances.spec.ts',      label: '13 - Finances & lots financiers' },
+      'e2e-13-documents':     { file: 'apps/buildnivo/tests/e2e-13-documents.spec.ts',     label: '14 - Documents (GED)' },
+      'e2e-14-messages':      { file: 'apps/buildnivo/tests/e2e-14-messages.spec.ts',      label: '15 - Messagerie & copilote IA' },
+      'e2e-15-notifications': { file: 'apps/buildnivo/tests/e2e-15-notifications.spec.ts', label: '16 - Notifications' },
+      'e2e-21-reprise-guide': { file: 'apps/buildnivo/tests/e2e-21-reprise-guide.spec.ts', label: '17 - Reprise de chantier' },
+      'e2e-22-reprise':       { file: 'apps/buildnivo/tests/e2e-22-reprise.spec.ts',       label: '17 - Reprise de chantier (parcours & droits)' },
+      'e2e-16-rbac':          { file: 'apps/buildnivo/tests/e2e-16-rbac.spec.ts',          label: '02 - RBAC (accès refusé)' },
+      'e2e-17-billing':       { file: 'apps/buildnivo/tests/e2e-17-billing.spec.ts',       label: '18 - Billing (Stripe Customer Portal)' },
+      'e2e-18-carnet':        { file: 'apps/buildnivo/tests/e2e-18-carnet-entretien.spec.ts', label: "19 - Carnet d'entretien engins" },
+      'e2e-19-audit':         { file: 'apps/buildnivo/tests/e2e-19-supervision-audit.spec.ts', label: '20 - Sécurité / Audit (console de supervision)' },
+      'e2e-20-rapports-ia':   { file: 'apps/buildnivo/tests/e2e-20-rapports-ia.spec.ts',   label: '21 - Rapports IA' },
+      'e2e-23-projets':       { file: 'apps/buildnivo/tests/e2e-23-projets.spec.ts',       label: '22 - Projets' },
+      'e2e-24-anomalies':     { file: 'apps/buildnivo/tests/e2e-24-anomalies.spec.ts',     label: "23 - Signalements d'anomalie" },
+      'e2e-25-checklists':    { file: 'apps/buildnivo/tests/e2e-25-checklists.spec.ts',    label: '24 - Checklists métier' },
+      'e2e-26-habilitations': { file: 'apps/buildnivo/tests/e2e-26-habilitations.spec.ts', label: '25 - Habilitations' },
+      'e2e-27-copilote':      { file: 'apps/buildnivo/tests/e2e-27-copilote.spec.ts',      label: '26 - Copilote IA' },
+      'e2e-28-controle':      { file: 'apps/buildnivo/tests/e2e-28-controle-financier.spec.ts', label: '27 - Contrôle financier' },
+      'e2e-29-support':       { file: 'apps/buildnivo/tests/e2e-29-support.spec.ts',       label: '28 - Support & aide' },
+      'e2e-30-profil':        { file: 'apps/buildnivo/tests/e2e-30-profil.spec.ts',        label: '29 - Mon profil' },
+      'e2e-31-equipes':       { file: 'apps/buildnivo/tests/e2e-31-equipes.spec.ts',       label: '30 - Équipes & sociétés' },
+      'e2e-32-parametres':    { file: 'apps/buildnivo/tests/e2e-32-parametres.spec.ts',    label: '31 - Paramètres' },
+      'e2e-33-administration':{ file: 'apps/buildnivo/tests/e2e-33-administration.spec.ts', label: '32 - Administration plateforme (Superadmin)' },
+      'e2e-34-avant-projet':  { file: 'apps/buildnivo/tests/e2e-34-avant-projet.spec.ts', label: '33 - Avant-projet' },
+      'e2e-35-devis-ia':      { file: 'apps/buildnivo/tests/e2e-35-extraction-devis-ia.spec.ts', label: '34 - Extraction de devis par IA' },
       'regression':           { file: 'apps/buildnivo/tests/regression.spec.ts',           label: 'Régression Complète' },
     },
   },
@@ -319,7 +321,7 @@ function humanizeFailureReason(lines) {
   }
   const errorLine = lines.find(l => /^\s*Error:/.test(l));
   if (errorLine) return errorLine.replace(/^\s*Error:\s*/, '').trim();
-  return 'Le test a échoué — voir le détail technique.';
+  return 'Le test a échoué - voir le détail technique.';
 }
 
 function finalizeFailBlock() {
@@ -386,7 +388,7 @@ function runTests(selectedKeys) {
   history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${APP.label}...`);
   history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
-  // Sous Windows, spawn('npx.cmd', ..., {shell:false}) plante avec EINVAL — un .cmd
+  // Sous Windows, spawn('npx.cmd', ..., {shell:false}) plante avec EINVAL - un .cmd
   // ne peut être lancé sans passer par un shell. Sous Linux/prod, shell:false + npx
   // (sans .cmd) fonctionne nativement et évite l'avertissement de dépréciation DEP0190.
   const isWindows = process.platform === 'win32';
@@ -585,7 +587,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // GET /history — liste paginée des runs de cette app
+  // GET /history - liste paginée des runs de cette app
   if (parsed.pathname === '/history' && req.method === 'GET') {
     const limit  = parseInt(parsed.query.limit  || '20');
     const offset = parseInt(parsed.query.offset || '0');
@@ -596,7 +598,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // GET /history/:id — détail d'un run
+  // GET /history/:id - détail d'un run
   const matchDetail = parsed.pathname.match(/^\/history\/(\d+)$/);
   if (matchDetail && req.method === 'GET') {
     const data = await history.getRunById(parseInt(matchDetail[1]));
@@ -606,7 +608,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // DELETE /history/:id — suppression d'un run
+  // DELETE /history/:id - suppression d'un run
   const matchDel = parsed.pathname.match(/^\/history\/(\d+)$/);
   if (matchDel && req.method === 'DELETE') {
     const ok = await history.deleteRun(parseInt(matchDel[1]));
@@ -615,7 +617,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // GET /history-stats — statistiques de l'app
+  // GET /history-stats - statistiques de l'app
   if (parsed.pathname === '/history-stats') {
     const data = await history.getStats(APP_KEY);
     res.writeHead(200, { 'Content-Type': 'application/json' });

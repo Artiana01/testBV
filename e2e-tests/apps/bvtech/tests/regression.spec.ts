@@ -1,10 +1,10 @@
 /**
  * apps/bvtech/tests/regression.spec.ts
  * ----------------------------------------
- * Tests de régression — BV Tech
+ * Tests de régression - BV Tech
  *
  * Scénarios critiques à rejouer :
- *   ● Vérification du formulaire signup (sans soumission — reCAPTCHA)
+ *   ● Vérification du formulaire signup (sans soumission - reCAPTCHA)
  *   ● Login utilisateur + admin
  *   ● Accès dashboard
  *   ● Modification profil
@@ -37,12 +37,12 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 const CLIENT_EMAIL    = process.env.TEST_EMAIL    ?? 'e2e.client@bvtest.com';
 const CLIENT_PASSWORD = process.env.TEST_PASSWORD ?? 'ClientTest123!';
 
-test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
+test.describe('RÉGRESSION - Scénarios critiques BV Tech', () => {
 
   // =========================================================
   // 1. FORMULAIRE INSCRIPTION (vérification sans soumission)
   // =========================================================
-  test('REG.01 — Formulaire inscription accessible et champs présents', async ({ page }) => {
+  test('REG.01 - Formulaire inscription accessible et champs présents', async ({ page }) => {
     // Note : bvtech-regression utilise storageState admin → /fr/signup redirige vers /fr/admin
     // Ce comportement est intentionnel (admin déjà connecté). Le formulaire signup est couvert
     // exhaustivement par E2E-01 (projet bvtech-public sans storageState).
@@ -52,7 +52,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
 
     const currentUrl = page.url();
     if (!currentUrl.includes('/signup')) {
-      console.log('ℹ️  REG.01: Admin redirigé vers', currentUrl, '— signup couvert par E2E-01');
+      console.log('ℹ️  REG.01: Admin redirigé vers', currentUrl, '- signup couvert par E2E-01');
       return;
     }
 
@@ -64,14 +64,14 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
       .or(page.locator('iframe[title*="reCAPTCHA"]'));
     const hasRecaptcha = await recaptcha.first().isVisible({ timeout: 3_000 }).catch(() => false);
     if (hasRecaptcha) {
-      console.log('ℹ️  REG.01: reCAPTCHA présent — soumission non testée automatiquement');
+      console.log('ℹ️  REG.01: reCAPTCHA présent - soumission non testée automatiquement');
     }
   });
 
   // =========================================================
   // 2. LOGIN UTILISATEUR
   // =========================================================
-  test('REG.02 — Login utilisateur avec compte pré-créé', async ({ page }) => {
+  test('REG.02 - Login utilisateur avec compte pré-créé', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
 
@@ -83,7 +83,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
   // =========================================================
   // 3. LOGIN ADMIN
   // =========================================================
-  test('REG.03 — Login admin', async ({ page }) => {
+  test('REG.03 - Login admin', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
 
@@ -95,7 +95,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
   // =========================================================
   // 4. ACCÈS DASHBOARD UTILISATEUR
   // =========================================================
-  test('REG.04 — Accès dashboard utilisateur', async ({ page }) => {
+  test('REG.04 - Accès dashboard utilisateur', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
@@ -111,7 +111,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
   // =========================================================
   // 5. MODIFICATION PROFIL
   // =========================================================
-  test('REG.05 — Modification profil utilisateur', async ({ page }) => {
+  test('REG.05 - Modification profil utilisateur', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -130,7 +130,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
   // =========================================================
   // 6. GESTION UTILISATEURS (ADMIN)
   // =========================================================
-  test('REG.06 — Gestion utilisateurs admin', async ({ page }) => {
+  test('REG.06 - Gestion utilisateurs admin', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -145,8 +145,8 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
 
     const count = await usersPage.getUsersCount();
     if (count === 0) {
-      console.log('ℹ️  REG.06: Aucun utilisateur dans la base — test skippé (base vide)');
-      test.skip(true, 'Base vide — ajoutez des utilisateurs pour activer ce test');
+      console.log('ℹ️  REG.06: Aucun utilisateur dans la base - test skippé (base vide)');
+      test.skip(true, 'Base vide - ajoutez des utilisateurs pour activer ce test');
     }
     expect(count).toBeGreaterThanOrEqual(1);
     console.log(`✅ REG.06: ${count} utilisateur(s) dans la liste`);
@@ -155,7 +155,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
   // =========================================================
   // 7. PAIEMENTS (ADMIN)
   // =========================================================
-  test('REG.07 — Consultation paiements admin', async ({ page }) => {
+  test('REG.07 - Consultation paiements admin', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -173,7 +173,7 @@ test.describe('RÉGRESSION — Scénarios critiques BV Tech', () => {
   // =========================================================
   // 8. ACCÈS DASHBOARD ADMIN
   // =========================================================
-  test('REG.08 — Accès dashboard admin', async ({ page }) => {
+  test('REG.08 - Accès dashboard admin', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);

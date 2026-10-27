@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/DashboardPage.ts
  * ------------------------------------
- * Page Object — Dashboard utilisateur BV Tech
+ * Page Object - Dashboard utilisateur BV Tech
  * Couvre : /fr/dashboard ou page post-connexion
  *
  * Éléments attendus :

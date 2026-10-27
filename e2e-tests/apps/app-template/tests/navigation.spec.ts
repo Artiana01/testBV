@@ -64,7 +64,7 @@ test.describe('Navigation publique', () => {
   // -------------------------------------------------------------------
   // TEST 3 : Les liens de navigation principaux fonctionnent
   // -------------------------------------------------------------------
-  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI — Navigation dans le menu principal', async ({ page }) => {
+  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI - Navigation dans le menu principal', async ({ page }) => {
     const basePage = new BasePage(page);
     await basePage.navigate('/');
     await basePage.waitForLoad();
@@ -97,7 +97,7 @@ test.describe('Navigation après connexion', () => {
   // -------------------------------------------------------------------
   // TEST 4 : Accès au tableau de bord après connexion
   // -------------------------------------------------------------------
-  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI — Le tableau de bord est accessible', async ({ page }) => {
+  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI - Le tableau de bord est accessible', async ({ page }) => {
     // Ce test est ignoré jusqu'à ce que vous le complétiez.
 
     // Exemple :
@@ -109,7 +109,7 @@ test.describe('Navigation après connexion', () => {
   // -------------------------------------------------------------------
   // TEST 5 : Navigation entre sections de l'application
   // -------------------------------------------------------------------
-  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI — Navigation entre sections', async ({ page }) => {
+  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI - Navigation entre sections', async ({ page }) => {
     // Ce test est ignoré jusqu'à ce que vous le complétiez.
 
     // Exemple de navigation entre plusieurs sections :
@@ -123,7 +123,7 @@ test.describe('Navigation après connexion', () => {
   // -------------------------------------------------------------------
   // TEST 6 : Redirection vers login si accès non autorisé
   // -------------------------------------------------------------------
-  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI — Redirection si non connecté', async ({ page }) => {
+  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI - Redirection si non connecté', async ({ page }) => {
     // Ce test vérifie qu'une URL protégée redirige vers /login si non connecté.
     // Note : ce test ne doit PAS utiliser beforeEach car on teste sans être connecté.
 

@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/AnalyticsPage.ts
  * -----------------------------------------
- * Page Object — Analytique Emiragate
+ * Page Object - Analytique Emiragate
  * Couvre : KPIs, graphiques, filtres (SC-09)
  */
 
@@ -37,7 +37,7 @@ export class AnalyticsPage extends BasePage {
       await expect(charts.first()).toBeVisible({ timeout: 20_000 });
       console.log(`   ✅  ${count} graphique(s)/KPI(s) détecté(s)`);
     } else {
-      console.log('   ℹ️  Graphiques non détectés — vérifier URL/sélecteurs dans AnalyticsPage');
+      console.log('   ℹ️  Graphiques non détectés - vérifier URL/sélecteurs dans AnalyticsPage');
     }
   }
 
@@ -47,7 +47,7 @@ export class AnalyticsPage extends BasePage {
     if (count > 0) {
       console.log(`   ✅  ${count} filtre(s) détecté(s)`);
     } else {
-      console.log('   ℹ️  Filtres non trouvés — vérifier sélecteurs');
+      console.log('   ℹ️  Filtres non trouvés - vérifier sélecteurs');
     }
   }
 

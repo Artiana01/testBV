@@ -10,7 +10,7 @@
 
 /**
  * Attend un certain nombre de millisecondes.
- * Pratique pour des pauses manuelles dans les tests, mais à éviter si possible —
+ * Pratique pour des pauses manuelles dans les tests, mais à éviter si possible -
  * préférer les attentes sémantiques de Playwright (waitForSelector, waitForURL...).
  *
  * @param ms - Durée de l'attente en millisecondes

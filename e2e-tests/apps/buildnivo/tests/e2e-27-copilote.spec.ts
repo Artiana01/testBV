@@ -13,7 +13,7 @@
 import { test, expect, BrowserContext, Page } from '@playwright/test';
 import { openModuleAs, revisit } from '../pages/RoleSession';
 
-test.describe('BuildNivo — 27. Copilote IA', () => {
+test.describe('BuildNivo - 27. Copilote IA', () => {
   let context: BrowserContext;
   let page: Page;
 
@@ -23,7 +23,7 @@ test.describe('BuildNivo — 27. Copilote IA', () => {
   });
   test.afterAll(async () => { await context?.close(); });
 
-  test('COP-01 — Page Copilote : promesse (jamais sans validation), périmètre du rôle, questions suggérées', async () => {
+  test('COP-01 - Page Copilote : promesse (jamais sans validation), périmètre du rôle, questions suggérées', async () => {
     await revisit(page, '/copilote');
     await expect(page.getByRole('heading', { name: 'Copilote IA', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/jamais sans votre validation/i)).toBeVisible();
@@ -40,7 +40,7 @@ test.describe('BuildNivo — 27. Copilote IA', () => {
     await expect(page.getByPlaceholder(/posez une question sur le chantier, un document, un délai/i)).toBeVisible();
   });
 
-  test('COP-02 — Historique des conversations : onglets Actives / Archivées, nouvelle conversation, confidentialité', async () => {
+  test('COP-02 - Historique des conversations : onglets Actives / Archivées, nouvelle conversation, confidentialité', async () => {
     await revisit(page, '/copilote');
     await expect(page.getByRole('button', { name: 'Historique' })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByRole('button', { name: 'Nouvelle conversation' })).toBeVisible();
@@ -58,7 +58,7 @@ test.describe('BuildNivo — 27. Copilote IA', () => {
     await expect(page.getByText(/conservées 6 mois après le dernier message/i)).toBeVisible();
   });
 
-  test('COP-03 — Dictée terrain : zone de texte, boutons "Dicter" et "Proposer des actions"', async () => {
+  test('COP-03 - Dictée terrain : zone de texte, boutons "Dicter" et "Proposer des actions"', async () => {
     await revisit(page, '/copilote');
     await expect(page.getByText('Dictée terrain', { exact: true }).first()).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/dictez ou saisissez vos observations/i)).toBeVisible();
@@ -69,8 +69,8 @@ test.describe('BuildNivo — 27. Copilote IA', () => {
     await expect(page.getByRole('button', { name: 'Proposer des actions' })).toBeVisible();
 
     // La zone accepte du texte (sans rien envoyer à l'IA).
-    await dictation.fill('Observation E2E — ne pas envoyer');
-    await expect(dictation).toHaveValue('Observation E2E — ne pas envoyer');
+    await dictation.fill('Observation E2E - ne pas envoyer');
+    await expect(dictation).toHaveValue('Observation E2E - ne pas envoyer');
     await dictation.fill('');
   });
 });

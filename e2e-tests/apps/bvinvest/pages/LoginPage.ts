@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/LoginPage.ts
  * ----------------------------------
- * Page Object — Authentification BV Invest
+ * Page Object - Authentification BV Invest
  * Couvre : /fr/connexion (email + mot de passe standard)
  */
 

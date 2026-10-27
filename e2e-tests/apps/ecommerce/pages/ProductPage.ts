@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/pages/ProductPage.ts
  * -------------------------------------
- * Page Object — Page détail produit (/product/[id]) — app Atelier
+ * Page Object - Page détail produit (/product/[id]) - app Atelier
  *
  * La page produit est un Client Component : tout le contenu est rendu côté client.
  * Il faut attendre que le composant React charge les données depuis l'API
@@ -10,7 +10,7 @@
  * Structure confirmée :
  * - h1 : nom du produit
  * - Bouton "Ajouter au panier" (text exact)
- * - Bouton cœur (Heart SVG) dans le conteneur image (décoratif — pas de toggle wishlist)
+ * - Bouton cœur (Heart SVG) dans le conteneur image (décoratif - pas de toggle wishlist)
  * - Badge panier navbar : <span class="rounded-full ..."> dans <a href="/cart">
  */
 
@@ -145,7 +145,7 @@ export class ProductPage extends BasePage {
 
   async verifyWishlistIsActive(): Promise<void> {
     // Sur la page produit, le bouton cœur est décoratif (pas de toggle).
-    // Le cœur actif aurait fill-red-500 — si absent, on passe silencieusement.
+    // Le cœur actif aurait fill-red-500 - si absent, on passe silencieusement.
     const redHeart = this.page.locator('.lucide-heart.fill-red-500');
     if (await redHeart.count() > 0) {
       await expect(redHeart.first()).toBeVisible({ timeout: 3_000 });

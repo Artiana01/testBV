@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/tests/e2e-04-profile.spec.ts
  * ---------------------------------------------
- * SCÉNARIO E2E #2 — Gestion du profil utilisateur (P1)
+ * SCÉNARIO E2E #2 - Gestion du profil utilisateur (P1)
  *
  * Étapes :
  *   1. Se connecter
@@ -34,9 +34,9 @@ function uniqueName(prefix: string): string {
   return `${prefix} ${Date.now().toString().slice(-6)}`;
 }
 
-test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
+test.describe('E2E 04 - Gestion du profil utilisateur (P1)', () => {
 
-  test('04.1 — Se connecter et accéder au profil', async ({ page }) => {
+  test('04.1 - Se connecter et accéder au profil', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -49,7 +49,7 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
     await profilePage.verifyProfilePageLoaded();
   });
 
-  test('04.2 — Les informations utilisateur sont affichées', async ({ page }) => {
+  test('04.2 - Les informations utilisateur sont affichées', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -62,7 +62,7 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
     await profilePage.verifyUserInfoDisplayed();
   });
 
-  test("04.3 — L'email affiché correspond au compte connecté", async ({ page }) => {
+  test("04.3 - L'email affiché correspond au compte connecté", async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -79,11 +79,11 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
     if (await emailDisplay.first().isVisible({ timeout: 5_000 }).catch(() => false)) {
       await expect(emailDisplay.first()).toBeVisible();
     } else {
-      console.log('ℹ️  Email non affiché directement — peut être masqué pour confidentialité');
+      console.log('ℹ️  Email non affiché directement - peut être masqué pour confidentialité');
     }
   });
 
-  test('04.4 — Modifier le nom et sauvegarder', async ({ page }) => {
+  test('04.4 - Modifier le nom et sauvegarder', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -100,7 +100,7 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
     console.log('✅ Nom modifié:', newName);
   });
 
-  test('04.5 — Les modifications sont persistantes après rechargement', async ({ page }) => {
+  test('04.5 - Les modifications sont persistantes après rechargement', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -119,7 +119,7 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
     console.log('✅ Persistance vérifiée pour:', persistName);
   });
 
-  test('04.6 — [BUG P1] Upload de photo de profil : vérifier la présence du composant', async ({ page }) => {
+  test('04.6 - [BUG P1] Upload de photo de profil : vérifier la présence du composant', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -136,7 +136,7 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
     console.log('✅ Composant upload photo trouvé');
   });
 
-  test('04.7 — [BUG P1] Upload de photo : la sauvegarde doit être persistante', async ({ page }) => {
+  test('04.7 - [BUG P1] Upload de photo : la sauvegarde doit être persistante', async ({ page }) => {
     test.setTimeout(90_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -151,7 +151,7 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
     // Utiliser une image de test (pixel PNG 1x1 en base64 sauvegardé temporairement)
     const testImagePath = path.resolve(__dirname, '../fixtures/test-avatar.png');
 
-    // Tenter l'upload — si le bug est présent, l'image ne sera pas sauvegardée
+    // Tenter l'upload - si le bug est présent, l'image ne sera pas sauvegardée
     try {
       await profilePage.attemptPhotoUpload(testImagePath);
       await profilePage.saveProfile();
@@ -168,7 +168,7 @@ test.describe('E2E 04 — Gestion du profil utilisateur (P1)', () => {
         console.warn('🐛 BUG P1 : La photo de profil n\'est pas persistante après rechargement');
       }
     } catch (e) {
-      console.warn('🐛 BUG P1 : Upload photo échoué — non fonctionnel:', (e as Error).message);
+      console.warn('🐛 BUG P1 : Upload photo échoué - non fonctionnel:', (e as Error).message);
     }
   });
 

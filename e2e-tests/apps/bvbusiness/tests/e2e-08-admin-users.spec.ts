@@ -14,23 +14,23 @@ import { AdminUsersPage } from '../pages/AdminUsersPage';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-test.describe('Admin — Gestion Users & Clients', () => {
+test.describe('Admin - Gestion Users & Clients', () => {
 
-  test('08.1 — La page admin Users est accessible', async ({ page }) => {
+  test('08.1 - La page admin Users est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const usersPage = new AdminUsersPage(page);
     await usersPage.goto();
     await usersPage.verifyUsersPageLoaded();
   });
 
-  test('08.2 — La liste des utilisateurs est affichée', async ({ page }) => {
+  test('08.2 - La liste des utilisateurs est affichée', async ({ page }) => {
     test.setTimeout(60_000);
     const usersPage = new AdminUsersPage(page);
     await usersPage.goto();
     await usersPage.verifyUsersTableVisible();
   });
 
-  test('08.3 — La recherche d\'utilisateur fonctionne', async ({ page }) => {
+  test('08.3 - La recherche d\'utilisateur fonctionne', async ({ page }) => {
     test.setTimeout(60_000);
     const usersPage = new AdminUsersPage(page);
     await usersPage.goto();
@@ -39,7 +39,7 @@ test.describe('Admin — Gestion Users & Clients', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('08.4 — La pagination est fonctionnelle si présente', async ({ page }) => {
+  test('08.4 - La pagination est fonctionnelle si présente', async ({ page }) => {
     test.setTimeout(60_000);
     const usersPage = new AdminUsersPage(page);
     await usersPage.goto();

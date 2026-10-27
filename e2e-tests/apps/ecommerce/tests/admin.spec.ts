@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/admin.spec.ts
  * ------------------------------------
- * Tests E2E — Back-office administrateur
+ * Tests E2E - Back-office administrateur
  * Couvre : dashboard KPIs, création/modification/désactivation produit,
  *          gestion utilisateurs, contrôle des accès.
  *
@@ -21,7 +21,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // =====================================================================
-// PARCOURS 4.1 — Dashboard admin
+// PARCOURS 4.1 - Dashboard admin
 // =====================================================================
 test.describe('Dashboard administrateur', () => {
 
@@ -44,9 +44,9 @@ test.describe('Dashboard administrateur', () => {
 });
 
 // =====================================================================
-// PARCOURS 4.2 — Gestion des produits : Création
+// PARCOURS 4.2 - Gestion des produits : Création
 // =====================================================================
-test.describe('Gestion des produits — Création', () => {
+test.describe('Gestion des produits - Création', () => {
 
   test.beforeEach(async ({ page }) => {
     const authPage = new AuthPage(page);
@@ -86,9 +86,9 @@ test.describe('Gestion des produits — Création', () => {
 });
 
 // =====================================================================
-// PARCOURS 4.3 — Gestion des produits : Modification
+// PARCOURS 4.3 - Gestion des produits : Modification
 // =====================================================================
-test.describe('Gestion des produits — Modification', () => {
+test.describe('Gestion des produits - Modification', () => {
 
   test.beforeEach(async ({ page }) => {
     const authPage = new AuthPage(page);
@@ -134,9 +134,9 @@ test.describe('Gestion des produits — Modification', () => {
 });
 
 // =====================================================================
-// PARCOURS 4.4 — Gestion des produits : Désactivation
+// PARCOURS 4.4 - Gestion des produits : Désactivation
 // =====================================================================
-test.describe('Gestion des produits — Désactivation', () => {
+test.describe('Gestion des produits - Désactivation', () => {
 
   test.beforeEach(async ({ page }) => {
     const authPage = new AuthPage(page);
@@ -176,7 +176,7 @@ test.describe('Gestion des produits — Désactivation', () => {
 });
 
 // =====================================================================
-// PARCOURS 4.5 — Gestion des utilisateurs
+// PARCOURS 4.5 - Gestion des utilisateurs
 // =====================================================================
 test.describe('Gestion des utilisateurs', () => {
 

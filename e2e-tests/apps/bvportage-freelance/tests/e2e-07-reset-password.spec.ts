@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-test.describe('E2E-07 — Reset Mot de passe', () => {
+test.describe('E2E-07 - Reset Mot de passe', () => {
   test('Demande reset MDP avec email incorrect → erreur', async ({ page }) => {
     await page.goto('/fr/mot-de-passe-oublie', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 
@@ -13,12 +13,12 @@ test.describe('E2E-07 — Reset Mot de passe', () => {
 
     const errorEl = page.locator('[role="alert"], .error-message, .alert-danger, .text-red-500, .text-destructive').first();
     const hasError = await errorEl.isVisible({ timeout: 5_000 }).catch(() => false);
-    // Reset with wrong email may succeed silently (no user enumeration) — test passes either way
+    // Reset with wrong email may succeed silently (no user enumeration) - test passes either way
     if (hasError) {
       const errorMsg = await errorEl.textContent();
       console.log(`Erreur reset MDP affichée: ${errorMsg}`);
     } else {
-      console.log('Pas d\'erreur explicite — comportement normal (pas d\'énumération d\'emails)');
+      console.log('Pas d\'erreur explicite - comportement normal (pas d\'énumération d\'emails)');
     }
     expect(true).toBeTruthy();
   });
@@ -81,7 +81,7 @@ test.describe('E2E-07 — Reset Mot de passe', () => {
   test('BUG F2: Reset MDP supprime données (missions, projets)', async ({ page }) => {
     console.log('BUG CRITIQUE F2: Après reset MDP - données potentiellement perdues');
     console.log('Impact: CRITIQUE - Data Loss - A vérifier manuellement');
-    // Ce test documente le bug — ne pas faire échouer les CI
+    // Ce test documente le bug - ne pas faire échouer les CI
     expect(true).toBeTruthy();
   });
 });

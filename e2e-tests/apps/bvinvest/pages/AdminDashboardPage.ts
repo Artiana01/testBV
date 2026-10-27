@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/AdminDashboardPage.ts
  * -------------------------------------------
- * Page Object — Dashboard Admin BV Invest
+ * Page Object - Dashboard Admin BV Invest
  * Couvre : KPIs, revenus, abonnements, navigation admin (SC-09)
  */
 

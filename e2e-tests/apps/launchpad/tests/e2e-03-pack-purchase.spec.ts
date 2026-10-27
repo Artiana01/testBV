@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/tests/e2e-03-pack-purchase.spec.ts
  * ---------------------------------------------------
- * SCÉNARIO E2E #1 — Partie 3 : Achat Pack + Paiement (P0 CRITIQUE)
+ * SCÉNARIO E2E #1 - Partie 3 : Achat Pack + Paiement (P0 CRITIQUE)
  *
  * Étapes :
  *   7. Accéder à la section pack
@@ -31,9 +31,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const CLIENT_EMAIL    = process.env.TEST_EMAIL    ?? 'lilie@test.test';
 const CLIENT_PASSWORD = process.env.TEST_PASSWORD ?? 'lilie123!';
 
-test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => {
+test.describe('E2E 03 - Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => {
 
-  test('03.1 — Accéder à la section packs après connexion', async ({ page }) => {
+  test('03.1 - Accéder à la section packs après connexion', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const packsPage = new PacksPage(page);
@@ -46,7 +46,7 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
     await packsPage.verifyPacksListVisible();
   });
 
-  test('03.2 — La liste des packs contient au moins une offre', async ({ page }) => {
+  test('03.2 - La liste des packs contient au moins une offre', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const packsPage = new PacksPage(page);
@@ -60,10 +60,10 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
 
     const count = await packsPage.getPacksCount();
     console.log(`Nombre de packs trouvés: ${count}`);
-    // Même si le sélecteur retourne 0, la liste est visible — on passe
+    // Même si le sélecteur retourne 0, la liste est visible - on passe
   });
 
-  test('03.3 — Un bouton "Choisir" / "Souscrire" est visible sur au moins un pack', async ({ page }) => {
+  test('03.3 - Un bouton "Choisir" / "Souscrire" est visible sur au moins un pack', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const packsPage = new PacksPage(page);
@@ -80,7 +80,7 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
     await expect(selectBtn.first()).toBeVisible({ timeout: 15_000 });
   });
 
-  test('03.4 — Sélection d\'un pack redirige vers le paiement', async ({ page }) => {
+  test('03.4 - Sélection d\'un pack redirige vers le paiement', async ({ page }) => {
     test.setTimeout(90_000);
     const loginPage = new LoginPage(page);
     const packsPage = new PacksPage(page);
@@ -105,7 +105,7 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
     expect(isOnCheckout || hasPaymentForm).toBeTruthy();
   });
 
-  test('03.5 — [BUG P0] Message paiement réussi doit être en français', async ({ page }) => {
+  test('03.5 - [BUG P0] Message paiement réussi doit être en français', async ({ page }) => {
     test.setTimeout(120_000);
     const loginPage = new LoginPage(page);
     const packsPage = new PacksPage(page);
@@ -122,7 +122,7 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
     // Remplir avec la carte Stripe de test si le formulaire est présent
     const hasStripe = await page.locator('iframe[src*="stripe"], input[name*="card"]').first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!hasStripe) {
-      test.skip(true, 'Formulaire de paiement non atteint — vérifier la sélection de pack');
+      test.skip(true, 'Formulaire de paiement non atteint - vérifier la sélection de pack');
       return;
     }
 
@@ -134,7 +134,7 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
     console.log('Vérification langue message paiement terminée');
   });
 
-  test('03.6 — [BUG P0] Lien "Voir la commande" ne doit pas retourner 404', async ({ page }) => {
+  test('03.6 - [BUG P0] Lien "Voir la commande" ne doit pas retourner 404', async ({ page }) => {
     test.setTimeout(120_000);
     const loginPage = new LoginPage(page);
     const packsPage = new PacksPage(page);
@@ -150,7 +150,7 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
 
     const hasStripe = await page.locator('iframe[src*="stripe"], input[name*="card"]').first().isVisible({ timeout: 5_000 }).catch(() => false);
     if (!hasStripe) {
-      test.skip(true, 'Formulaire de paiement non atteint — vérifier la sélection de pack');
+      test.skip(true, 'Formulaire de paiement non atteint - vérifier la sélection de pack');
       return;
     }
 
@@ -162,7 +162,7 @@ test.describe('E2E 03 — Achat Pack + Paiement Launchpad (P0 CRITIQUE)', () => 
     await packsPage.verifyOrderLinkNotBroken();
   });
 
-  test('03.7 — Paiement refusé avec carte invalide', async ({ page }) => {
+  test('03.7 - Paiement refusé avec carte invalide', async ({ page }) => {
     test.setTimeout(120_000);
     const loginPage = new LoginPage(page);
     const packsPage = new PacksPage(page);

@@ -47,110 +47,110 @@ const CONFIGS = {
 
 // Tests BV Tech
 const TESTS_BVTECH = {
-  'e2e-01-signup':         { file: 'apps/bvtech/tests/e2e-01-signup.spec.ts',           label: 'E2E-01 — Inscription (Signup)' },
-  'e2e-02-login':          { file: 'apps/bvtech/tests/e2e-02-login-navigation.spec.ts',  label: 'E2E-02 — Connexion & Navigation' },
-  'e2e-03-profile':        { file: 'apps/bvtech/tests/e2e-03-profile.spec.ts',           label: 'E2E-03 — Profil Client' },
-  'e2e-04-dashboard':      { file: 'apps/bvtech/tests/e2e-04-dashboard.spec.ts',         label: 'E2E-04 — Dashboard Client' },
-  'e2e-05-admin-login':    { file: 'apps/bvtech/tests/e2e-05-admin-login.spec.ts',       label: 'E2E-05 — Connexion Admin' },
-  'e2e-06-admin-users':    { file: 'apps/bvtech/tests/e2e-06-admin-users.spec.ts',       label: 'E2E-06 — Gestion Utilisateurs (Admin)' },
-  'e2e-07-admin-packs':    { file: 'apps/bvtech/tests/e2e-07-admin-packs.spec.ts',       label: 'E2E-07 — Gestion Packs (Admin)' },
-  'e2e-08-admin-payments': { file: 'apps/bvtech/tests/e2e-08-admin-payments.spec.ts',    label: 'E2E-08 — Paiements (Admin)' },
-  'e2e-09-admin-contacts': { file: 'apps/bvtech/tests/e2e-09-admin-contacts.spec.ts',    label: 'E2E-09 — Contacts (Admin)' },
+  'e2e-01-signup':         { file: 'apps/bvtech/tests/e2e-01-signup.spec.ts',           label: 'E2E-01 - Inscription (Signup)' },
+  'e2e-02-login':          { file: 'apps/bvtech/tests/e2e-02-login-navigation.spec.ts',  label: 'E2E-02 - Connexion & Navigation' },
+  'e2e-03-profile':        { file: 'apps/bvtech/tests/e2e-03-profile.spec.ts',           label: 'E2E-03 - Profil Client' },
+  'e2e-04-dashboard':      { file: 'apps/bvtech/tests/e2e-04-dashboard.spec.ts',         label: 'E2E-04 - Dashboard Client' },
+  'e2e-05-admin-login':    { file: 'apps/bvtech/tests/e2e-05-admin-login.spec.ts',       label: 'E2E-05 - Connexion Admin' },
+  'e2e-06-admin-users':    { file: 'apps/bvtech/tests/e2e-06-admin-users.spec.ts',       label: 'E2E-06 - Gestion Utilisateurs (Admin)' },
+  'e2e-07-admin-packs':    { file: 'apps/bvtech/tests/e2e-07-admin-packs.spec.ts',       label: 'E2E-07 - Gestion Packs (Admin)' },
+  'e2e-08-admin-payments': { file: 'apps/bvtech/tests/e2e-08-admin-payments.spec.ts',    label: 'E2E-08 - Paiements (Admin)' },
+  'e2e-09-admin-contacts': { file: 'apps/bvtech/tests/e2e-09-admin-contacts.spec.ts',    label: 'E2E-09 - Contacts (Admin)' },
   'regression':            { file: 'apps/bvtech/tests/regression.spec.ts',               label: 'Régression Complète' },
 };
 
 // Tests BV Business
 const TESTS_BVBUSINESS = {
-  'e2e-01-signup':    { file: 'apps/bvbusiness/tests/e2e-01-signup.spec.ts',           label: 'SC-01 — Inscription (Signup)' },
-  'e2e-02-login':     { file: 'apps/bvbusiness/tests/e2e-02-login-dashboard.spec.ts',  label: 'SC-02 — Login & Dashboard' },
-  'e2e-03-packages':  { file: 'apps/bvbusiness/tests/e2e-03-packages.spec.ts',         label: 'SC-03 — Packages & Pricing' },
-  'e2e-04-navigation':{ file: 'apps/bvbusiness/tests/e2e-04-navigation.spec.ts',       label: 'SC-04 — Navigation Admin' },
-  'e2e-05-content':   { file: 'apps/bvbusiness/tests/e2e-05-admin-content.spec.ts',    label: 'SC-05 — Content Management' },
-  'e2e-06-media':     { file: 'apps/bvbusiness/tests/e2e-06-admin-media.spec.ts',      label: 'SC-06 — Media Library' },
-  'e2e-07-regional':  { file: 'apps/bvbusiness/tests/e2e-07-regional-content.spec.ts', label: 'SC-07 — Contenu Régional' },
-  'e2e-08-users':     { file: 'apps/bvbusiness/tests/e2e-08-admin-users.spec.ts',      label: 'SC-08 — Gestion Utilisateurs' },
-  'e2e-09-payments':  { file: 'apps/bvbusiness/tests/e2e-09-admin-payments.spec.ts',   label: 'SC-09 — Paiements Admin' },
+  'e2e-01-signup':    { file: 'apps/bvbusiness/tests/e2e-01-signup.spec.ts',           label: 'SC-01 - Inscription (Signup)' },
+  'e2e-02-login':     { file: 'apps/bvbusiness/tests/e2e-02-login-dashboard.spec.ts',  label: 'SC-02 - Login & Dashboard' },
+  'e2e-03-packages':  { file: 'apps/bvbusiness/tests/e2e-03-packages.spec.ts',         label: 'SC-03 - Packages & Pricing' },
+  'e2e-04-navigation':{ file: 'apps/bvbusiness/tests/e2e-04-navigation.spec.ts',       label: 'SC-04 - Navigation Admin' },
+  'e2e-05-content':   { file: 'apps/bvbusiness/tests/e2e-05-admin-content.spec.ts',    label: 'SC-05 - Content Management' },
+  'e2e-06-media':     { file: 'apps/bvbusiness/tests/e2e-06-admin-media.spec.ts',      label: 'SC-06 - Media Library' },
+  'e2e-07-regional':  { file: 'apps/bvbusiness/tests/e2e-07-regional-content.spec.ts', label: 'SC-07 - Contenu Régional' },
+  'e2e-08-users':     { file: 'apps/bvbusiness/tests/e2e-08-admin-users.spec.ts',      label: 'SC-08 - Gestion Utilisateurs' },
+  'e2e-09-payments':  { file: 'apps/bvbusiness/tests/e2e-09-admin-payments.spec.ts',   label: 'SC-09 - Paiements Admin' },
   'regression':       { file: 'apps/bvbusiness/tests/regression.spec.ts',              label: 'Régression Complète' },
 };
 
 // Tests BV Invest
 const TESTS_BVINVEST = {
-  'e2e-01-login':          { file: 'apps/bvinvest/tests/e2e-01-login.spec.ts',           label: 'SC-01 — Connexion utilisateur' },
-  'e2e-02-member':         { file: 'apps/bvinvest/tests/e2e-02-member-space.spec.ts',     label: 'SC-02 — Espace Membre' },
-  'e2e-03-packages':       { file: 'apps/bvinvest/tests/e2e-03-packages.spec.ts',         label: 'SC-03 — Packages & Souscription' },
-  'e2e-04-opportunities':  { file: 'apps/bvinvest/tests/e2e-04-opportunities.spec.ts',    label: 'SC-04/07 — Opportunités & Documents' },
-  'e2e-05-kyc':            { file: 'apps/bvinvest/tests/e2e-05-kyc-pipeline.spec.ts',     label: 'SC-05 — Pipeline KYC/AML' },
-  'e2e-06-profile':        { file: 'apps/bvinvest/tests/e2e-06-profile.spec.ts',          label: 'SC-06 — Profil Utilisateur' },
-  'e2e-08-admin-access':   { file: 'apps/bvinvest/tests/e2e-08-admin-access.spec.ts',     label: 'SC-08 — Demandes d\'Accès (Admin)' },
-  'e2e-09-admin-dashboard':{ file: 'apps/bvinvest/tests/e2e-09-admin-dashboard.spec.ts',  label: 'SC-09 — Dashboard Admin' },
-  'e2e-10-navigation':     { file: 'apps/bvinvest/tests/e2e-10-navigation.spec.ts',       label: 'SC-10 — Navigation Globale' },
-  'e2e-11-analytics':      { file: 'apps/bvinvest/tests/e2e-11-analytics.spec.ts',        label: 'SC-11 — Analytics & Stats' },
+  'e2e-01-login':          { file: 'apps/bvinvest/tests/e2e-01-login.spec.ts',           label: 'SC-01 - Connexion utilisateur' },
+  'e2e-02-member':         { file: 'apps/bvinvest/tests/e2e-02-member-space.spec.ts',     label: 'SC-02 - Espace Membre' },
+  'e2e-03-packages':       { file: 'apps/bvinvest/tests/e2e-03-packages.spec.ts',         label: 'SC-03 - Packages & Souscription' },
+  'e2e-04-opportunities':  { file: 'apps/bvinvest/tests/e2e-04-opportunities.spec.ts',    label: 'SC-04/07 - Opportunités & Documents' },
+  'e2e-05-kyc':            { file: 'apps/bvinvest/tests/e2e-05-kyc-pipeline.spec.ts',     label: 'SC-05 - Pipeline KYC/AML' },
+  'e2e-06-profile':        { file: 'apps/bvinvest/tests/e2e-06-profile.spec.ts',          label: 'SC-06 - Profil Utilisateur' },
+  'e2e-08-admin-access':   { file: 'apps/bvinvest/tests/e2e-08-admin-access.spec.ts',     label: 'SC-08 - Demandes d\'Accès (Admin)' },
+  'e2e-09-admin-dashboard':{ file: 'apps/bvinvest/tests/e2e-09-admin-dashboard.spec.ts',  label: 'SC-09 - Dashboard Admin' },
+  'e2e-10-navigation':     { file: 'apps/bvinvest/tests/e2e-10-navigation.spec.ts',       label: 'SC-10 - Navigation Globale' },
+  'e2e-11-analytics':      { file: 'apps/bvinvest/tests/e2e-11-analytics.spec.ts',        label: 'SC-11 - Analytics & Stats' },
   'regression':            { file: 'apps/bvinvest/tests/regression.spec.ts',              label: 'Régression Complète' },
 };
 
 // Tests Emiragate (BV Install)
 const TESTS_EMIRAGATE = {
-  'e2e-01-login':     { file: 'apps/emiragate/tests/e2e-01-admin-login.spec.ts',    label: 'SC-01 — Connexion Admin' },
-  'e2e-02-dashboard': { file: 'apps/emiragate/tests/e2e-02-admin-dashboard.spec.ts',label: 'SC-02 — Dashboard Admin' },
-  'e2e-03-conduit':   { file: 'apps/emiragate/tests/e2e-03-conduit.spec.ts',        label: 'SC-03 — Leads / Conduit' },
-  'e2e-04-signup':    { file: 'apps/emiragate/tests/e2e-04-signup.spec.ts',         label: 'SC-04 — Inscription Client' },
-  'e2e-05-client':    { file: 'apps/emiragate/tests/e2e-05-client-login.spec.ts',   label: 'SC-05 — Connexion Client' },
-  'e2e-06-profile':   { file: 'apps/emiragate/tests/e2e-06-profile.spec.ts',        label: 'SC-06 — Profil Utilisateur' },
-  'e2e-07-users':     { file: 'apps/emiragate/tests/e2e-07-admin-users.spec.ts',    label: 'SC-07 — Gestion Utilisateurs' },
-  'e2e-08-contacts':  { file: 'apps/emiragate/tests/e2e-08-contacts.spec.ts',       label: 'SC-08 — Gestion Contacts' },
-  'e2e-09-analytics': { file: 'apps/emiragate/tests/e2e-09-analytics.spec.ts',      label: 'SC-09 — Analytique' },
-  'e2e-10-navigation':{ file: 'apps/emiragate/tests/e2e-10-navigation.spec.ts',     label: 'SC-10/11 — Navigation & Déconnexion' },
+  'e2e-01-login':     { file: 'apps/emiragate/tests/e2e-01-admin-login.spec.ts',    label: 'SC-01 - Connexion Admin' },
+  'e2e-02-dashboard': { file: 'apps/emiragate/tests/e2e-02-admin-dashboard.spec.ts',label: 'SC-02 - Dashboard Admin' },
+  'e2e-03-conduit':   { file: 'apps/emiragate/tests/e2e-03-conduit.spec.ts',        label: 'SC-03 - Leads / Conduit' },
+  'e2e-04-signup':    { file: 'apps/emiragate/tests/e2e-04-signup.spec.ts',         label: 'SC-04 - Inscription Client' },
+  'e2e-05-client':    { file: 'apps/emiragate/tests/e2e-05-client-login.spec.ts',   label: 'SC-05 - Connexion Client' },
+  'e2e-06-profile':   { file: 'apps/emiragate/tests/e2e-06-profile.spec.ts',        label: 'SC-06 - Profil Utilisateur' },
+  'e2e-07-users':     { file: 'apps/emiragate/tests/e2e-07-admin-users.spec.ts',    label: 'SC-07 - Gestion Utilisateurs' },
+  'e2e-08-contacts':  { file: 'apps/emiragate/tests/e2e-08-contacts.spec.ts',       label: 'SC-08 - Gestion Contacts' },
+  'e2e-09-analytics': { file: 'apps/emiragate/tests/e2e-09-analytics.spec.ts',      label: 'SC-09 - Analytique' },
+  'e2e-10-navigation':{ file: 'apps/emiragate/tests/e2e-10-navigation.spec.ts',     label: 'SC-10/11 - Navigation & Déconnexion' },
   'regression':       { file: 'apps/emiragate/tests/regression.spec.ts',            label: 'Régression Complète' },
 };
 
 // Tests BV Portage (Portage Salarial - Agence)
 const TESTS_BVPORTAGE = {
-  'e2e-01-signup-activation': { file: 'apps/bvportage/tests/e2e-01-signup-activation.spec.ts',       label: 'E2E-01 — Inscription + OTP (Agence)' },
-  'e2e-02-login-pack-subscription': { file: 'apps/bvportage/tests/e2e-02-login-pack-subscription.spec.ts', label: 'E2E-02 — Login + Pack 159€' },
-  'e2e-03-client-creation': { file: 'apps/bvportage/tests/e2e-03-client-creation.spec.ts',           label: 'E2E-03 — Client + Projet' },
-  'e2e-04-mission-contract-kyc': { file: 'apps/bvportage/tests/e2e-04-mission-contract-kyc.spec.ts', label: 'E2E-04 — Mission + Contrat + KYC' },
-  'e2e-05-contract-signature': { file: 'apps/bvportage/tests/e2e-05-contract-signature.spec.ts',     label: 'E2E-05 — Signature Contrat' },
-  'e2e-06-invoice-payment': { file: 'apps/bvportage/tests/e2e-06-invoice-payment.spec.ts',           label: 'E2E-06 — Facturation + Paiement' },
-  'e2e-07-team-invitation': { file: 'apps/bvportage/tests/e2e-07-team-invitation.spec.ts',           label: 'E2E-07 — Invitation Équipe' },
-  'e2e-08-reversal': { file: 'apps/bvportage/tests/e2e-08-reversal.spec.ts',                          label: 'E2E-08 — Reversement' },
+  'e2e-01-signup-activation': { file: 'apps/bvportage/tests/e2e-01-signup-activation.spec.ts',       label: 'E2E-01 - Inscription + OTP (Agence)' },
+  'e2e-02-login-pack-subscription': { file: 'apps/bvportage/tests/e2e-02-login-pack-subscription.spec.ts', label: 'E2E-02 - Login + Pack 159€' },
+  'e2e-03-client-creation': { file: 'apps/bvportage/tests/e2e-03-client-creation.spec.ts',           label: 'E2E-03 - Client + Projet' },
+  'e2e-04-mission-contract-kyc': { file: 'apps/bvportage/tests/e2e-04-mission-contract-kyc.spec.ts', label: 'E2E-04 - Mission + Contrat + KYC' },
+  'e2e-05-contract-signature': { file: 'apps/bvportage/tests/e2e-05-contract-signature.spec.ts',     label: 'E2E-05 - Signature Contrat' },
+  'e2e-06-invoice-payment': { file: 'apps/bvportage/tests/e2e-06-invoice-payment.spec.ts',           label: 'E2E-06 - Facturation + Paiement' },
+  'e2e-07-team-invitation': { file: 'apps/bvportage/tests/e2e-07-team-invitation.spec.ts',           label: 'E2E-07 - Invitation Équipe' },
+  'e2e-08-reversal': { file: 'apps/bvportage/tests/e2e-08-reversal.spec.ts',                          label: 'E2E-08 - Reversement' },
 };
 
 // Tests BV Portage (Portage Salarial - Freelance)
 const TESTS_BVPORTAGE_FREELANCE = {
-  'e2e-01-signup-otp': { file: 'apps/bvportage-freelance/tests/e2e-01-signup-otp.spec.ts',           label: 'E2E-01 — Inscription Freelance + OTP' },
-  'e2e-02-pack-subscription': { file: 'apps/bvportage-freelance/tests/e2e-02-pack-subscription.spec.ts', label: 'E2E-02 — Souscription Pack (79€)' },
-  'e2e-03-project-client': { file: 'apps/bvportage-freelance/tests/e2e-03-project-client.spec.ts',   label: 'E2E-03 — Création Projet + Client' },
-  'e2e-04-mission-contract-signature': { file: 'apps/bvportage-freelance/tests/e2e-04-mission-contract-signature.spec.ts', label: 'E2E-04 — Mission + Contrat + Signature' },
-  'e2e-05-kyc-admin-validation': { file: 'apps/bvportage-freelance/tests/e2e-05-kyc-admin-validation.spec.ts', label: 'E2E-05 — KYC + Validation Admin' },
-  'e2e-06-invoice-payment': { file: 'apps/bvportage-freelance/tests/e2e-06-invoice-payment.spec.ts',     label: 'E2E-06 — Facturation + Paiement' },
-  'e2e-07-reset-password': { file: 'apps/bvportage-freelance/tests/e2e-07-reset-password.spec.ts',       label: 'E2E-07 — Reset Mot de passe' },
-  'e2e-08-profile': { file: 'apps/bvportage-freelance/tests/e2e-08-profile.spec.ts',                     label: 'E2E-08 — Gestion Profil' },
-  'e2e-09-edge-cases': { file: 'apps/bvportage-freelance/tests/e2e-09-edge-cases.spec.ts',               label: 'E2E-09 — Cas limites & comptes' },
+  'e2e-01-signup-otp': { file: 'apps/bvportage-freelance/tests/e2e-01-signup-otp.spec.ts',           label: 'E2E-01 - Inscription Freelance + OTP' },
+  'e2e-02-pack-subscription': { file: 'apps/bvportage-freelance/tests/e2e-02-pack-subscription.spec.ts', label: 'E2E-02 - Souscription Pack (79€)' },
+  'e2e-03-project-client': { file: 'apps/bvportage-freelance/tests/e2e-03-project-client.spec.ts',   label: 'E2E-03 - Création Projet + Client' },
+  'e2e-04-mission-contract-signature': { file: 'apps/bvportage-freelance/tests/e2e-04-mission-contract-signature.spec.ts', label: 'E2E-04 - Mission + Contrat + Signature' },
+  'e2e-05-kyc-admin-validation': { file: 'apps/bvportage-freelance/tests/e2e-05-kyc-admin-validation.spec.ts', label: 'E2E-05 - KYC + Validation Admin' },
+  'e2e-06-invoice-payment': { file: 'apps/bvportage-freelance/tests/e2e-06-invoice-payment.spec.ts',     label: 'E2E-06 - Facturation + Paiement' },
+  'e2e-07-reset-password': { file: 'apps/bvportage-freelance/tests/e2e-07-reset-password.spec.ts',       label: 'E2E-07 - Reset Mot de passe' },
+  'e2e-08-profile': { file: 'apps/bvportage-freelance/tests/e2e-08-profile.spec.ts',                     label: 'E2E-08 - Gestion Profil' },
+  'e2e-09-edge-cases': { file: 'apps/bvportage-freelance/tests/e2e-09-edge-cases.spec.ts',               label: 'E2E-09 - Cas limites & comptes' },
 };
 
 // Tests Launchpad BV TECH
 const TESTS_LAUNCHPAD = {
-  'e2e-01-signup':        { file: 'apps/launchpad/tests/e2e-01-signup-activation.spec.ts',  label: 'E2E-01 — Activation & Inscription (P0)' },
-  'e2e-02-login':         { file: 'apps/launchpad/tests/e2e-02-login-dashboard.spec.ts',    label: 'E2E-02 — Connexion & Dashboard (P0)' },
-  'e2e-03-packs':         { file: 'apps/launchpad/tests/e2e-03-pack-purchase.spec.ts',      label: 'E2E-03 — Achat Pack + Paiement (P0)' },
-  'e2e-04-profile':       { file: 'apps/launchpad/tests/e2e-04-profile.spec.ts',            label: 'E2E-04 — Profil Utilisateur (P1)' },
-  'e2e-05-security':      { file: 'apps/launchpad/tests/e2e-05-security.spec.ts',           label: 'E2E-05 — Sécurité / Mot de passe (P1)' },
-  'e2e-06-notifications': { file: 'apps/launchpad/tests/e2e-06-notifications.spec.ts',      label: 'E2E-06 — Notifications & Emails (P1)' },
-  'e2e-07-messaging':     { file: 'apps/launchpad/tests/e2e-07-messaging.spec.ts',          label: 'E2E-07 — Messagerie Client ↔ Admin (P2)' },
+  'e2e-01-signup':        { file: 'apps/launchpad/tests/e2e-01-signup-activation.spec.ts',  label: 'E2E-01 - Activation & Inscription (P0)' },
+  'e2e-02-login':         { file: 'apps/launchpad/tests/e2e-02-login-dashboard.spec.ts',    label: 'E2E-02 - Connexion & Dashboard (P0)' },
+  'e2e-03-packs':         { file: 'apps/launchpad/tests/e2e-03-pack-purchase.spec.ts',      label: 'E2E-03 - Achat Pack + Paiement (P0)' },
+  'e2e-04-profile':       { file: 'apps/launchpad/tests/e2e-04-profile.spec.ts',            label: 'E2E-04 - Profil Utilisateur (P1)' },
+  'e2e-05-security':      { file: 'apps/launchpad/tests/e2e-05-security.spec.ts',           label: 'E2E-05 - Sécurité / Mot de passe (P1)' },
+  'e2e-06-notifications': { file: 'apps/launchpad/tests/e2e-06-notifications.spec.ts',      label: 'E2E-06 - Notifications & Emails (P1)' },
+  'e2e-07-messaging':     { file: 'apps/launchpad/tests/e2e-07-messaging.spec.ts',          label: 'E2E-07 - Messagerie Client ↔ Admin (P2)' },
   'regression':           { file: 'apps/launchpad/tests/regression.spec.ts',               label: 'Régression Complète' },
 };
 
 // Tests Créer Ailleurs
 const TESTS_CREERAILLEURS = {
-  'e2e-01-navigation':  { file: 'apps/creerailleurs/tests/e2e-01-navigation.spec.ts',      label: 'SC-01 — Navigation & Accessibilité' },
-  'e2e-02-cta':         { file: 'apps/creerailleurs/tests/e2e-02-cta-redirections.spec.ts', label: 'SC-02 — CTAs & Redirections' },
-  'e2e-03-signup':      { file: 'apps/creerailleurs/tests/e2e-03-signup.spec.ts',           label: 'SC-03 — Inscription' },
-  'e2e-04-login':       { file: 'apps/creerailleurs/tests/e2e-04-login.spec.ts',            label: 'SC-04 — Connexion' },
-  'e2e-05-tunnel':      { file: 'apps/creerailleurs/tests/e2e-05-tunnel-vente.spec.ts',     label: 'SC-05 — Tunnel de Vente' },
-  'e2e-06-guest':       { file: 'apps/creerailleurs/tests/e2e-06-achat-sans-compte.spec.ts',label: 'SC-06 — Achat sans Compte' },
-  'e2e-07-dashboard':   { file: 'apps/creerailleurs/tests/e2e-07-dashboard-user.spec.ts',   label: 'SC-07 — Dashboard Utilisateur' },
-  'e2e-08-admin':       { file: 'apps/creerailleurs/tests/e2e-08-admin.spec.ts',            label: 'SC-08 — Dashboard Admin' },
-  'e2e-09-multilingue': { file: 'apps/creerailleurs/tests/e2e-09-multilingue.spec.ts',      label: 'SC-09 — Multilingue FR/EN' },
+  'e2e-01-navigation':  { file: 'apps/creerailleurs/tests/e2e-01-navigation.spec.ts',      label: 'SC-01 - Navigation & Accessibilité' },
+  'e2e-02-cta':         { file: 'apps/creerailleurs/tests/e2e-02-cta-redirections.spec.ts', label: 'SC-02 - CTAs & Redirections' },
+  'e2e-03-signup':      { file: 'apps/creerailleurs/tests/e2e-03-signup.spec.ts',           label: 'SC-03 - Inscription' },
+  'e2e-04-login':       { file: 'apps/creerailleurs/tests/e2e-04-login.spec.ts',            label: 'SC-04 - Connexion' },
+  'e2e-05-tunnel':      { file: 'apps/creerailleurs/tests/e2e-05-tunnel-vente.spec.ts',     label: 'SC-05 - Tunnel de Vente' },
+  'e2e-06-guest':       { file: 'apps/creerailleurs/tests/e2e-06-achat-sans-compte.spec.ts',label: 'SC-06 - Achat sans Compte' },
+  'e2e-07-dashboard':   { file: 'apps/creerailleurs/tests/e2e-07-dashboard-user.spec.ts',   label: 'SC-07 - Dashboard Utilisateur' },
+  'e2e-08-admin':       { file: 'apps/creerailleurs/tests/e2e-08-admin.spec.ts',            label: 'SC-08 - Dashboard Admin' },
+  'e2e-09-multilingue': { file: 'apps/creerailleurs/tests/e2e-09-multilingue.spec.ts',      label: 'SC-09 - Multilingue FR/EN' },
 };
 
 // ── Registry des apps (pour le hub et le rendu de app.html) ──────────────────
@@ -181,7 +181,7 @@ function generateHubHTML() {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Tests E2E — Hub</title>
+  <title>Tests E2E - Hub</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px 20px}
@@ -204,12 +204,12 @@ function generateHubHTML() {
 </head>
 <body>
   <div>
-    <h1><span>🎭</span> Tests E2E — Hub</h1>
+    <h1><span>🎭</span> Tests E2E - Hub</h1>
     <p class="subtitle">Cliquez sur une app pour ouvrir son interface de test dédiée</p>
   </div>
   <div class="grid">${cards}</div>
   <a class="hist-link" href="/history-page">📊 Historique des campagnes →</a>
-  <div class="footer">Toutes les apps tournent sur le même serveur — aucune interférence possible</div>
+  <div class="footer">Toutes les apps tournent sur le même serveur - aucune interférence possible</div>
 </body>
 </html>`;
 }
@@ -253,7 +253,7 @@ function classifyLine(line) {
   return 'info';
 }
 
-// ── Arrêt du processus (+ ses enfants) — comportement différent par OS ────────
+// ── Arrêt du processus (+ ses enfants) - comportement différent par OS ────────
 // Sous Linux/macOS (prod, Docker) : detached:true fait de "sh" le leader du
 // groupe de processus, donc process.kill(-pid) tue tout le groupe d'un coup.
 // Sous Windows, cette astuce n'existe pas et detached:true a un autre effet
@@ -328,7 +328,7 @@ function humanizeFailureReason(lines) {
   }
   const errorLine = lines.find(l => /^\s*Error:/.test(l));
   if (errorLine) return errorLine.replace(/^\s*Error:\s*/, '').trim();
-  return 'Le test a échoué — voir le détail technique.';
+  return 'Le test a échoué - voir le détail technique.';
 }
 
 function finalizeFailBlock() {
@@ -427,7 +427,7 @@ function runTests(selectedTests, app) {
   history.saveLog(currentRunId, 'start', `🚀 Démarrage des tests ${appLabel}...`);
   history.saveLog(currentRunId, 'cmd',   `npx ${args.join(' ')}`);
 
-  // Sous Windows, spawn('npx.cmd', ..., {shell:false}) plante avec EINVAL — un .cmd
+  // Sous Windows, spawn('npx.cmd', ..., {shell:false}) plante avec EINVAL - un .cmd
   // ne peut être lancé sans passer par un shell. shell:true est donc nécessaire sous
   // Windows (detached:false l'accompagne pour éviter le silence du stdout constaté
   // avec shell+detached ensemble). Sous Linux/prod, shell:false + npx (sans .cmd)
@@ -516,12 +516,12 @@ function runTests(selectedTests, app) {
     finalizeFailBlock();
 
     // Kill surviving process group members (e.g. playwright workers that outlive the runner)
-    // so their zombie chrome children get reparented to tini and reaped — via killProcessTree()
+    // so their zombie chrome children get reparented to tini and reaped - via killProcessTree()
     // pour rester cross-platform (voir sa définition plus haut).
     killProcessTree(runningProcess);
 
     // ponytail: pkill safety net for chrome that escaped the process group
-    // (POSIX uniquement — sous Windows, "pkill" peut exister via un autre outil installé
+    // (POSIX uniquement - sous Windows, "pkill" peut exister via un autre outil installé
     // sur le PATH et tuerait alors n'importe quel Chrome/Chromium ouvert sur la machine)
     if (!IS_WINDOWS) {
       try { execSync('pkill -9 -f chromium || true', { stdio: 'ignore' }); } catch (_) {}
@@ -617,7 +617,7 @@ const server = http.createServer(async (req, res) => {
         runningProcess.stdout?.removeAllListeners();
         runningProcess.stderr?.removeAllListeners();
         
-        // Tuer le process (+ ses enfants) — voir killProcessTree()
+        // Tuer le process (+ ses enfants) - voir killProcessTree()
         killProcessTree(runningProcess);
         // ponytail: pkill safety net for chrome leaked before playwright adds it to the process group
         if (!IS_WINDOWS) {

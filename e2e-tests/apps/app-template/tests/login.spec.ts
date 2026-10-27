@@ -90,9 +90,9 @@ test.describe('Connexion utilisateur', () => {
   });
 
   // -------------------------------------------------------------------
-  // TEST 4 : Placeholder — À compléter avec vos scénarios
+  // TEST 4 : Placeholder - À compléter avec vos scénarios
   // -------------------------------------------------------------------
-  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI — exemple : Connexion via SSO', async ({ page }) => {
+  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI - exemple : Connexion via SSO', async ({ page }) => {
     // Ce test est ignoré (test.skip) jusqu'à ce que vous le complétiez.
     // Supprimez test.skip et remplacez ce commentaire par votre scénario.
 
@@ -118,7 +118,7 @@ test.describe('Déconnexion utilisateur', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI — exemple : Déconnexion réussie', async ({ page }) => {
+  test.skip('👉 AJOUTER VOS SCÉNARIOS ICI - exemple : Déconnexion réussie', async ({ page }) => {
     // Ce test est ignoré jusqu'à ce que vous le complétiez.
 
     // Exemple :

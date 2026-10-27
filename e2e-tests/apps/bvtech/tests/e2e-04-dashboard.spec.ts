@@ -30,9 +30,9 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 const DASH_EMAIL    = process.env.TEST_EMAIL    ?? 'e2e.client@bvtest.com';
 const DASH_PASSWORD = process.env.TEST_PASSWORD ?? 'ClientTest123!';
 
-test.describe('E2E 04 — Dashboard utilisateur (IMPORTANT)', () => {
+test.describe('E2E 04 - Dashboard utilisateur (IMPORTANT)', () => {
 
-  test('04.1 — Le dashboard se charge correctement après connexion', async ({ page }) => {
+  test('04.1 - Le dashboard se charge correctement après connexion', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
@@ -49,7 +49,7 @@ test.describe('E2E 04 — Dashboard utilisateur (IMPORTANT)', () => {
     await dashboardPage.verifyDashboardLoaded();
   });
 
-  test('04.2 — Les KPIs sont visibles sur le dashboard', async ({ page }) => {
+  test('04.2 - Les KPIs sont visibles sur le dashboard', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
@@ -64,7 +64,7 @@ test.describe('E2E 04 — Dashboard utilisateur (IMPORTANT)', () => {
     await dashboardPage.verifyKpisVisible();
   });
 
-  test('04.3 — La section projets est visible (vide si aucun projet)', async ({ page }) => {
+  test('04.3 - La section projets est visible (vide si aucun projet)', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
@@ -81,7 +81,7 @@ test.describe('E2E 04 — Dashboard utilisateur (IMPORTANT)', () => {
     await dashboardPage.verifyEmptyProjectsMessage();
   });
 
-  test('04.4 — Un graphique est affiché sur le dashboard', async ({ page }) => {
+  test('04.4 - Un graphique est affiché sur le dashboard', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);
@@ -96,7 +96,7 @@ test.describe('E2E 04 — Dashboard utilisateur (IMPORTANT)', () => {
     await dashboardPage.verifyChartVisible();
   });
 
-  test('04.5 — Le titre/heading du dashboard est affiché', async ({ page }) => {
+  test('04.5 - Le titre/heading du dashboard est affiché', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const dashboardPage = new DashboardPage(page);

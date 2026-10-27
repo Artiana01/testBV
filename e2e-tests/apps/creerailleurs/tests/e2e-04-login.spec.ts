@@ -1,5 +1,5 @@
 /**
- * e2e-04-login.spec.ts — Créer Ailleurs
+ * e2e-04-login.spec.ts - Créer Ailleurs
  * SC-04 : Connexion utilisateur
  *
  * Vérifie : connexion classique, Google OAuth, dashboard post-login
@@ -13,15 +13,15 @@ const BASE          = process.env.BASE_URL      ?? 'https://dev.creerailleurs.co
 const TEST_EMAIL    = process.env.TEST_EMAIL    ?? '';
 const TEST_PASSWORD = process.env.TEST_PASSWORD ?? '';
 
-test.describe('SC-04 — Connexion utilisateur', () => {
+test.describe('SC-04 - Connexion utilisateur', () => {
 
-  test('04.1 — La page de connexion est accessible', async ({ page }) => {
+  test('04.1 - La page de connexion est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToLogin();
     const emailField = page.locator('input[type="email"], input[placeholder*="@"], input[name*="email" i]').first();
     const hasEmail = await emailField.isVisible({ timeout: 10_000 }).catch(() => false);
-    test.skip(!hasEmail, 'Page login sans champ email standard — structure UI non-conventionnelle');
+    test.skip(!hasEmail, 'Page login sans champ email standard - structure UI non-conventionnelle');
     await expect(emailField).toBeVisible();
     await expect(page.locator('input[type="password"]').first()).toBeVisible();
     const submitBtn = page.locator(
@@ -30,7 +30,7 @@ test.describe('SC-04 — Connexion utilisateur', () => {
     await expect(submitBtn).toBeVisible({ timeout: 5_000 });
   });
 
-  test('04.2 — Connexion réussie avec identifiants valides', async ({ page }) => {
+  test('04.2 - Connexion réussie avec identifiants valides', async ({ page }) => {
     test.setTimeout(60_000);
     if (!TEST_EMAIL || !TEST_PASSWORD) {
       test.skip(true, 'TEST_EMAIL / TEST_PASSWORD non configurés dans .env');
@@ -39,19 +39,19 @@ test.describe('SC-04 — Connexion utilisateur', () => {
     await auth.login(TEST_EMAIL, TEST_PASSWORD);
     const url = page.url();
     if (url.includes('/login') || url.includes('/connexion')) {
-      console.log(`Connexion non réussie avec ${TEST_EMAIL} — credentials invalides sur cet environnement`);
-      test.skip(true, `Credentials ${TEST_EMAIL} rejetés par le serveur — mettre à jour .env`);
+      console.log(`Connexion non réussie avec ${TEST_EMAIL} - credentials invalides sur cet environnement`);
+      test.skip(true, `Credentials ${TEST_EMAIL} rejetés par le serveur - mettre à jour .env`);
     }
     await auth.verifyLoginSuccess();
     console.log(`Connexion réussie: ${TEST_EMAIL}`);
   });
 
-  test('04.3 — Connexion échouée avec mauvais mot de passe', async ({ page }) => {
+  test('04.3 - Connexion échouée avec mauvais mot de passe', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToLogin();
     const filled = await auth.fillLoginForm(TEST_EMAIL || 'test@creerailleurs.com', 'mauvais-mdp-xyz-999');
-    test.skip(!filled, 'Page login sans champ email standard — test ignoré');
+    test.skip(!filled, 'Page login sans champ email standard - test ignoré');
     await auth.submit();
     await page.waitForTimeout(2000);
     // Vérifier qu'on reste sur login ou qu'il y a une erreur
@@ -60,12 +60,12 @@ test.describe('SC-04 — Connexion utilisateur', () => {
     expect(url.match(/login|connexion/) || hasError).toBeTruthy();
   });
 
-  test('04.4 — Connexion échouée avec email inexistant', async ({ page }) => {
+  test('04.4 - Connexion échouée avec email inexistant', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToLogin();
     const filled = await auth.fillLoginForm('email.inexistant.xyz999@nowhere.com', 'Password123!');
-    test.skip(!filled, 'Page login sans champ email standard — test ignoré');
+    test.skip(!filled, 'Page login sans champ email standard - test ignoré');
     await auth.submit();
     await page.waitForTimeout(2000);
     const url = page.url();
@@ -73,26 +73,26 @@ test.describe('SC-04 — Connexion utilisateur', () => {
     expect(url.match(/login|connexion/) || hasError).toBeTruthy();
   });
 
-  test('04.5 — Le bouton "Connexion via Google" est présent', async ({ page }) => {
+  test('04.5 - Le bouton "Connexion via Google" est présent', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToLogin();
     const googleBtn = auth.google_btn.first();
     const hasGoogle = await googleBtn.isVisible({ timeout: 10_000 }).catch(() => false);
     if (!hasGoogle) {
-      console.log('Bouton Google non trouvé sur la page login — structure UI non-conventionnelle');
-      test.skip(true, 'Bouton "Connexion Google" absent — page login non standard');
+      console.log('Bouton Google non trouvé sur la page login - structure UI non-conventionnelle');
+      test.skip(true, 'Bouton "Connexion Google" absent - page login non standard');
     }
     await expect(googleBtn).toBeVisible();
   });
 
-  test('04.6 — Clic sur "Connexion Google" déclenche le flux OAuth', async ({ page }) => {
+  test('04.6 - Clic sur "Connexion Google" déclenche le flux OAuth', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToLogin();
     const googleBtn = auth.google_btn.first();
     if (await googleBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      // Surveiller la navigation — Google OAuth ouvre une popup ou redirige
+      // Surveiller la navigation - Google OAuth ouvre une popup ou redirige
       const [popup] = await Promise.all([
         page.context().waitForEvent('page', { timeout: 5_000 }).catch(() => null),
         googleBtn.click(),
@@ -107,11 +107,11 @@ test.describe('SC-04 — Connexion utilisateur', () => {
         expect(url).toMatch(/google\.com|accounts|login|connexion/i);
       }
     } else {
-      console.log('Bouton Google non trouvé — vérifier la page login');
+      console.log('Bouton Google non trouvé - vérifier la page login');
     }
   });
 
-  test('04.7 — Redirection vers le dashboard après connexion', async ({ page }) => {
+  test('04.7 - Redirection vers le dashboard après connexion', async ({ page }) => {
     test.setTimeout(60_000);
     if (!TEST_EMAIL || !TEST_PASSWORD) {
       test.skip(true, 'TEST_EMAIL / TEST_PASSWORD non configurés dans .env');
@@ -120,13 +120,13 @@ test.describe('SC-04 — Connexion utilisateur', () => {
     await auth.login(TEST_EMAIL, TEST_PASSWORD);
     const url = page.url();
     if (url.includes('/login') || url.includes('/connexion')) {
-      test.skip(true, `Credentials ${TEST_EMAIL} rejetés par le serveur — mettre à jour .env`);
+      test.skip(true, `Credentials ${TEST_EMAIL} rejetés par le serveur - mettre à jour .env`);
     }
     // Vérifier qu'on est sur le dashboard ou espace client
     expect(url).toMatch(/dashboard|account|profil|espace|home/i);
   });
 
-  test('04.8 — Notification de connexion réussie visible', async ({ page }) => {
+  test('04.8 - Notification de connexion réussie visible', async ({ page }) => {
     test.setTimeout(60_000);
     if (!TEST_EMAIL || !TEST_PASSWORD) {
       test.skip(true, 'TEST_EMAIL / TEST_PASSWORD non configurés dans .env');
@@ -142,16 +142,16 @@ test.describe('SC-04 — Connexion utilisateur', () => {
     if (isVisible) {
       console.log('Notification de connexion détectée');
     } else {
-      console.log('Pas de notification de connexion explicite — comportement possible');
+      console.log('Pas de notification de connexion explicite - comportement possible');
     }
-    // Le test ne fail pas — on vérifie juste la présence
+    // Le test ne fail pas - on vérifie juste la présence
     expect(true).toBeTruthy();
   });
 
 });
 
 // Tests de navigation post-login avec session partagée
-test.describe('SC-04 — Navigation dashboard post-connexion', () => {
+test.describe('SC-04 - Navigation dashboard post-connexion', () => {
   let sharedContext: BrowserContext;
   let sharedPage: Page;
 
@@ -167,7 +167,7 @@ test.describe('SC-04 — Navigation dashboard post-connexion', () => {
     if (sharedContext) await sharedContext.close();
   });
 
-  test('04.9 — Le dashboard utilisateur est accessible après connexion', async () => {
+  test('04.9 - Le dashboard utilisateur est accessible après connexion', async () => {
     if (!TEST_EMAIL || !TEST_PASSWORD) {
       test.skip(true, 'Credentials non configurés');
     }

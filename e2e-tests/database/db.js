@@ -105,7 +105,7 @@ async function initSchema() {
 // ── Vérification de connexion + init au démarrage ────────────────────────────
 async function connect() {
   if (!process.env.DATABASE_URL) {
-    console.warn('[DB] ⚠️  DATABASE_URL non défini — historisation désactivée.');
+    console.warn('[DB] ⚠️  DATABASE_URL non défini - historisation désactivée.');
     return false;
   }
   try {

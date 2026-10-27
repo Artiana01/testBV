@@ -1,7 +1,7 @@
 /**
  * apps/emiragate/pages/AdminDashboardPage.ts
  * --------------------------------------------
- * Page Object — Dashboard Administrateur Emiragate
+ * Page Object - Dashboard Administrateur Emiragate
  * Couvre : KPIs, activités récentes, navigation admin (SC-02, SC-09)
  */
 
@@ -36,7 +36,7 @@ export class AdminDashboardPage extends BasePage {
       await expect(kpis.first()).toBeVisible({ timeout: 20_000 });
       console.log(`   ✅  ${count} KPI(s) détecté(s)`);
     } else {
-      console.log('   ℹ️  KPIs non détectés — vérifier sélecteurs dans AdminDashboardPage');
+      console.log('   ℹ️  KPIs non détectés - vérifier sélecteurs dans AdminDashboardPage');
     }
   }
 

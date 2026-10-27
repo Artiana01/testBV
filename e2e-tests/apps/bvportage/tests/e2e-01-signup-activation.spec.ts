@@ -12,7 +12,7 @@ test.describe('E2E 01: Inscription Agence + Activation compte', () => {
     // Accéder à la page d'inscription
     await signupPage.navigate('/signup');
 
-    // Remplir le formulaire avec seulement le nom (incomplet — sans prénom, email, password)
+    // Remplir le formulaire avec seulement le nom (incomplet - sans prénom, email, password)
     await signupPage.lastNameInput.fill('Test');
 
     // Essayer de soumettre sans remplir tous les champs
@@ -90,7 +90,7 @@ test.describe('E2E 01: Inscription Agence + Activation compte', () => {
     }
 
     if (!otpPageFound) {
-      console.log('Page OTP non accessible directement sans inscription préalable — test ignoré');
+      console.log('Page OTP non accessible directement sans inscription préalable - test ignoré');
     }
   });
 });

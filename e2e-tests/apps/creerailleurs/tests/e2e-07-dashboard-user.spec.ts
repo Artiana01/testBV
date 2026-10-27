@@ -1,5 +1,5 @@
 /**
- * e2e-07-dashboard-user.spec.ts — Créer Ailleurs
+ * e2e-07-dashboard-user.spec.ts - Créer Ailleurs
  * SC-07 : Dashboard utilisateur
  *
  * Vérifie : KPIs, profil, mot de passe, documents
@@ -17,7 +17,7 @@ const TEST_EMAIL    = process.env.TEST_EMAIL    ?? '';
 const TEST_PASSWORD = process.env.TEST_PASSWORD ?? '';
 
 // Ces tests utilisent la session sauvegardée par globalSetup (storageState)
-test.describe('SC-07 — Dashboard utilisateur', () => {
+test.describe('SC-07 - Dashboard utilisateur', () => {
 
   test.beforeEach(async ({ page }) => {
     // Vérifier si la session client est valide avant chaque test
@@ -25,11 +25,11 @@ test.describe('SC-07 — Dashboard utilisateur', () => {
     await dashboard.navigateToDashboard();
     const url = page.url();
     if (url.includes('/login') || url.includes('/connexion')) {
-      test.skip(true, 'Session client invalide — credentials harivola@test.test non acceptés. Mettre à jour apps/creerailleurs/.env');
+      test.skip(true, 'Session client invalide - credentials harivola@test.test non acceptés. Mettre à jour apps/creerailleurs/.env');
     }
   });
 
-  test('07.1 — Le dashboard est accessible après connexion', async ({ page }) => {
+  test('07.1 - Le dashboard est accessible après connexion', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToDashboard();
@@ -38,7 +38,7 @@ test.describe('SC-07 — Dashboard utilisateur', () => {
     expect(url).toMatch(/dashboard|account|profil|espace/i);
   });
 
-  test('07.2 — Les KPIs sont visibles sur le dashboard', async ({ page }) => {
+  test('07.2 - Les KPIs sont visibles sur le dashboard', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToDashboard();
@@ -52,7 +52,7 @@ test.describe('SC-07 — Dashboard utilisateur', () => {
     console.log('Dashboard chargé avec contenu');
   });
 
-  test('07.3 — [BUG CONNU] Menu "Aperçu" vide avant achat', async ({ page }) => {
+  test('07.3 - [BUG CONNU] Menu "Aperçu" vide avant achat', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToDashboard();
@@ -67,25 +67,25 @@ test.describe('SC-07 — Dashboard utilisateur', () => {
         console.log('ANOMALIE SC-07: Menu "Aperçu" semble vide ou peu utile avant achat');
       }
     } else {
-      console.log('Menu "Aperçu" non trouvé — peut-être renommé');
+      console.log('Menu "Aperçu" non trouvé - peut-être renommé');
     }
     expect(true).toBeTruthy();
   });
 
-  test('07.4 — La page Profil est accessible depuis le dashboard', async ({ page }) => {
+  test('07.4 - La page Profil est accessible depuis le dashboard', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToProfile();
     const content = page.locator('form, main, [role="main"]');
     const hasContent = await content.first().isVisible({ timeout: 10_000 }).catch(() => false);
     if (!hasContent) {
-      console.log('Page profil sans conteneur standard — URL:', page.url());
+      console.log('Page profil sans conteneur standard - URL:', page.url());
       test.skip(true, 'Page profil non accessible ou structure non standard');
     }
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('07.5 — Les champs du profil sont éditables', async ({ page }) => {
+  test('07.5 - Les champs du profil sont éditables', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToProfile();
@@ -94,11 +94,11 @@ test.describe('SC-07 — Dashboard utilisateur', () => {
       await expect(nameField).toBeEnabled();
       console.log('Champ Nom du profil éditable');
     } else {
-      console.log('Champ Nom non trouvé — vérifier les sélecteurs');
+      console.log('Champ Nom non trouvé - vérifier les sélecteurs');
     }
   });
 
-  test('07.6 — Modification du profil enregistrée avec succès', async ({ page }) => {
+  test('07.6 - Modification du profil enregistrée avec succès', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToProfile();
@@ -115,27 +115,27 @@ test.describe('SC-07 — Dashboard utilisateur', () => {
         console.log('Profil mis à jour avec succès');
       } else {
         // L'app peut recharger sans toast explicite
-        console.log('Mise à jour profil — pas de notification explicite visible');
+        console.log('Mise à jour profil - pas de notification explicite visible');
       }
     } else {
-      console.log('Champ Nom non disponible — test ignoré');
+      console.log('Champ Nom non disponible - test ignoré');
     }
   });
 
-  test('07.7 — La section Mot de passe est accessible', async ({ page }) => {
+  test('07.7 - La section Mot de passe est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToPassword();
     const section = page.locator('form, input[type="password"]');
     const hasSection = await section.first().isVisible({ timeout: 10_000 }).catch(() => false);
     if (!hasSection) {
-      console.log('Section mot de passe sans formulaire standard — URL:', page.url());
+      console.log('Section mot de passe sans formulaire standard - URL:', page.url());
       test.skip(true, 'Section mot de passe non accessible ou structure non standard');
     }
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('07.8 — Changement de mot de passe — validation des champs', async ({ page }) => {
+  test('07.8 - Changement de mot de passe - validation des champs', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToPassword();
@@ -143,14 +143,14 @@ test.describe('SC-07 — Dashboard utilisateur', () => {
     await pwFields.first().waitFor({ state: 'visible', timeout: 8_000 }).catch(() => {});
     const count = await pwFields.count();
     if (count === 0) {
-      console.log('Aucun champ mot de passe trouvé — page non standard');
+      console.log('Aucun champ mot de passe trouvé - page non standard');
       test.skip(true, 'Page changement mot de passe sans champs standard');
     }
     expect(count).toBeGreaterThanOrEqual(1);
     console.log(`${count} champ(s) mot de passe trouvé(s)`);
   });
 
-  test('07.9 — Les documents / Manifeste acheté sont accessibles', async ({ page }) => {
+  test('07.9 - Les documents / Manifeste acheté sont accessibles', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new DashboardPage(page);
     await dashboard.navigateToDocuments();

@@ -2,7 +2,7 @@ import { test, expect } from '../../fixtures/base.fixture';
 import shop1 from '../../apps/shop1';
 import { ShippingInfo } from '../../pages/ecommerce/CheckoutPage';
 
-test.describe('@ecommerce — Checkout', () => {
+test.describe('@ecommerce - Checkout', () => {
   test.use({ baseURL: shop1.baseURL });
 
   const shippingInfo: ShippingInfo = {

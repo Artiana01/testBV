@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/checkout.spec.ts
  * ----------------------------------------
- * Tests E2E — Tunnel de commande (Checkout)
+ * Tests E2E - Tunnel de commande (Checkout)
  * Couvre : parcours complet de commande, validation des champs,
  *          confirmation et vidage du panier.
  *
@@ -37,9 +37,9 @@ const TEST_SHIPPING = {
 };
 
 // =====================================================================
-// PARCOURS 3.1 — Checkout complet
+// PARCOURS 3.1 - Checkout complet
 // =====================================================================
-test.describe('Checkout complet — utilisateur connecté', () => {
+test.describe('Checkout complet - utilisateur connecté', () => {
 
   test.beforeEach(async ({ page }) => {
     const authPage = new AuthPage(page);
@@ -124,7 +124,7 @@ test.describe('Checkout complet — utilisateur connecté', () => {
 });
 
 // =====================================================================
-// Validation des champs — Checkout sans remplir les champs
+// Validation des champs - Checkout sans remplir les champs
 // =====================================================================
 test.describe('Validation des champs du checkout', () => {
 
@@ -159,7 +159,7 @@ test.describe('Validation des champs du checkout', () => {
 // =====================================================================
 // Test de profil utilisateur
 // =====================================================================
-test.describe('Profil utilisateur — après commande', () => {
+test.describe('Profil utilisateur - après commande', () => {
 
   test("L'historique des commandes est accessible depuis le profil", async ({ page }) => {
     const authPage = new AuthPage(page);
@@ -172,7 +172,7 @@ test.describe('Profil utilisateur — après commande', () => {
     const ordersSection = page.getByRole('link', { name: /commandes|orders|historique/i })
       .or(page.getByText(/mes commandes|order history/i));
 
-    // Ce test est conditionnel — l'historique n'existe que si l'utilisateur a commandé
+    // Ce test est conditionnel - l'historique n'existe que si l'utilisateur a commandé
     if (await ordersSection.isVisible()) {
       await ordersSection.click();
       await expect(page).toHaveURL(/orders|commandes|profile/);

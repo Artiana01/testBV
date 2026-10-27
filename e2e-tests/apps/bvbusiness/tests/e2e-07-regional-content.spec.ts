@@ -17,9 +17,9 @@ import { AdminDashboardPage } from '../pages/AdminDashboardPage';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-test.describe('SC-07 — Contenu Régional Admin (SECONDAIRE)', () => {
+test.describe('SC-07 - Contenu Régional Admin (SECONDAIRE)', () => {
 
-  test('07.1 — La page Contenu Régional est accessible', async ({ page }) => {
+  test('07.1 - La page Contenu Régional est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
@@ -27,14 +27,14 @@ test.describe('SC-07 — Contenu Régional Admin (SECONDAIRE)', () => {
     await expect(page.locator('main, [role="main"], body').first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('07.2 — Un sélecteur de région est présent', async ({ page }) => {
+  test('07.2 - Un sélecteur de région est présent', async ({ page }) => {
     test.setTimeout(60_000);
     const regionalPage = new AdminRegionalContentPage(page);
     await regionalPage.goto();
     await regionalPage.verifyRegionSelectorPresent();
   });
 
-  test('07.3 — Modification et sauvegarde du contenu régional', async ({ page }) => {
+  test('07.3 - Modification et sauvegarde du contenu régional', async ({ page }) => {
     test.setTimeout(60_000);
     const regionalPage = new AdminRegionalContentPage(page);
     await regionalPage.goto();

@@ -1,5 +1,5 @@
 /**
- * e2e-03-signup.spec.ts — Créer Ailleurs
+ * e2e-03-signup.spec.ts - Créer Ailleurs
  * SC-03 : Création de compte utilisateur
  *
  * Vérifie : parcours inscription, validation champs, anomalies connues
@@ -14,49 +14,49 @@ import { AuthPage } from '../pages/AuthPage';
 
 const BASE = process.env.BASE_URL ?? 'https://dev.creerailleurs.com';
 
-test.describe('SC-03 — Création de compte utilisateur', () => {
+test.describe('SC-03 - Création de compte utilisateur', () => {
 
-  test('03.1 — La page d\'inscription est accessible', async ({ page }) => {
+  test('03.1 - La page d\'inscription est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
     await expect(page).toHaveURL(/signup|inscription|register/i, { timeout: 20_000 });
-    // Vérifier la présence d'un champ de saisie — peut utiliser une structure non-standard
+    // Vérifier la présence d'un champ de saisie - peut utiliser une structure non-standard
     const hasInput = await page.locator('input[type="email"], input[type="text"], input[type="password"]')
       .first().isVisible({ timeout: 10_000 }).catch(() => false);
     if (!hasInput) {
-      console.log('NOTE: Page inscription sans champs input standards — structure UI non-conventionnelle');
+      console.log('NOTE: Page inscription sans champs input standards - structure UI non-conventionnelle');
     }
     // Test passe quand la page /inscription est chargée, même sans les champs attendus
     expect(page.url()).toMatch(/inscription|signup|register/i);
   });
 
-  test('03.2 — Les champs obligatoires sont présents (Nom, Email, Mot de passe)', async ({ page }) => {
+  test('03.2 - Les champs obligatoires sont présents (Nom, Email, Mot de passe)', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
     const hasName  = await auth.name_input.first().isVisible({ timeout: 5_000 }).catch(() => false);
     const hasEmail = await auth.email_input.isVisible({ timeout: 5_000 }).catch(() => false);
     const hasPw    = await auth.password_input.isVisible({ timeout: 5_000 }).catch(() => false);
-    if (!hasName)  console.log('NOTE: Champ Nom non trouvé — sélecteur peut ne pas correspondre au DOM');
+    if (!hasName)  console.log('NOTE: Champ Nom non trouvé - sélecteur peut ne pas correspondre au DOM');
     if (!hasEmail) console.log('NOTE: Champ Email non trouvé');
     if (!hasPw)    console.log('NOTE: Champ Mot de passe non trouvé');
-    // Test passe si la page est chargée — les champs manquants sont documentés
+    // Test passe si la page est chargée - les champs manquants sont documentés
     expect(page.url()).toMatch(/inscription|signup|register/i);
   });
 
-  test('03.3 — Les champs du formulaire sont remplissables', async ({ page }) => {
+  test('03.3 - Les champs du formulaire sont remplissables', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
     const hasEmail = await auth.email_input.isVisible({ timeout: 6_000 }).catch(() => false);
-    test.skip(!hasEmail, 'Formulaire inscription sans champ email standard — structure UI non-conventionnelle');
+    test.skip(!hasEmail, 'Formulaire inscription sans champ email standard - structure UI non-conventionnelle');
     const email = `qa.test.${Date.now()}@test.com`;
     await auth.fillSignupForm('Test QA', email, 'TestQA123!');
     await expect(auth.email_input).toHaveValue(email);
   });
 
-  test('03.4 — Soumission avec email vide → validation bloquée', async ({ page }) => {
+  test('03.4 - Soumission avec email vide → validation bloquée', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
@@ -72,12 +72,12 @@ test.describe('SC-03 — Création de compte utilisateur', () => {
     expect(url).toMatch(/signup|inscription|register/i);
   });
 
-  test('03.5 — Soumission avec mot de passe trop court → validation', async ({ page }) => {
+  test('03.5 - Soumission avec mot de passe trop court → validation', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
     const hasEmail = await auth.email_input.isVisible({ timeout: 6_000 }).catch(() => false);
-    test.skip(!hasEmail, 'Formulaire inscription non standard — test ignoré');
+    test.skip(!hasEmail, 'Formulaire inscription non standard - test ignoré');
     const email = `qa.test.${Date.now()}@test.com`;
     await auth.fillSignupForm('Test QA', email, '123');
     await auth.submit();
@@ -88,12 +88,12 @@ test.describe('SC-03 — Création de compte utilisateur', () => {
     expect(url.match(/signup|inscription|register/) || hasError).toBeTruthy();
   });
 
-  test('03.6 — Inscription complète avec un nouveau compte', async ({ page }) => {
+  test('03.6 - Inscription complète avec un nouveau compte', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
     const hasEmail = await auth.email_input.isVisible({ timeout: 6_000 }).catch(() => false);
-    test.skip(!hasEmail, 'Formulaire inscription non standard — test ignoré');
+    test.skip(!hasEmail, 'Formulaire inscription non standard - test ignoré');
     const email = `qa.new.${Date.now()}@test.com`;
     await auth.fillSignupForm('Test QA Nouveau', email, 'NewQATest123!');
     await auth.submit();
@@ -107,12 +107,12 @@ test.describe('SC-03 — Création de compte utilisateur', () => {
     console.log(`Inscription testée avec email: ${email}`);
   });
 
-  test('03.7 — Inscription avec email déjà utilisé → erreur', async ({ page }) => {
+  test('03.7 - Inscription avec email déjà utilisé → erreur', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
     const hasEmail = await auth.email_input.isVisible({ timeout: 6_000 }).catch(() => false);
-    test.skip(!hasEmail, 'Formulaire inscription non standard — test ignoré');
+    test.skip(!hasEmail, 'Formulaire inscription non standard - test ignoré');
     const existingEmail = process.env.TEST_EMAIL || 'test@creerailleurs.com';
     await auth.fillSignupForm('Test Existant', existingEmail, 'TestQA123!');
     await auth.submit();
@@ -122,7 +122,7 @@ test.describe('SC-03 — Création de compte utilisateur', () => {
     expect(hasError || stayedOnSignup).toBeTruthy();
   });
 
-  test('03.8 — [BUG CONNU] Absence du bouton "voir le mot de passe"', async ({ page }) => {
+  test('03.8 - [BUG CONNU] Absence du bouton "voir le mot de passe"', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToSignup();
@@ -132,13 +132,13 @@ test.describe('SC-03 — Création de compte utilisateur', () => {
     ).first();
     const isVisible = await togglePw.isVisible({ timeout: 3_000 }).catch(() => false);
     if (!isVisible) {
-      console.log('ANOMALIE SC-03: Bouton "voir le mot de passe" absent — amélioration UX recommandée');
+      console.log('ANOMALIE SC-03: Bouton "voir le mot de passe" absent - amélioration UX recommandée');
     }
-    // Ce test passe toujours — il documente le bug
+    // Ce test passe toujours - il documente le bug
     expect(true).toBeTruthy();
   });
 
-  test('03.9 — [BUG CONNU] Lien "Mot de passe oublié" présent mais non fonctionnel', async ({ page }) => {
+  test('03.9 - [BUG CONNU] Lien "Mot de passe oublié" présent mais non fonctionnel', async ({ page }) => {
     test.setTimeout(60_000);
     const auth = new AuthPage(page);
     await auth.navigateToLogin();

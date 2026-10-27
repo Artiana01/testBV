@@ -51,14 +51,14 @@ export class LoginPage extends BasePage {
     await this.page.waitForLoadState('domcontentloaded').catch(() => {});
   }
 
-  // The BV Portage site has no "Freelance" profile button — this is a no-op
+  // The BV Portage site has no "Freelance" profile button - this is a no-op
   async chooseFreelanceProfile() {
     const freelanceBtn = this.page.locator('button:has-text("Freelance"), label:has-text("Freelance")').first();
     if (await freelanceBtn.isVisible({ timeout: 3_000 }).catch(() => false)) {
       await freelanceBtn.click();
       await this.page.waitForURL(url => !url.includes('/connexion') && !url.includes('/login'), { timeout: 15_000 }).catch(() => {});
     }
-    // If button doesn't exist, just continue — no profile selection needed
+    // If button doesn't exist, just continue - no profile selection needed
   }
 
   async getErrorMessage(): Promise<string> {

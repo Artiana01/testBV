@@ -24,9 +24,9 @@ const ADMIN_PASS   = process.env.BVINVEST_ADMIN_PASSWORD ?? 'Admin@2026!';
 const CLIENT_EMAIL = process.env.BVINVEST_CLIENT_EMAIL  ?? 'rojotiana49@gmail.com';
 const CLIENT_PASS  = process.env.BVINVEST_CLIENT_PASSWORD ?? 'Diary12345678!';
 
-test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
+test.describe('SC-01 - Connexion utilisateur (CRITIQUE)', () => {
 
-  test('01.1 — La page login est accessible', async ({ page }) => {
+  test('01.1 - La page login est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -35,7 +35,7 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
     await expect(page.locator('button[type="submit"]')).toBeVisible();
   });
 
-  test('01.2 — Connexion réussie avec identifiants admin', async ({ page }) => {
+  test('01.2 - Connexion réussie avec identifiants admin', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.login(ADMIN_EMAIL, ADMIN_PASS);
@@ -43,7 +43,7 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
     console.log('Connexion admin réussie :', ADMIN_EMAIL);
   });
 
-  test('01.3 — Connexion réussie avec identifiants client', async ({ page }) => {
+  test('01.3 - Connexion réussie avec identifiants client', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.login(CLIENT_EMAIL, CLIENT_PASS);
@@ -51,7 +51,7 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
     console.log('Connexion client réussie :', CLIENT_EMAIL);
   });
 
-  test('01.4 — Connexion échouée avec mauvais mot de passe', async ({ page }) => {
+  test('01.4 - Connexion échouée avec mauvais mot de passe', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -60,7 +60,7 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
     await loginPage.verifyLoginError();
   });
 
-  test('01.5 — Connexion échouée avec email inexistant', async ({ page }) => {
+  test('01.5 - Connexion échouée avec email inexistant', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.navigateToLogin();
@@ -69,7 +69,7 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
     await loginPage.verifyLoginError();
   });
 
-  test('01.6 — Redirection post-login vers espace membre ou dashboard', async ({ page }) => {
+  test('01.6 - Redirection post-login vers espace membre ou dashboard', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     await loginPage.login(CLIENT_EMAIL, CLIENT_PASS);
@@ -78,12 +78,12 @@ test.describe('SC-01 — Connexion utilisateur (CRITIQUE)', () => {
     const url = page.url();
     const isExpected = /pack|member|dashboard|private|home|accueil/i.test(url);
     if (!isExpected) {
-      console.log(`   ℹ️  URL post-login : ${url} — à valider manuellement`);
+      console.log(`   ℹ️  URL post-login : ${url} - à valider manuellement`);
     }
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('01.7 — Gestion de session : page protégée inaccessible sans connexion', async ({ page }) => {
+  test('01.7 - Gestion de session : page protégée inaccessible sans connexion', async ({ page }) => {
     test.setTimeout(60_000);
     await page.goto(`${BASE}/fr/dashboard`);
     await page.waitForLoadState('domcontentloaded');

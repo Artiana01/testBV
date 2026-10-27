@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/cart.spec.ts
  * -----------------------------------
- * Tests E2E — Panier
+ * Tests E2E - Panier
  * Couvre : ajout au panier (connecté et non connecté), modification quantité,
  *          suppression d'article, vérification du sous-total, persistance, checkout bloqué.
  *
@@ -20,9 +20,9 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // =====================================================================
-// PARCOURS 1.8 — Ajout au panier (visiteur non connecté)
+// PARCOURS 1.8 - Ajout au panier (visiteur non connecté)
 // =====================================================================
-test.describe('Ajout au panier — visiteur non connecté', () => {
+test.describe('Ajout au panier - visiteur non connecté', () => {
 
   test("Ajouter un produit incrémente le compteur panier dans la navbar", async ({ page }) => {
     const shopPage = new ShopPage(page);
@@ -83,7 +83,7 @@ test.describe('Ajout au panier — visiteur non connecté', () => {
 });
 
 // =====================================================================
-// PARCOURS 1.9 — Modification du panier
+// PARCOURS 1.9 - Modification du panier
 // =====================================================================
 test.describe('Modification du panier', () => {
 
@@ -128,7 +128,7 @@ test.describe('Modification du panier', () => {
 });
 
 // =====================================================================
-// PARCOURS 1.10 — Checkout bloqué sans connexion
+// PARCOURS 1.10 - Checkout bloqué sans connexion
 // =====================================================================
 test.describe('Checkout bloqué sans connexion', () => {
 
@@ -181,7 +181,7 @@ test.describe('Persistance du panier', () => {
 // =====================================================================
 // Panier avec compte connecté
 // =====================================================================
-test.describe('Panier — utilisateur connecté', () => {
+test.describe('Panier - utilisateur connecté', () => {
 
   test.beforeEach(async ({ page }) => {
     // Se connecter avant chaque test

@@ -3,7 +3,7 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-test.describe('E2E-08 — Gestion Profil', () => {
+test.describe('E2E-08 - Gestion Profil', () => {
   test.beforeEach(async ({ loginPage, dashboardFreelancePage, page }) => {
     await page.goto('/fr/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
 

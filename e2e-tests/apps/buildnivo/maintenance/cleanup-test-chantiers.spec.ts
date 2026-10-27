@@ -5,7 +5,7 @@
  * et jamais nettoyés ("E2E Chantier …", "RÉGRESSION Chantier …", "E2E BUILDNIVO-304 …", "E2E Reprise …").
  * Ils s'accumulent à chaque run, paginent la liste /chantiers et ralentissent les tests.
  *
- * Seuls les noms correspondant EXACTEMENT à ces préfixes sont supprimés — jamais les chantiers de
+ * Seuls les noms correspondant EXACTEMENT à ces préfixes sont supprimés - jamais les chantiers de
  * démo ("Résidence Itaosy", "Residence Antsirabe", …) ni un chantier créé à la main.
  *
  * Lancement (voir package.json) :
@@ -43,12 +43,12 @@ test('Nettoyage des chantiers de test E2E', async ({ browser }) => {
   const all = projects.out;
   const targets = all.filter(p => TEST_CHANTIER_NAME.test(p.name));
   const kept = all.filter(p => !TEST_CHANTIER_NAME.test(p.name));
-  console.log(`Chantiers au total : ${all.length} — à supprimer : ${targets.length} — conservés : ${kept.length}`);
+  console.log(`Chantiers au total : ${all.length} - à supprimer : ${targets.length} - conservés : ${kept.length}`);
   console.log('CONSERVÉS :', JSON.stringify(kept.map(k => k.name)));
   expect(kept.length, 'Garde-fou : au moins un chantier de démo doit rester').toBeGreaterThan(0);
 
   if (dryRun) {
-    console.log('DRY_RUN — exemples à supprimer :', JSON.stringify(targets.slice(0, 5).map(t => t.name)));
+    console.log('DRY_RUN - exemples à supprimer :', JSON.stringify(targets.slice(0, 5).map(t => t.name)));
     await context.close();
     return;
   }

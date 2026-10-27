@@ -14,37 +14,37 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const BASE = process.env.EMIRAGATE_BASE_URL ?? 'https://dev.bluevalorisinstall.com';
 
-test.describe('SC-02 — Dashboard Administrateur (CRITIQUE)', () => {
+test.describe('SC-02 - Dashboard Administrateur (CRITIQUE)', () => {
 
-  test('02.1 — Le dashboard admin est accessible', async ({ page }) => {
+  test('02.1 - Le dashboard admin est accessible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyDashboardLoaded();
   });
 
-  test('02.2 — Les KPIs sont affichés (prospects, leads, etc.)', async ({ page }) => {
+  test('02.2 - Les KPIs sont affichés (prospects, leads, etc.)', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyKpisVisible();
   });
 
-  test('02.3 — Les activités récentes sont affichées', async ({ page }) => {
+  test('02.3 - Les activités récentes sont affichées', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyRecentActivityVisible();
   });
 
-  test('02.4 — La navigation admin est visible', async ({ page }) => {
+  test('02.4 - La navigation admin est visible', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();
     await dashboard.verifyNavVisible();
   });
 
-  test('02.5 — Aucune valeur corrompue sur le dashboard', async ({ page }) => {
+  test('02.5 - Aucune valeur corrompue sur le dashboard', async ({ page }) => {
     test.setTimeout(60_000);
     const dashboard = new AdminDashboardPage(page);
     await dashboard.goto();

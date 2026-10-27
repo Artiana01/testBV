@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/pages/DashboardPage.ts
  * ----------------------------------------
- * Page Object — Dashboard utilisateur Launchpad BV TECH
+ * Page Object - Dashboard utilisateur Launchpad BV TECH
  * Couvre : /fr/dashboard (page post-connexion)
  */
 

@@ -20,7 +20,7 @@ export default defineConfig({
   // Dossier racine où Playwright cherche les fichiers de test
   testDir: './apps',
 
-  // Délai maximum pour chaque test (60 secondes — adapté pour les serveurs distants)
+  // Délai maximum pour chaque test (60 secondes - adapté pour les serveurs distants)
   timeout: 60_000,
 
   // Délai maximum pour les assertions (ex : expect(...).toBeVisible())

@@ -3,7 +3,7 @@ import shop1 from './shop1';
 import saas1 from './saas1';
 import vitrine1 from './vitrine1';
 
-// Registry — add new apps here
+// Registry - add new apps here
 export const apps: Record<string, AppConfig> = {
   shop1,
   saas1,

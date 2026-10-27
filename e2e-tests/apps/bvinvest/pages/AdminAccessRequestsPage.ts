@@ -1,7 +1,7 @@
 /**
  * apps/bvinvest/pages/AdminAccessRequestsPage.ts
  * -------------------------------------------------
- * Page Object — Gestion des Demandes d'Accès Admin BV Invest
+ * Page Object - Gestion des Demandes d'Accès Admin BV Invest
  * Couvre : visualisation, validation, rejet (SC-08)
  */
 
@@ -39,7 +39,7 @@ export class AdminAccessRequestsPage extends BasePage {
     if (count > 0) {
       await expect(rows.first()).toBeVisible({ timeout: 5_000 });
     } else {
-      console.log('   ℹ️  Aucune demande d\'accès trouvée — liste vide ou URL à adapter');
+      console.log('   ℹ️  Aucune demande d\'accès trouvée - liste vide ou URL à adapter');
     }
   }
 
@@ -47,7 +47,7 @@ export class AdminAccessRequestsPage extends BasePage {
     const approveVisible = await this.page.locator(this.approveBtn).first().isVisible({ timeout: 3_000 }).catch(() => false);
     const rejectVisible  = await this.page.locator(this.rejectBtn).first().isVisible({ timeout: 3_000 }).catch(() => false);
     if (!approveVisible && !rejectVisible) {
-      console.log('   ℹ️  Boutons de validation/rejet non trouvés — vérifier sélecteurs ou liste vide');
+      console.log('   ℹ️  Boutons de validation/rejet non trouvés - vérifier sélecteurs ou liste vide');
     }
   }
 }

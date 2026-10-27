@@ -32,9 +32,9 @@ dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 const PROFILE_EMAIL    = process.env.TEST_EMAIL    ?? 'e2e.client@bvtest.com';
 const PROFILE_PASSWORD = process.env.TEST_PASSWORD ?? 'ClientTest123!';
 
-test.describe('E2E 03 — Gestion du profil utilisateur (CRITIQUE)', () => {
+test.describe('E2E 03 - Gestion du profil utilisateur (CRITIQUE)', () => {
 
-  test('03.1 — Se connecter et accéder au profil', async ({ page }) => {
+  test('03.1 - Se connecter et accéder au profil', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -51,7 +51,7 @@ test.describe('E2E 03 — Gestion du profil utilisateur (CRITIQUE)', () => {
     await profilePage.verifyProfilePageLoaded();
   });
 
-  test('03.2 — Modifier le nom et sauvegarder', async ({ page }) => {
+  test('03.2 - Modifier le nom et sauvegarder', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -75,7 +75,7 @@ test.describe('E2E 03 — Gestion du profil utilisateur (CRITIQUE)', () => {
     await profilePage.verifyProfileSaved();
   });
 
-  test('03.3 — Vérifier la persistance des données après modification', async ({ page }) => {
+  test('03.3 - Vérifier la persistance des données après modification', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -96,7 +96,7 @@ test.describe('E2E 03 — Gestion du profil utilisateur (CRITIQUE)', () => {
     await profilePage.verifyDataPersistence(persistName);
   });
 
-  test('03.4 — Les informations utilisateur sont affichées', async ({ page }) => {
+  test('03.4 - Les informations utilisateur sont affichées', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const profilePage = new ProfilePage(page);
@@ -113,7 +113,7 @@ test.describe('E2E 03 — Gestion du profil utilisateur (CRITIQUE)', () => {
     await profilePage.verifyUserInfoDisplayed();
   });
 
-  test('03.5 — L\'email affiché correspond au compte connecté', async ({ page }) => {
+  test('03.5 - L\'email affiché correspond au compte connecté', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage  = new LoginPage(page);
     const profilePage = new ProfilePage(page);

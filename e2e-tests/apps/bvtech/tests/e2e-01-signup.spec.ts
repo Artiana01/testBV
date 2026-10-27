@@ -25,9 +25,9 @@ import { SignupPage } from '../pages/SignupPage';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
+test.describe('E2E 01 - Inscription + Accès Dashboard (CRITIQUE)', () => {
 
-  test("01.1 — La page d'inscription est accessible", async ({ page }) => {
+  test("01.1 - La page d'inscription est accessible", async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
@@ -36,7 +36,7 @@ test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
     await expect(heading.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.2 — Le formulaire contient le champ Nom', async ({ page }) => {
+  test('01.2 - Le formulaire contient le champ Nom', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
@@ -46,14 +46,14 @@ test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
     await expect(nomField.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.3 — Le formulaire contient le champ Email', async ({ page }) => {
+  test('01.3 - Le formulaire contient le champ Email', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
     await expect(page.locator('input[type="email"]').first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.4 — Le formulaire contient les champs Mot de passe et Confirmation', async ({ page }) => {
+  test('01.4 - Le formulaire contient les champs Mot de passe et Confirmation', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
@@ -68,7 +68,7 @@ test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
     await expect(passwordFields.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.5 — Le formulaire ne contient plus de reCAPTCHA', async ({ page }) => {
+  test('01.5 - Le formulaire ne contient plus de reCAPTCHA', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
@@ -77,11 +77,11 @@ test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
     const hasRecaptcha = await recaptcha.first().isVisible({ timeout: 5_000 }).catch(() => false);
     expect(hasRecaptcha).toBeFalsy();
     console.log(hasRecaptcha
-      ? '⚠️ reCAPTCHA détecté — la soumission automatisée reste bloquée'
-      : 'ℹ️ Aucun reCAPTCHA détecté — la soumission automatisée n\'est plus bloquée par ce mécanisme');
+      ? '⚠️ reCAPTCHA détecté - la soumission automatisée reste bloquée'
+      : 'ℹ️ Aucun reCAPTCHA détecté - la soumission automatisée n\'est plus bloquée par ce mécanisme');
   });
 
-  test('01.6 — Les champs du formulaire sont remplissables', async ({ page }) => {
+  test('01.6 - Les champs du formulaire sont remplissables', async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
@@ -100,7 +100,7 @@ test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
     await expect(emailField).toHaveValue('test.e2e@bvtest.com');
   });
 
-  test("01.7 — Lien vers la page login visible depuis l'inscription", async ({ page }) => {
+  test("01.7 - Lien vers la page login visible depuis l'inscription", async ({ page }) => {
     test.setTimeout(60_000);
     const signupPage = new SignupPage(page);
     await signupPage.goto();
@@ -109,9 +109,9 @@ test.describe('E2E 01 — Inscription + Accès Dashboard (CRITIQUE)', () => {
     await expect(loginLink.first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('01.8 — Navigation vers le signup depuis la page login', async ({ page }) => {
+  test('01.8 - Navigation vers le signup depuis la page login', async ({ page }) => {
     // La page /fr/login ne contient pas de lien vers /fr/signup (comportement actuel de l'app)
-    test.skip(true, 'Pas de lien signup sur la page login — a implémenter côté app si besoin');
+    test.skip(true, 'Pas de lien signup sur la page login - a implémenter côté app si besoin');
   });
 
 });

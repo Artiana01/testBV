@@ -1,5 +1,5 @@
 /**
- * e2e-09-multilingue.spec.ts — Créer Ailleurs
+ * e2e-09-multilingue.spec.ts - Créer Ailleurs
  * SC-09 : Vérification multilingue (FR/EN)
  *
  * Vérifie : navigation EN, textes espace utilisateur, cohérence traduction
@@ -13,9 +13,9 @@ import { HomePage } from '../pages/HomePage';
 
 const BASE = process.env.BASE_URL ?? 'https://dev.creerailleurs.com';
 
-test.describe('SC-09 — Vérification multilingue FR/EN', () => {
+test.describe('SC-09 - Vérification multilingue FR/EN', () => {
 
-  test('09.1 — La version FR est la langue par défaut', async ({ page }) => {
+  test('09.1 - La version FR est la langue par défaut', async ({ page }) => {
     test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigate();
@@ -27,7 +27,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     console.log(`Langue HTML détectée: ${lang}`);
   });
 
-  test('09.2 — Le sélecteur de langue permet de passer en EN', async ({ page }) => {
+  test('09.2 - Le sélecteur de langue permet de passer en EN', async ({ page }) => {
     test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigate();
@@ -48,7 +48,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     }
   });
 
-  test('09.3 — La version EN charge correctement', async ({ page }) => {
+  test('09.3 - La version EN charge correctement', async ({ page }) => {
     test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();
@@ -56,7 +56,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     console.log(`Version EN chargée: ${page.url()}`);
   });
 
-  test('09.4 — Les menus de navigation sont traduits en EN', async ({ page }) => {
+  test('09.4 - Les menus de navigation sont traduits en EN', async ({ page }) => {
     test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();
@@ -68,12 +68,12 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     if (isVisible) {
       console.log('Navigation EN détectée');
     } else {
-      console.log('Navigation EN non détectée — vérifier si la traduction est complète');
+      console.log('Navigation EN non détectée - vérifier si la traduction est complète');
     }
     await expect(page.locator('header, nav').first()).toBeVisible({ timeout: 20_000 });
   });
 
-  test('09.5 — [BUG CONNU] Mot "MODIFIER" en français dans la version anglaise', async ({ page }) => {
+  test('09.5 - [BUG CONNU] Mot "MODIFIER" en français dans la version anglaise', async ({ page }) => {
     test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();
@@ -85,12 +85,12 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
       console.log('ANOMALIE SC-09: Mot "MODIFIER" en français détecté dans la version anglaise');
       console.log('Correction requise: traduire en "EDIT" ou "UPDATE"');
     } else {
-      console.log('"MODIFIER" non visible sur la page EN principale — peut apparaître dans l\'espace utilisateur');
+      console.log('"MODIFIER" non visible sur la page EN principale - peut apparaître dans l\'espace utilisateur');
     }
     expect(true).toBeTruthy();
   });
 
-  test('09.6 — Espace utilisateur EN — vérification textes non traduits', async ({ page }) => {
+  test('09.6 - Espace utilisateur EN - vérification textes non traduits', async ({ page }) => {
     test.setTimeout(60_000);
     // Accéder au dashboard en version EN
     await page.goto(`${BASE}/en/dashboard`);
@@ -108,7 +108,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
         }
       }
     } else {
-      // Pas connecté — tester sur la page publique EN
+      // Pas connecté - tester sur la page publique EN
       await page.goto(`${BASE}/en`);
       await page.waitForLoadState('domcontentloaded');
       const modifierText = page.getByText('MODIFIER', { exact: false }).first();
@@ -120,7 +120,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     expect(true).toBeTruthy();
   });
 
-  test('09.7 — Cohérence FR/EN — la structure de la page est identique', async ({ page }) => {
+  test('09.7 - Cohérence FR/EN - la structure de la page est identique', async ({ page }) => {
     test.setTimeout(60_000);
     // Comparer le nombre de sections entre FR et EN
     const home = new HomePage(page);
@@ -135,7 +135,7 @@ test.describe('SC-09 — Vérification multilingue FR/EN', () => {
     expect(Math.abs(frSections - enSections)).toBeLessThanOrEqual(2);
   });
 
-  test('09.8 — Le footer est traduit en EN', async ({ page }) => {
+  test('09.8 - Le footer est traduit en EN', async ({ page }) => {
     test.setTimeout(60_000);
     const home = new HomePage(page);
     await home.navigateEN();

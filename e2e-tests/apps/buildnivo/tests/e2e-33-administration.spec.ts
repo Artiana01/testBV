@@ -23,7 +23,7 @@ async function openAdminPage(page: Page, link: RegExp | string, url: RegExp) {
   await expect(page).toHaveURL(url, { timeout: 20_000 });
 }
 
-test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => {
+test.describe('BuildNivo - 33. Administration plateforme (Superadmin)', () => {
   test.skip(!getRole('superadmin').login, 'SUPERADMIN_EMAIL/PASSWORD absents de apps/buildnivo/.env.');
 
   let context: BrowserContext;
@@ -40,7 +40,7 @@ test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => 
     await expect(page.getByRole('link', { name: 'Dashboard admin' })).toBeVisible({ timeout: 30_000 });
   });
 
-  test('ADM-01 — Dashboard admin : métriques plateforme (clients, revenus, engagement, inscriptions, support)', async () => {
+  test('ADM-01 - Dashboard admin : métriques plateforme (clients, revenus, engagement, inscriptions, support)', async () => {
     await openAdminPage(page, 'Dashboard admin', /\/admin\/dashboard$/);
     await expect(page.getByRole('heading', { name: 'Dashboard admin', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText('Métriques plateforme')).toBeVisible();
@@ -57,7 +57,7 @@ test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => 
     }
   });
 
-  test('ADM-02 — Offres & tarification : catalogue des offres (code, famille, nom, prix, statut)', async () => {
+  test('ADM-02 - Offres & tarification : catalogue des offres (code, famille, nom, prix, statut)', async () => {
     await openAdminPage(page, /offres & tarification/i, /\/admin\/packages$/);
     await expect(page.getByRole('heading', { name: 'Offres & tarification', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/catalogue des offres vendues sur \/tarifs et de leurs fonctionnalités/i)).toBeVisible();
@@ -74,7 +74,7 @@ test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => 
     await expect(page.getByRole('button', { name: 'Aperçu synchro' })).toBeVisible();
   });
 
-  test('ADM-03 — Offres & tarification : onglet Fonctionnalités et formulaire "Nouvelle offre" (annulé)', async () => {
+  test('ADM-03 - Offres & tarification : onglet Fonctionnalités et formulaire "Nouvelle offre" (annulé)', async () => {
     await openAdminPage(page, /offres & tarification/i, /\/admin\/packages$/);
     await expect(page.getByRole('button', { name: 'Fonctionnalités' })).toBeVisible({ timeout: 20_000 });
 
@@ -98,7 +98,7 @@ test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => 
     await expect(dialog).toBeHidden();
   });
 
-  test('ADM-04 — Rôles & permissions : rôles de la plateforme par famille, onglets Modules et Matrice', async () => {
+  test('ADM-04 - Rôles & permissions : rôles de la plateforme par famille, onglets Modules et Matrice', async () => {
     await openAdminPage(page, /rôles & permissions/i, /\/admin\/rbac$/);
     await expect(page.getByRole('heading', { name: 'Rôles & permissions', level: 1 })).toBeVisible({ timeout: 20_000 });
 
@@ -126,7 +126,7 @@ test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => 
     await expect(page.getByRole('table')).toBeVisible();
   });
 
-  test('ADM-05 — Rôles & permissions : formulaire "Nouveau rôle" (code, libellé, famille) ; annulation sans création', async () => {
+  test('ADM-05 - Rôles & permissions : formulaire "Nouveau rôle" (code, libellé, famille) ; annulation sans création', async () => {
     await openAdminPage(page, /rôles & permissions/i, /\/admin\/rbac$/);
     await page.getByRole('button', { name: 'Nouveau rôle' }).click();
 
@@ -141,7 +141,7 @@ test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => 
     await expect(dialog).toBeHidden();
   });
 
-  test('ADM-06 — Matrice des permissions : référentiel RBAC partagé rôle × module', async () => {
+  test('ADM-06 - Matrice des permissions : référentiel RBAC partagé rôle × module', async () => {
     await openAdminPage(page, /matrice des permissions/i, /\/matrix$/);
     await expect(page.getByRole('heading', { name: 'Matrice des permissions', level: 1 })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText(/référentiel rbac partagé de la plateforme/i)).toBeVisible();
@@ -150,11 +150,11 @@ test.describe('BuildNivo — 33. Administration plateforme (Superadmin)', () => 
 });
 
 // Accès négatif : ces pages sont réservées au Superadmin. NB : la garde d'autorisation des routes /admin/*
-// peut s'exécuter après un premier rendu (voir e2e-19-supervision-audit) — on attend donc la redirection
+// peut s'exécuter après un premier rendu (voir e2e-19-supervision-audit) - on attend donc la redirection
 // finale plutôt que de juger le premier affichage.
-test.describe('BuildNivo — 33. Administration plateforme : accès refusé hors Superadmin', () => {
+test.describe('BuildNivo - 33. Administration plateforme : accès refusé hors Superadmin', () => {
   for (const route of ['/admin/dashboard', '/admin/packages', '/admin/rbac']) {
-    test(`ADM-07 — Direction : ${route} refusé (redirigé hors de l'administration)`, async ({ browser }) => {
+    test(`ADM-07 - Direction : ${route} refusé (redirigé hors de l'administration)`, async ({ browser }) => {
       const { context, page } = await openModuleAs(browser, 'direction', route);
       await expect(page).not.toHaveURL(new RegExp(`${route}$`), { timeout: 30_000 });
       await expect(page.getByRole('heading', { name: /dashboard admin|offres & tarification|rôles & permissions/i, level: 1 })).toHaveCount(0);
@@ -162,7 +162,7 @@ test.describe('BuildNivo — 33. Administration plateforme : accès refusé hors
     });
   }
 
-  test('ADM-08 — Direction : la sidebar ne propose pas la section "Administration"', async ({ browser }) => {
+  test('ADM-08 - Direction : la sidebar ne propose pas la section "Administration"', async ({ browser }) => {
     const { context, page } = await openModuleAs(browser, 'direction', '/dashboard');
     await expect(page.getByRole('link', { name: 'Reprise de chantier' })).toBeVisible({ timeout: 20_000 });
     await expect(page.getByText('Administration', { exact: true })).toHaveCount(0);

@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/SignupPage.ts
  * ---------------------------------
- * Page Object — Inscription BV Tech
+ * Page Object - Inscription BV Tech
  * Couvre : /fr/signup
  *
  * Le formulaire d'inscription contient les champs :

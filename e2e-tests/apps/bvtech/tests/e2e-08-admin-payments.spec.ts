@@ -24,9 +24,9 @@ import { AdminPaymentsPage } from '../pages/AdminPaymentsPage';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-test.describe('E2E 08 — Consultation des paiements (CRITIQUE)', () => {
+test.describe('E2E 08 - Consultation des paiements (CRITIQUE)', () => {
 
-  test('08.1 — Accéder à la liste des paiements', async ({ page }) => {
+  test('08.1 - Accéder à la liste des paiements', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -44,7 +44,7 @@ test.describe('E2E 08 — Consultation des paiements (CRITIQUE)', () => {
     await paymentsPage.verifyPaymentsListVisible();
   });
 
-  test('08.2 — Consulter les détails d\'un paiement', async ({ page }) => {
+  test('08.2 - Consulter les détails d\'un paiement', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -59,13 +59,13 @@ test.describe('E2E 08 — Consultation des paiements (CRITIQUE)', () => {
 
     // Ignorer si aucun paiement dans la base
     const count = await paymentsPage.getPaymentsCount();
-    test.skip(count === 0, 'Aucun paiement dans la base — test ignoré (table vide)');
+    test.skip(count === 0, 'Aucun paiement dans la base - test ignoré (table vide)');
 
     await paymentsPage.clickViewFirstPayment();
     await paymentsPage.verifyPaymentDetailsVisible();
   });
 
-  test('08.3 — Vérifier que le montant est affiché', async ({ page }) => {
+  test('08.3 - Vérifier que le montant est affiché', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -79,13 +79,13 @@ test.describe('E2E 08 — Consultation des paiements (CRITIQUE)', () => {
     await paymentsPage.verifyPaymentsListVisible();
 
     const count = await paymentsPage.getPaymentsCount();
-    test.skip(count === 0, 'Aucun paiement dans la base — test ignoré (table vide)');
+    test.skip(count === 0, 'Aucun paiement dans la base - test ignoré (table vide)');
 
     await paymentsPage.clickViewFirstPayment();
     await paymentsPage.verifyPaymentHasAmount();
   });
 
-  test('08.4 — Vérifier que le statut est affiché', async ({ page }) => {
+  test('08.4 - Vérifier que le statut est affiché', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -99,13 +99,13 @@ test.describe('E2E 08 — Consultation des paiements (CRITIQUE)', () => {
     await paymentsPage.verifyPaymentsListVisible();
 
     const count = await paymentsPage.getPaymentsCount();
-    test.skip(count === 0, 'Aucun paiement dans la base — test ignoré (table vide)');
+    test.skip(count === 0, 'Aucun paiement dans la base - test ignoré (table vide)');
 
     await paymentsPage.clickViewFirstPayment();
     await paymentsPage.verifyPaymentHasStatus();
   });
 
-  test('08.5 — Vérifier que l\'ID/référence est affiché', async ({ page }) => {
+  test('08.5 - Vérifier que l\'ID/référence est affiché', async ({ page }) => {
     test.setTimeout(60_000);
     const loginPage = new LoginPage(page);
     const adminDashboard = new AdminDashboardPage(page);
@@ -119,7 +119,7 @@ test.describe('E2E 08 — Consultation des paiements (CRITIQUE)', () => {
     await paymentsPage.verifyPaymentsListVisible();
 
     const count = await paymentsPage.getPaymentsCount();
-    test.skip(count === 0, 'Aucun paiement dans la base — test ignoré (table vide)');
+    test.skip(count === 0, 'Aucun paiement dans la base - test ignoré (table vide)');
 
     await paymentsPage.clickViewFirstPayment();
     await paymentsPage.verifyPaymentHasId();

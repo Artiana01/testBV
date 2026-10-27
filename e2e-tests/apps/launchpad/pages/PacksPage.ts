@@ -1,7 +1,7 @@
 /**
  * apps/launchpad/pages/PacksPage.ts
  * ------------------------------------
- * Page Object — Packs / Abonnements Launchpad BV TECH
+ * Page Object - Packs / Abonnements Launchpad BV TECH
  *
  * Scénario E2E #1 (P0) :
  *   - Accéder à la section pack
@@ -134,7 +134,7 @@ export class PacksPage extends BasePage {
     const hasEnglish = await englishSuccess.first().isVisible({ timeout: 3_000 }).catch(() => false);
 
     if (hasEnglish && !hasFrench) {
-      console.warn('🐛 BUG P0 : Message de paiement affiché en anglais — attendu en français');
+      console.warn('🐛 BUG P0 : Message de paiement affiché en anglais - attendu en français');
     }
     // Le test vérifie qu'un message de succès est bien affiché (quelle que soit la langue pour l'instant)
     expect(hasFrench || hasEnglish).toBeTruthy();

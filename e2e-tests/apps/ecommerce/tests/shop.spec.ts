@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/shop.spec.ts
  * -----------------------------------
- * Tests E2E — Catalogue boutique
+ * Tests E2E - Catalogue boutique
  * Couvre : page d'accueil, boutique /shop, recherche, filtres, tri, page produit.
  *
  * Ces tests sont exécutés EN TANT QUE VISITEUR (non connecté).
@@ -19,7 +19,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // =====================================================================
-// PARCOURS 1.1 — Page d'accueil
+// PARCOURS 1.1 - Page d'accueil
 // =====================================================================
 test.describe("Page d'accueil", () => {
 
@@ -57,7 +57,7 @@ test.describe("Page d'accueil", () => {
 });
 
 // =====================================================================
-// PARCOURS 1.2 — Page boutique
+// PARCOURS 1.2 - Page boutique
 // =====================================================================
 test.describe('Page boutique /shop', () => {
 
@@ -80,7 +80,7 @@ test.describe('Page boutique /shop', () => {
 });
 
 // =====================================================================
-// PARCOURS 1.3 — Recherche produit
+// PARCOURS 1.3 - Recherche produit
 // =====================================================================
 test.describe('Recherche produit', () => {
 
@@ -136,7 +136,7 @@ test.describe('Recherche produit', () => {
 });
 
 // =====================================================================
-// PARCOURS 1.4 — Filtrage par catégorie
+// PARCOURS 1.4 - Filtrage par catégorie
 // =====================================================================
 test.describe('Filtrage par catégorie', () => {
 
@@ -177,7 +177,7 @@ test.describe('Filtrage par catégorie', () => {
 });
 
 // =====================================================================
-// PARCOURS 1.5 — Filtre par prix
+// PARCOURS 1.5 - Filtre par prix
 // =====================================================================
 test.describe('Filtre par prix', () => {
 
@@ -201,7 +201,7 @@ test.describe('Filtre par prix', () => {
 });
 
 // =====================================================================
-// PARCOURS 1.6 — Tri des produits
+// PARCOURS 1.6 - Tri des produits
 // =====================================================================
 test.describe('Tri des produits', () => {
 
@@ -227,7 +227,7 @@ test.describe('Tri des produits', () => {
 });
 
 // =====================================================================
-// PARCOURS 1.7 — Page détail produit
+// PARCOURS 1.7 - Page détail produit
 // =====================================================================
 test.describe('Page détail produit', () => {
 

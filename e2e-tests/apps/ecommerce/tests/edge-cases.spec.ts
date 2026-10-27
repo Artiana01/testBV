@@ -1,7 +1,7 @@
 /**
  * apps/ecommerce/tests/edge-cases.spec.ts
  * -----------------------------------------
- * Tests E2E — Cas limites et robustesse
+ * Tests E2E - Cas limites et robustesse
  * Couvre : accès non autorisés, pages 404, persistance des états,
  *          validation des formulaires, états vides.
  *
@@ -22,7 +22,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 // =====================================================================
-// PARCOURS 5.1 — Accès /admin sans connexion
+// PARCOURS 5.1 - Accès /admin sans connexion
 // =====================================================================
 test.describe('Accès non autorisés', () => {
 
@@ -86,7 +86,7 @@ test.describe('Accès non autorisés', () => {
 });
 
 // =====================================================================
-// PARCOURS 5.4 — Persistance du panier après rechargement
+// PARCOURS 5.4 - Persistance du panier après rechargement
 // =====================================================================
 test.describe('Persistance du panier', () => {
 
@@ -128,7 +128,7 @@ test.describe('Persistance du panier', () => {
 });
 
 // =====================================================================
-// PARCOURS 5.5 — Persistance de la wishlist après rechargement
+// PARCOURS 5.5 - Persistance de la wishlist après rechargement
 // =====================================================================
 test.describe('Persistance de la wishlist', () => {
 
@@ -155,7 +155,7 @@ test.describe('Persistance de la wishlist', () => {
 });
 
 // =====================================================================
-// PARCOURS 5.6 — Recherche sans résultat
+// PARCOURS 5.6 - Recherche sans résultat
 // =====================================================================
 test.describe('États vides', () => {
 
@@ -184,7 +184,7 @@ test.describe('États vides', () => {
 });
 
 // =====================================================================
-// PARCOURS 5.7 — Validation des formulaires
+// PARCOURS 5.7 - Validation des formulaires
 // =====================================================================
 test.describe('Validation des formulaires', () => {
 
@@ -249,15 +249,15 @@ test.describe('Validation des formulaires', () => {
     const errorVisible = await page.getByText(/mot de passe|password|caractère|majuscule|chiffre/i)
       .isVisible({ timeout: 3_000 })
       .catch(() => false);
-    // Ce test est conditionnel — la validation peut être côté client ou serveur
+    // Ce test est conditionnel - la validation peut être côté client ou serveur
   });
 
 });
 
 // =====================================================================
-// PARCOURS 5.8 — Inscription avec email déjà utilisé
+// PARCOURS 5.8 - Inscription avec email déjà utilisé
 // =====================================================================
-test.describe('Inscription — cas limites', () => {
+test.describe('Inscription - cas limites', () => {
 
   test('[5.8] Inscription avec un email déjà enregistré affiche une erreur', async ({ page }) => {
     const authPage = new AuthPage(page);

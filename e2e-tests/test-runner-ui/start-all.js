@@ -95,7 +95,7 @@ function generateHubHTML() {
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Tests E2E — Hub</title>
+  <title>Tests E2E - Hub</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1117;color:#e2e8f0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;padding:40px 20px}
@@ -116,11 +116,11 @@ function generateHubHTML() {
 </head>
 <body>
   <div>
-    <h1><span>🎭</span> Tests E2E — Hub</h1>
+    <h1><span>🎭</span> Tests E2E - Hub</h1>
     <p class="subtitle">Cliquez sur une app pour ouvrir son interface de test dédiée</p>
   </div>
   <div class="grid">${cards}</div>
-  <div class="footer">Chaque app est un processus isolé — aucune interférence possible</div>
+  <div class="footer">Chaque app est un processus isolé - aucune interférence possible</div>
 </body>
 </html>`;
 }
@@ -145,7 +145,7 @@ function proxyRequest(req, res, targetPort, targetPath) {
 
   proxyReq.on('error', () => {
     if (!res.headersSent) { res.writeHead(502); }
-    res.end('App server not ready yet — retry in a second');
+    res.end('App server not ready yet - retry in a second');
   });
 
   req.pipe(proxyReq, { end: true });
@@ -234,7 +234,7 @@ proxy.on('error', err => {
 });
 
 proxy.listen(PROXY_PORT, () => {
-  console.log('\n🎭 Tests E2E — Proxy démarré\n');
+  console.log('\n🎭 Tests E2E - Proxy démarré\n');
   console.log(`   Hub  → http://localhost:${PROXY_PORT}`);
   APPS.forEach(({ key, label }) => {
     console.log(`   ${label.padEnd(22)} → http://localhost:${PROXY_PORT}/${key}/`);

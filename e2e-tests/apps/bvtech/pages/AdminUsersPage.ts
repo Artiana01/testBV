@@ -1,7 +1,7 @@
 /**
  * apps/bvtech/pages/AdminUsersPage.ts
  * --------------------------------------
- * Page Object — Gestion des utilisateurs (admin)
+ * Page Object - Gestion des utilisateurs (admin)
  * Couvre : liste des utilisateurs, modification, recherche
  */
 
@@ -130,7 +130,7 @@ export class AdminUsersPage extends BasePage {
       await saveBtn.first().click();
       await this.page.waitForLoadState('domcontentloaded');
     } else {
-      console.log('ℹ️  Bouton save non trouvé — formulaire peut-être non ouvert');
+      console.log('ℹ️  Bouton save non trouvé - formulaire peut-être non ouvert');
     }
   }
 

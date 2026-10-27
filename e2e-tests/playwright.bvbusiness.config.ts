@@ -68,7 +68,7 @@ export default defineConfig({
       },
     },
 
-    // === Projet : Flux login — storageState actif pour les tests dashboard (02.7-02.10)
+    // === Projet : Flux login - storageState actif pour les tests dashboard (02.7-02.10)
     // Les tests formulaire (02.1-02.6) écrasent le storageState via test.use() dans le fichier
     {
       name: 'bvbusiness-login-flow',
