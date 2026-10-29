@@ -9,7 +9,7 @@
  * Exécuté avec la session Direction (accès complet à la création de chantier).
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../test';
 import { ChantiersPage } from '../pages/ChantiersPage';
 
 test.describe('BuildNivo - 03. Chantiers, zones & lots', () => {

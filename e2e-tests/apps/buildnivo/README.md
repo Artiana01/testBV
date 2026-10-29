@@ -1,4 +1,46 @@
-# Tests BuildNivo - avant-projet et devis IA
+# Tests BuildNivo
+
+La recette complète se lance depuis `e2e-tests` :
+
+```powershell
+npm run test:buildnivo
+npm run test:buildnivo:report
+```
+
+Les modules s'ouvrent depuis le registre **Chantiers**, puis par les liens de
+l'interface. Ce parcours charge le contexte et les droits du chantier ; sur dev,
+un accès direct à certains modules peut afficher « Aucun projet rattaché ».
+`ModulePage` sélectionne explicitement **Résidence Itaosy**. `openModuleAs` le
+privilégie si le profil y est rattaché et conserve sinon le chantier autorisé du profil.
+`revisit` remet le formulaire à zéro par navigation dans l'interface. Les tests de
+refus d'accès conservent leurs accès directs aux routes interdites.
+
+Les sessions expirées sont renouvelées avec le rôle demandé. Les erreurs de
+passerelle 502/503/504 à la navigation sont retentées une fois ; une panne persistante
+fait échouer le scénario avec son statut HTTP. Les assertions métier restent actives.
+Les fichiers partagés dans `fixtures.ts` sont un JPEG décodable et un PDF d'une page.
+Les profils navigateur, fichiers temporaires et caches des workers sont placés dans `e2e-tests/.tmp-buildnivo/`
+(ignoré par Git), sur le disque du dépôt plutôt que sur le disque système.
+
+Les tests qui créent des chantiers importent `test` depuis `../test`. Cette fixture
+enregistre les identifiants renvoyés à la création et les supprime à la fin du test,
+y compris après un échec ou un renommage. Une suppression refusée fait échouer le
+nettoyage. Les tests Finances créent leur propre chantier temporaire ; ils ne dépendent
+plus des données laissées par une exécution précédente. Le parcours Reprise conserve
+son chantier pendant ses étapes liées, puis le supprime dans `afterAll`.
+
+Pour les anciens chantiers accumulés : `npm run cleanup:buildnivo`. Pour un inventaire
+seul sous PowerShell : `$env:DRY_RUN='1'; npm run cleanup:buildnivo` (remettre ensuite
+`$env:DRY_RUN='0'`). Seuls les noms E2E reconnus sont ciblés ; les chantiers de démo
+sont conservés. Si le compte Salarié dépend encore d'un ancien chantier E2E, son compte
+existant est rattaché à Résidence Itaosy en Ouvrier avant la suppression.
+
+Les contrôles d'audit vérifient une session authentifiée, le refus HTTP 403 de
+`/api/activity-logs` et le refus final de la console (redirection ou message explicite).
+La garde cliente peut afficher brièvement son titre avant de rediriger : ces contrôles
+ne mesurent pas l'absence de ce flash d'interface.
+
+## Avant-projet et devis IA
 
 Les suites sont disponibles dans le lanceur BuildNivo (`npm run start:buildnivo`),
 dans la suite complète (`npm run test:buildnivo`) et séparément :

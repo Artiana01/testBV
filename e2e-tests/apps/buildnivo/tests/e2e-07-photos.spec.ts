@@ -6,10 +6,8 @@
  */
 
 import { test, expect } from '@playwright/test';
-import * as os from 'os';
-import * as path from 'path';
-import * as fs from 'fs';
 import { ModulePage } from '../pages/ModulePage';
+import { JPEG } from '../fixtures';
 
 test.describe('BuildNivo - 08. Photos & problèmes', () => {
 
@@ -28,20 +26,21 @@ test.describe('BuildNivo - 08. Photos & problèmes', () => {
     await mod.dismissOnboardingTour();
     await page.waitForTimeout(800);
 
-    const fileInput = page.locator('input[type="file"]').first();
-    const hasFileInput = await fileInput.count() > 0;
-    test.skip(!hasFileInput, 'PHOTO-03 - champ d\'upload de fichier introuvable après clic sur "Ajouter une photo".');
-
-    const fakeExePath = path.join(os.tmpdir(), `buildnivo-e2e-fake-${Date.now()}.exe`);
-    fs.writeFileSync(fakeExePath, Buffer.from('MZ-fake-executable-for-e2e-test'));
-
-    await fileInput.setInputFiles(fakeExePath).catch(() => {});
-    await page.waitForTimeout(1500);
-
-    const errorMsg = page.getByText(/format.*(non supporté|invalide|accepté)|type de fichier|jpeg|jpg|png/i);
-    await expect(errorMsg.first()).toBeVisible({ timeout: 10_000 });
-
-    fs.unlinkSync(fakeExePath);
+    const modal = page.locator('.fixed.inset-0').filter({ hasText: 'Ajouter une photo de chantier' });
+    const fileInput = modal.locator('input[type="file"]');
+    await expect(fileInput).toBeAttached();
+    await fileInput.setInputFiles({
+      name: 'interdit.exe', mimeType: 'application/x-msdownload',
+      buffer: Buffer.from('MZ-fake-executable-for-e2e-test'),
+    });
+    // Le fichier non image est écarté à la sélection. La soumission explique
+    // ensuite qu'aucune photo valide n'a été ajoutée au relevé.
+    await modal.getByPlaceholder(/cloisons R\+2/i).fill('E2E fichier interdit');
+    await modal.getByRole('button', { name: 'Enregistrer la photo', exact: true }).click();
+    await expect(modal.getByText('Ajoutez au moins une photo au relevé.', { exact: true }))
+      .toBeVisible({ timeout: 10_000 });
+    await expect(modal).toBeVisible();
+    await expect(modal.locator('img')).toHaveCount(0);
   });
 
   test('PHOTO-01 - Upload d\'une photo JPEG valide', async ({ page }) => {
@@ -52,32 +51,18 @@ test.describe('BuildNivo - 08. Photos & problèmes', () => {
     await mod.dismissOnboardingTour();
     await page.waitForTimeout(800);
 
-    const fileInput = page.locator('input[type="file"]').first();
-    const hasFileInput = await fileInput.count() > 0;
-    test.skip(!hasFileInput, 'PHOTO-01 - champ d\'upload de fichier introuvable après clic sur "Ajouter une photo".');
-
-    // Un JPEG minimal valide (en-tête JFIF) suffit à passer la validation de format.
-    const jpegPath = path.join(os.tmpdir(), `buildnivo-e2e-photo-${Date.now()}.jpg`);
-    const minimalJpeg = Buffer.from([
-      0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
-      0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0xff, 0xd9,
-    ]);
-    fs.writeFileSync(jpegPath, minimalJpeg);
-
-    await fileInput.setInputFiles(jpegPath).catch(() => {});
-    await page.waitForTimeout(2000);
-
-    const validateBtn = await mod.findActionButton(/enregistrer|valider|publier|confirmer/i);
-    if (validateBtn) {
-      await validateBtn.click();
-      await page.waitForTimeout(1500);
-    }
-
-    // Pas de message d'erreur de format après upload d'un JPEG
-    const errorMsg = page.getByText(/format.*(non supporté|invalide)/i);
-    await expect(errorMsg.first()).not.toBeVisible({ timeout: 5_000 }).catch(() => {});
-
-    fs.unlinkSync(jpegPath);
+    const modal = page.locator('.fixed.inset-0').filter({ hasText: 'Ajouter une photo de chantier' });
+    const title = `Photo E2E ${Date.now()}`;
+    await modal.getByPlaceholder(/cloisons R\+2/i).fill(title);
+    await modal.locator('input[type="file"]').setInputFiles({
+      name: `${title}.jpg`, mimeType: 'image/jpeg', buffer: JPEG,
+    });
+    await modal.locator('select').filter({
+      has: page.locator('option', { hasText: 'Bâtiment Principal' }),
+    }).selectOption({ label: 'Bâtiment Principal' });
+    await modal.getByRole('button', { name: 'Enregistrer la photo', exact: true }).click();
+    await expect(modal).toBeHidden({ timeout: 30_000 });
+    await expect(page.getByText(title, { exact: true })).toBeVisible({ timeout: 15_000 });
   });
 
 });

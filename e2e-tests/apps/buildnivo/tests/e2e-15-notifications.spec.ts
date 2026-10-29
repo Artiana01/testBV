@@ -37,16 +37,7 @@ test.describe('BuildNivo - 16. Notifications', () => {
 
     const markAllReadBtn = page.getByRole('button', { name: /tout marquer comme lu/i })
       .or(page.getByText(/tout marquer comme lu/i));
-    const hasBtn = await markAllReadBtn.first().isVisible({ timeout: 5_000 }).catch(() => false);
-    // Confirmé (inspection live, 2026-09-23) : le panneau "Alertes prioritaires" affiche de
-    // nombreuses notifications réelles (changements de statut de tâche, documents, visas...)
-    // mais ne contient aucun texte "marquer" nulle part dans tout l'arbre d'accessibilité de la
-    // page - pas un souci de sélecteur, aucune action de lecture groupée trouvée dans l'UI.
-    test.skip(!hasBtn,
-      'NOTIF-02 - aucun contrôle "Tout marquer comme lu" trouvé dans le panneau de notifications, ' +
-      'même avec de nombreuses notifications réelles affichées - possible absence de cette ' +
-      'fonctionnalité, à vérifier manuellement.'
-    );
+    await expect(markAllReadBtn.first(), 'Action de lecture groupée des notifications').toBeVisible({ timeout: 5_000 });
 
     const readAll = page
       .waitForResponse(r => r.request().method() === 'PATCH' && /\/api\/notifications\/read-all/.test(r.url()), { timeout: 15_000 })
@@ -54,13 +45,10 @@ test.describe('BuildNivo - 16. Notifications', () => {
     await markAllReadBtn.first().click();
     const readAllResponse = await readAll;
 
-    // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-10-07, 4 essais sur 2 runs) - PAS un problème de
-    // test : PATCH /api/notifications/read-all répond 503 ; le compteur reste inchangé, même après
-    // rechargement. Le test se remet à tourner tout seul dès que l'API répond sans erreur serveur.
-    test.fixme(!!readAllResponse && readAllResponse.status() >= 500,
-      `NOTIF-02 - PATCH /api/notifications/read-all répond ${readAllResponse?.status()} : « Tout marquer ` +
-      'comme lu » n\'est pas pris en compte côté serveur (anomalie applicative réelle, pas un défaut de ce test).'
-    );
+    // Une erreur serveur doit faire échouer le contrôle, y compris le 503 constaté
+    // précédemment sur dev, au lieu de transformer cette anomalie en test ignoré.
+    expect(readAllResponse, 'Réponse à PATCH /api/notifications/read-all').not.toBeNull();
+    expect(readAllResponse!.ok(), `Lecture groupée des notifications : HTTP ${readAllResponse!.status()}`).toBeTruthy();
     await page.waitForTimeout(1000);
 
     const badge = page.locator('button[aria-label="Notifications"] >> text=/^\\d+$/');

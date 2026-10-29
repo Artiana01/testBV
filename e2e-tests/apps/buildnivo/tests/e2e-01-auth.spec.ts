@@ -112,13 +112,14 @@ test.describe('BuildNivo - 01. Authentification & compte', () => {
     }
 
     const throttleMsg = page.getByText(/trop de tentatives|too many|réessayer plus tard|patientez|bloqué/i);
-    const isThrottled = await throttleMsg.first().isVisible({ timeout: 8_000 }).catch(() => false);
+    // Le dernier refus de connexion arrive de façon asynchrone. isVisible({ timeout })
+    // lit seulement l'état courant et pouvait ignorer le test avant la réponse serveur.
+    const isThrottled = await throttleMsg.first().waitFor({ state: 'visible', timeout: 8_000 })
+      .then(() => true).catch(() => false);
 
-    test.skip(!isThrottled,
-      'AUTH-06 - aucun message de throttle détecté après 7 tentatives : soit le seuil est plus élevé, ' +
-      'soit le rate limiting n\'est pas encore implémenté côté BuildNivo (à consigner comme anomalie potentielle).'
-    );
-    expect(isThrottled).toBeTruthy();
+    expect(isThrottled,
+      'AUTH-06 - un message de limitation doit apparaître après les 7 tentatives de connexion incorrectes.'
+    ).toBeTruthy();
 
     // Ce test déclenche volontairement le throttle du compte DIRECTION_EMAIL - sans
     // dissipation avant la fin, le tout prochain test à utiliser ce compte (une autre

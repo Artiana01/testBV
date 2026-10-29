@@ -58,14 +58,14 @@ async function openStripePortal(page: Page): Promise<void> {
   // arrive parfois bien après 20s alors que la page est déjà là - le vrai signal de
   // disponibilité est le bloc abonnement attendu juste après.
   await page.waitForURL(/stripe\.com/i, { timeout: 45_000, waitUntil: 'commit' });
-  await page.waitForLoadState('networkidle', { timeout: 30_000 }).catch(() => {});
   // Le portail Stripe affiche d'abord une coquille (logo + bandeau "Sandbox"/"Environnement de
   // test") avant que son contenu réel (abonnement, moyen de paiement...) ne s'hydrate quelques
   // secondes après - 'networkidle' seul résout trop tôt (observé : capture d'écran de page blanche
   // juste après). "Powered by Stripe" fait partie du pied de page statique de la coquille
   // elle-même, donc PAS un bon indicateur - on attend plutôt le bloc abonnement, qui n'apparaît
-  // qu'une fois le contenu réel monté.
-  await page.getByText(RE_CURRENT_SUB).waitFor({ state: 'visible', timeout: 60_000 });
+  // qu'une fois le contenu réel monté. Les scripts tiers peuvent conserver une connexion
+  // ouverte ; attendre ce contenu directement évite un délai networkidle sans utilité.
+  await page.getByText(RE_CURRENT_SUB).waitFor({ state: 'visible', timeout: 90_000 });
 }
 
 interface PortalPlan { index: number; name: string; price: number; current: boolean; selectable: boolean }
@@ -122,6 +122,8 @@ async function confirmPlan(page: Page, plan: PortalPlan): Promise<void> {
 test.describe('BuildNivo - 17. Billing (Stripe Customer Portal)', () => {
 
   test('Scénario 1 - Carte Abonnement sur /parametres et accès au portail Stripe', async ({ browser }) => {
+    // La connexion éventuelle et le chargement des scripts Stripe sont successifs.
+    test.setTimeout(180_000);
     const { context, page } = await openModuleAs(browser, 'tenant-owner', '/parametres');
 
     // Pastille verte "Abonnement actif"
@@ -175,7 +177,10 @@ test.describe('BuildNivo - 17. Billing (Stripe Customer Portal)', () => {
   });
 
   test('Scénario 3 - Badge "Votre plan actuel" sur /tarifs', async ({ browser }) => {
-    const { context, page } = await openModuleAs(browser, 'tenant-owner', '/tarifs');
+    // /tarifs est une page publique sans sélecteur de chantier. Préparer la session
+    // dans le shell authentifié, puis ouvrir cette page sans y attendre ce sélecteur.
+    const { context, page } = await openModuleAs(browser, 'tenant-owner', '/parametres');
+    await page.goto('/tarifs', { waitUntil: 'domcontentloaded', timeout: 45_000 });
     await page.waitForTimeout(2_000);
 
     // ANOMALIE OBSERVÉE (inspection live, 2026-09-23) : le badge "Votre plan actuel" apparaît sur

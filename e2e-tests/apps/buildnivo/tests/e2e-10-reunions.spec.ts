@@ -7,7 +7,7 @@
 
 import { test, expect } from '@playwright/test';
 import { ModulePage } from '../pages/ModulePage';
-import { openModuleAs, isoDateInDays } from '../pages/RoleSession';
+import { openModuleAs, revisit, isoDateInDays } from '../pages/RoleSession';
 
 test.describe('BuildNivo - 11. Réunions & comptes rendus', () => {
 
@@ -47,7 +47,7 @@ test.describe('BuildNivo - 11. Réunions & comptes rendus', () => {
     await expect(dialog).toBeHidden({ timeout: 15_000 });
 
     // Relire depuis le serveur pour vérifier que la réunion et ses convocations sont persistées.
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await revisit(page, '/reunions');
     const meeting = page.getByRole('button', { name: new RegExp(`Réunion de chantier n°\\d+ .*\\(${heure}\\)`) });
     await expect(meeting).toBeVisible({ timeout: 15_000 });
     await meeting.click();

@@ -58,33 +58,38 @@ test.describe('BuildNivo - 23. Projets', () => {
     await expect(page.getByText('Aucun projet pour ces critères.')).toBeVisible({ timeout: 15_000 });
   });
 
-  test('PRJ-03 - "Nouveau projet" : formulaire par sections (identification, société, localisation, opération, unités), annulation sans création', async () => {
+  test('PRJ-03 - "Nouveau projet" : formulaire par sections (identification, société, localisation, opération, taxe), annulation sans création', async () => {
     await revisit(page, '/projets');
     await page.getByRole('button', { name: 'Nouveau projet' }).click();
 
     // "Nouveau projet" s'ouvre en pleine page (titre de niveau 1), pas en modale.
     await expect(page.getByRole('heading', { name: 'Nouveau projet', level: 1 })).toBeVisible({ timeout: 20_000 });
     const form = page.getByRole('main');
-    for (const section of ['Identification', 'Société', 'Localisation et devise', 'Opération', 'Unités et taxes']) {
+    for (const section of ['Identification', 'Société', 'Localisation et devise', 'Opération', 'Taxe']) {
       await expect(form.getByRole('heading', { name: section, exact: true }), `Section "${section}"`).toBeVisible();
     }
-    for (const label of [
-      'Nom du projet *', 'Référence unique *', 'Rôle de la société sur ce projet *', 'Client (maître d\'ouvrage)',
-      'Société porteuse', 'Adresse', 'Pays *', 'Devise *', 'Type d\'opération', 'Date cible', 'Budget cible',
-      'Description', 'Unité de surface', 'Décimales de calcul', 'Taxe applicable',
-    ]) {
-      await expect(form.getByText(label, { exact: true }).first(), `Champ "${label}"`).toBeVisible();
+    for (const [controlRole, label] of [
+      ['textbox', 'Nom du projet'], ['textbox', 'Référence unique'],
+      ['combobox', 'Rôle de la société sur ce projet'], ['combobox', 'Client (maître d\'ouvrage)'],
+      ['combobox', 'Responsable'], ['combobox', 'Société porteuse'], ['textbox', 'Localisation'],
+      ['combobox', 'Pays'], ['combobox', 'Devise'], ['textbox', 'Type d\'opération'],
+      ['textbox', 'Date cible'], ['textbox', 'Budget cible'], ['textbox', 'Description'],
+      ['combobox', 'Taxe applicable'],
+    ] as const) {
+      await expect(form.getByRole(controlRole, { name: label, exact: true }), `Champ "${label}"`).toBeVisible();
     }
     // La référence est proposée automatiquement (modifiable avant création).
-    await expect(form.getByLabel('Référence unique *')).toHaveValue(/^[A-Z]{2,}-\d{4}-\d+/);
+    await expect(form.getByRole('textbox', { name: 'Référence unique', exact: true })).toHaveValue(/^[A-Z]{2,}-\d{4}-\d+/);
     await expect(form.getByText('Proposée, modifiable avant création')).toBeVisible();
 
     // Le rôle de la société sur le projet adapte le formulaire et les écrans.
-    const role = form.locator('#np-business_role');
+    const role = form.getByRole('combobox', { name: 'Rôle de la société sur ce projet', exact: true });
     for (const option of ['Promoteur', 'Maître d\'ouvrage', 'Maître d\'œuvre', 'Entreprise de travaux']) {
       await expect(role.locator('option', { hasText: option })).toHaveCount(1);
     }
     await expect(form.getByRole('button', { name: '+ Ajouter une société' })).toBeVisible();
+    await expect(form.getByRole('group', { name: 'Origine de la taxe', exact: true })).toBeVisible();
+    await expect(form.getByRole('radio', { name: 'Taxe de la société', exact: true })).toBeChecked();
     await expect(form.getByRole('button', { name: 'Créer le projet' })).toBeVisible();
 
     // Annuler ramène au registre sans rien créer.

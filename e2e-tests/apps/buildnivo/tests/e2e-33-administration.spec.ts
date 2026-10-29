@@ -15,7 +15,7 @@
  */
 
 import { test, expect, BrowserContext, Page } from '@playwright/test';
-import { openModuleAs } from '../pages/RoleSession';
+import { openModuleAs, revisit } from '../pages/RoleSession';
 import { getRole } from '../roles';
 
 async function openAdminPage(page: Page, link: RegExp | string, url: RegExp) {
@@ -36,7 +36,7 @@ test.describe('BuildNivo - 33. Administration plateforme (Superadmin)', () => {
   test.afterAll(async () => { await context?.close(); });
 
   test.beforeEach(async () => {
-    await page.goto('/chantiers', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await revisit(page, '/chantiers');
     await expect(page.getByRole('link', { name: 'Dashboard admin' })).toBeVisible({ timeout: 30_000 });
   });
 
@@ -155,7 +155,7 @@ test.describe('BuildNivo - 33. Administration plateforme (Superadmin)', () => {
 test.describe('BuildNivo - 33. Administration plateforme : accès refusé hors Superadmin', () => {
   for (const route of ['/admin/dashboard', '/admin/packages', '/admin/rbac']) {
     test(`ADM-07 - Direction : ${route} refusé (redirigé hors de l'administration)`, async ({ browser }) => {
-      const { context, page } = await openModuleAs(browser, 'direction', route);
+      const { context, page } = await openModuleAs(browser, 'direction', route, { projectScoped: false });
       await expect(page).not.toHaveURL(new RegExp(`${route}$`), { timeout: 30_000 });
       await expect(page.getByRole('heading', { name: /dashboard admin|offres & tarification|rôles & permissions/i, level: 1 })).toHaveCount(0);
       await context.close();

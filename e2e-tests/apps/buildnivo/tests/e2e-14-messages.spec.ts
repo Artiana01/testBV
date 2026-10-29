@@ -48,6 +48,7 @@ test.describe('BuildNivo - 15. Messagerie & copilote IA', () => {
   // API, comme le ferait un client automatisé (conversation 1:1 avec Raivosoa Andria, session Direction).
   // Les messages créés sont supprimés ensuite.
   test('MSG-04 - Envoi de messages en rafale → throttle déclenché', async ({ page }) => {
+    test.setTimeout(180_000);
     const mod = new ModulePage(page, '/messages');
     await mod.goto();
     // Ouvrir la conversation déclenche un POST …/read, et un GET …/messages seulement si elle n'est
@@ -58,23 +59,42 @@ test.describe('BuildNivo - 15. Messagerie & copilote IA', () => {
 
     const { statuses, ids } = await page.evaluate(async ({ url, tag }) => {
       const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1] ?? '');
-      const results = await Promise.all(Array.from({ length: 60 }, async (_, i) => {
-        const body = new FormData();
-        body.append('text_content', `${tag} #${i}`);
-        const r = await fetch(url, { method: 'POST', credentials: 'include', body, headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf } });
-        const json = await r.json().catch(() => ({}));
-        return { status: r.status, id: json?.data?.id as string | undefined };
-      }));
+      const results: Array<{ status: number; id?: string }> = [];
+      // Des lots courts atteignent le seuil sans laisser soixante écritures en
+      // attente sur le serveur. Arrêter dès le premier refus de limitation.
+      for (let offset = 0; offset < 60; offset += 6) {
+        const batch = await Promise.all(Array.from({ length: 6 }, async (_, i) => {
+          const body = new FormData();
+          body.append('text_content', `${tag} #${offset + i}`);
+          const r = await fetch(url, {
+            method: 'POST', credentials: 'include', body,
+            headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf },
+            signal: AbortSignal.timeout(20_000),
+          }).catch(() => null);
+          const json = await r?.json().catch(() => ({}));
+          return { status: r?.status ?? 0, id: json?.data?.id as string | undefined };
+        }));
+        results.push(...batch);
+        if (batch.some(result => result.status === 429)) break;
+      }
       return { statuses: results.map(r => r.status), ids: results.map(r => r.id).filter(Boolean) as string[] };
     }, { url: messagesUrl, tag: `E2E rafale ${Date.now()}` });
 
     // Nettoyage des messages effectivement créés (conversation réelle d'un compte de démo).
     await page.evaluate(async (messageIds) => {
       const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1] ?? '');
-      await Promise.all(messageIds.map(id => fetch(`/api/messages/${id}`, { method: 'DELETE', credentials: 'include', headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf } })));
+      for (let offset = 0; offset < messageIds.length; offset += 6) {
+        await Promise.all(messageIds.slice(offset, offset + 6).map(id => fetch(`/api/messages/${id}`, {
+          method: 'DELETE', credentials: 'include',
+          headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf },
+          signal: AbortSignal.timeout(15_000),
+        })));
+      }
     }, ids);
 
     expect(statuses).toContain(429);
+    expect(statuses.filter(status => ![201, 429].includes(status)),
+      'La rafale doit produire des messages créés ou des refus 429, sans erreur serveur ni requête bloquée').toEqual([]);
   });
 
 });

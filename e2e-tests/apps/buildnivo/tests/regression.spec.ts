@@ -6,7 +6,7 @@
  * régressé. Session : Direction (projet "buildnivo-regression").
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../test';
 import { AppShellPage } from '../pages/AppShellPage';
 import { ModulePage } from '../pages/ModulePage';
 import { ChantiersPage } from '../pages/ChantiersPage';
@@ -43,8 +43,11 @@ test.describe('BuildNivo - RÉGRESSION - Parcours critiques', () => {
       const mod = new ModulePage(page, route);
       await mod.goto();
       await expect(page).not.toHaveURL(/\/connexion/);
-      // Aucune page blanche / erreur non gérée
-      await expect(page.getByText(/erreur inattendue|something went wrong|500/i)).not.toBeVisible({ timeout: 2_000 }).catch(() => {});
+      await expect(page.getByRole('main'), `Contenu du module ${route}`).toBeVisible();
+      // Les montants contenant "500" ne sont pas des erreurs serveur.
+      const errors = page.getByText(/erreur inattendue|something went wrong|internal server error|erreur interne du serveur/i)
+        .and(page.locator(':visible'));
+      await expect(errors, `Aucune erreur applicative sur ${route}`).toHaveCount(0, { timeout: 2_000 });
     }
   });
 
@@ -62,7 +65,10 @@ test.describe('BuildNivo - RÉGRESSION - Parcours critiques', () => {
       const mod = new ModulePage(page, route);
       await mod.goto();
       await expect(page).not.toHaveURL(/\/connexion/);
-      await expect(page.getByText(/erreur inattendue|something went wrong|500/i)).not.toBeVisible({ timeout: 2_000 }).catch(() => {});
+      await expect(page.getByRole('main'), `Contenu du module ${route}`).toBeVisible();
+      const errors = page.getByText(/erreur inattendue|something went wrong|internal server error|erreur interne du serveur/i)
+        .and(page.locator(':visible'));
+      await expect(errors, `Aucune erreur applicative sur ${route}`).toHaveCount(0, { timeout: 2_000 });
     }
   });
 

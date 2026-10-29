@@ -4,7 +4,8 @@
  * BUILDNIVO-304 - Guide pratique de la Reprise de chantier après création.
  */
 
-import { test, expect, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
+import { test, expect } from '../test';
 import { ChantiersPage } from '../pages/ChantiersPage';
 
 /**
@@ -144,6 +145,9 @@ test.describe('BuildNivo - BUILDNIVO-304. Guide de reprise après création', ()
   });
 
   test('Le guide réapparaît après Plus tard, la croix et Échap', async ({ page }) => {
+    // Trois créations complètes et deux rechargements dépassent le délai global
+    // lorsque chaque navigation prend plusieurs dizaines de secondes sur la recette.
+    test.setTimeout(240_000);
     let { guide } = await createProjectAndWaitForGuide(page);
     await guide.getByRole('button', { name: 'Plus tard' }).click();
     await expect(guide).toBeHidden();

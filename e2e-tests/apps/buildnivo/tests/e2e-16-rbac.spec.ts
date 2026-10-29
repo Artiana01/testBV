@@ -13,6 +13,8 @@ import { test, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import { AppShellPage } from '../pages/AppShellPage';
+import { LoginPage } from '../pages/LoginPage';
+import { getRole } from '../roles';
 
 const ADMIN_ONLY_PATHS = [
   '/equipes',          // Équipes & sociétés - gestion des utilisateurs/rôles
@@ -48,23 +50,34 @@ const SESSION_FILE = path.resolve(__dirname, '../auth/intervenant-simple.json');
 test.describe('BuildNivo - 02. Utilisateurs & rôles (RBAC)', () => {
 
   test.beforeEach(async ({ page }) => {
-    // Ce compte échoue actuellement à se connecter sur dev.buildnivo.com (voir
-    // e2e-02-roles-login.spec.ts) - sans session valide, ces tests ne feraient que
-    // constater qu'un visiteur anonyme est redirigé vers /connexion, ce qui n'a rien
-    // à voir avec du RBAC. On les suspend explicitement plutôt que de laisser un faux
-    // positif masquer l'absence réelle de compte "Intervenant sans droit particulier".
+    // Une session absente ou expirée ne doit pas valider le refus d'un rôle
+    // authentifié en constatant seulement le refus d'un visiteur anonyme.
     test.skip(!fs.existsSync(SESSION_FILE),
       'Session "Intervenant sans droit particulier" indisponible (identifiants refusés au login - ' +
       'voir e2e-02-roles-login.spec.ts) : les tests RBAC ne peuvent pas être exécutés avec un compte à ' +
       'privilèges réels tant que ce compte n\'est pas provisionné dans cet environnement.'
     );
-    await page.goto('/chantiers', { waitUntil: 'domcontentloaded', timeout: 30_000 });
-    const authenticated = !page.url().includes('/connexion');
-    test.skip(!authenticated, 'Session "Intervenant sans droit particulier" présente mais invalide/expirée (redirigé vers /connexion).');
+    await page.goto('/chantiers', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    // La requête doit partir du navigateur : Sanctum refuse le client HTTP sans
+    // les en-têtes d'origine même lorsque ses cookies de session sont valides.
+    const sessionStatus = () => page.evaluate(async () => (
+      await fetch('/api/auth/me', { credentials: 'same-origin', headers: { Accept: 'application/json' } })
+    ).status);
+    if (await sessionStatus() !== 200) {
+      await page.context().clearCookies();
+      const role = getRole('intervenant-simple');
+      const login = new LoginPage(page);
+      await login.login(role.login, role.password);
+      await login.verifyLoginSuccessWithRetry(role.login, role.password);
+      await page.context().storageState({ path: SESSION_FILE });
+      await page.goto('/chantiers', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    }
+    expect(await sessionStatus(), 'Session authentifiée Intervenant sans droit particulier').toBe(200);
   });
 
   for (const path of ADMIN_ONLY_PATHS) {
     test(`RBAC-03 - Accès à ${path} sans droit suffisant → refusé`, async ({ page }) => {
+      test.setTimeout(180_000);
       const shell = new AppShellPage(page);
       await page.goto(path, { waitUntil: 'domcontentloaded', timeout: 30_000 });
       await shell.dismissOnboardingTour();
@@ -73,9 +86,14 @@ test.describe('BuildNivo - 02. Utilisateurs & rôles (RBAC)', () => {
       // page simplement lente à se résoudre est comptée à tort comme "ni refusée ni redirigée".
       await page.waitForURL(u => !u.pathname.startsWith(path), { timeout: 20_000 }).catch(() => {});
       await shell.waitForSkeletonToClear(45_000);
+      // Ce spinner utilise un aria-label sans texte : getByText(/chargement/)
+      // ne le détecte pas et pouvait juger les droits avant la réponse de l'API.
+      await expect(page.getByRole('main').getByLabel('Chargement', { exact: true }))
+        .toBeHidden({ timeout: 45_000 });
       await page.waitForTimeout(1000);
 
       const redirectedAway = !new URL(page.url()).pathname.startsWith(path);
+      await expect(page, 'Le refus doit concerner un rôle connecté, pas une session expirée').not.toHaveURL(/\/connexion/);
       const deniedMsg = page.getByText(/403|accès refusé|non autorisé|forbidden|permission insuffisante/i);
       const isDenied = await deniedMsg.first().isVisible({ timeout: 3_000 }).catch(() => false);
       // Deux formes de chargement observées selon la page : squelette Tailwind

@@ -12,8 +12,10 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from '../../../shared/pages/BasePage';
 import { LoginPage } from './LoginPage';
+import * as path from 'path';
+import { gotoBuildNivo } from './navigation';
 
-const pagesWithTourHandler = new WeakSet<Page>();
+const pagesWithTourHandler = new WeakMap<Page, Locator>();
 
 export class AppShellPage extends BasePage {
 
@@ -24,11 +26,20 @@ export class AppShellPage extends BasePage {
     // bien après dismissOnboardingTour()). Le handler Playwright le ferme dès qu'il bloque une
     // action, quel que soit le moment. Une seule inscription par page.
     if (!pagesWithTourHandler.has(page)) {
-      pagesWithTourHandler.add(page);
       const tourSkip = page.getByRole('dialog')
         .filter({ has: page.getByRole('button', { name: /^Suivant$/i }) })
         .getByRole('button', { name: /^Passer$/i });
+      pagesWithTourHandler.set(page, tourSkip);
       void page.addLocatorHandler(tourSkip, async btn => { await btn.click().catch(() => {}); }).catch(() => {});
+    }
+  }
+
+  /** Permet aux tests du tour de l'observer et de le fermer eux-mêmes. */
+  async keepOnboardingTourOpen(): Promise<void> {
+    const skip = pagesWithTourHandler.get(this.page);
+    if (skip) {
+      await this.page.removeLocatorHandler(skip);
+      pagesWithTourHandler.delete(this.page);
     }
   }
 
@@ -78,7 +89,12 @@ export class AppShellPage extends BasePage {
     // réseau pendant 500ms" peut ne jamais survenir même quand la page est parfaitement
     // utilisable - d'où des timeouts de navigation à 45-90s sans rapport avec un vrai bug.
     // 'domcontentloaded' + attente du rendu réel (skeleton → contenu) est plus fiable.
-    await this.gotoTolerant(path);
+    // Le registre initialise le contexte des projets avant l'accès aux modules.
+    if (await this.getChantierSwitcher().isVisible()) {
+      await this.navigateWithinApp('/chantiers');
+    } else {
+      await this.gotoTolerant('/chantiers');
+    }
 
     // La session "direction.json" (créée une fois en global-setup) est réutilisée pendant
     // toute la durée des sections 03-16 + régression - 20 à 35 minutes de tests
@@ -89,30 +105,48 @@ export class AppShellPage extends BasePage {
     // à la volée avec le même compte plutôt que de laisser filer cette cascade. Tous les
     // appelants de gotoModule() (ModulePage, régression) utilisent exclusivement la
     // session Direction - pas de risque d'élever les privilèges d'un autre rôle ici.
-    // Le redirect vers /connexion (session expirée) se fait côté client, après une
-    // vérification API du token (GET /api/auth/me → 401) - donc APRÈS que
-    // 'domcontentloaded' soit déjà résolu. Juger l'URL immédiatement ici la capture
-    // trop tôt (avant le redirect) et manque systématiquement la détection. Mesuré en
-    // conditions réelles : le redirect survient ~4s après le 401 - 8s laisse une marge
-    // confortable sans pénaliser le cas sain (résout dès que l'URL change).
-    await this.page.waitForURL(/\/connexion/, { timeout: 8_000 }).catch(() => {});
+    // Une redirection cliente peut arriver longtemps après domcontentloaded.
+    // Vérifier directement la session, depuis le navigateur, évite de manquer
+    // l'expiration et d'attendre huit secondes à chaque navigation valide.
+    const readSessionStatus = async () => {
+      let status = 0;
+      await expect.poll(async () => {
+        status = await this.page.evaluate(async () => (
+          await fetch('/api/auth/me', {
+            credentials: 'same-origin', headers: { Accept: 'application/json' },
+            signal: AbortSignal.timeout(15_000),
+          })
+        ).status).catch(() => 0);
+        // Une indisponibilité 5xx ne signifie pas que le compte a perdu ses droits.
+        return status >= 500 ? 0 : status;
+      }, { message: 'Réponse du contrôle de session Direction', timeout: 45_000 }).toBeGreaterThan(0);
+      return status;
+    };
+    let sessionStatus = await readSessionStatus();
     // 2 tentatives : la reconnexion elle-même peut échouer de façon intermittente
     // (observé : le formulaire de /connexion met occasionnellement plus de 15s à
     // apparaître sous charge) - même logique de tolérance qu'ailleurs dans cette
     // suite (global-setup, PROJ-01) plutôt qu'un aléa ponctuel qui fait tout échouer.
-    for (let attempt = 1; attempt <= 2 && this.page.url().includes('/connexion'); attempt++) {
+    for (let attempt = 1; attempt <= 2 && (sessionStatus === 401 || this.page.url().includes('/connexion')); attempt++) {
       await this.reauthenticateAsDirection().catch(() => {});
-      await this.gotoTolerant(path);
-      await this.page.waitForURL(/\/connexion/, { timeout: 8_000 }).catch(() => {});
+      await this.gotoTolerant('/chantiers');
+      sessionStatus = await readSessionStatus();
     }
+    expect(sessionStatus, 'Session Direction authentifiée avant la navigation du module').toBe(200);
 
     await this.dismissOnboardingTour();
+    if (path === '/chantiers') {
+      // Le registre et sa création ne dépendent pas d'un chantier sélectionné.
+      // Sa liste paginée peut être prête même si le contexte global des projets
+      // est indisponible : attendre le sélecteur bloquait ces contrôles sans raison.
+      await expect(this.page.getByRole('heading', { name: 'Chantiers', exact: true, level: 1 }))
+        .toBeVisible({ timeout: 30_000 });
+      return;
+    }
+    await this.waitForChantierContext();
+    await this.navigateWithinApp(path);
     await this.waitForSkeletonToClear();
-    // Le tour peut se (re)déclencher avec un délai variable une fois le contenu réel monté
-    // (pas seulement juste après la navigation) - on le surveille encore quelques secondes
-    // pour éviter qu'une modale "Passer" apparue en retard n'intercepte un clic plus tard
-    // dans le test.
-    await this.watchForOnboardingTour();
+    // Les tours qui apparaissent ensuite sont pris en charge par le locator handler.
   }
 
   /**
@@ -125,9 +159,43 @@ export class AppShellPage extends BasePage {
    * Visas, Réunions, Documents, Messages, Notifications...), toutes avec ce message précis.
    * Toute autre erreur remonte normalement.
    */
+  /** Suit les liens de l'application pour conserver le contexte React du chantier. */
+  async navigateWithinApp(path: string): Promise<void> {
+    const initialPath = new URL(this.page.url()).pathname;
+    if (initialPath === path) return;
+    await this.dismissOnboardingTour();
+    const link = this.page.locator(`a[href="${path}"]`).first();
+    if (await link.count()) {
+      await Promise.all([
+        this.page.waitForURL(url => url.pathname !== initialPath, {
+          waitUntil: 'domcontentloaded', timeout: 30_000,
+        }),
+        link.click(),
+      ]);
+    } else {
+      // Les tests de refus d'accès ciblent volontairement des routes sans lien.
+      await this.gotoTolerant(path);
+    }
+    await this.dismissOnboardingTour();
+    await this.waitForSkeletonToClear();
+  }
+
+  /** Recharge le registre une fois si son contexte global n'a pas pu se charger. */
+  async waitForChantierContext(): Promise<void> {
+    const switcher = this.getChantierSwitcher();
+    // /api/projects peut répondre au-delà de 25 s sur dev. Recharger avant sa
+    // réponse annule le chargement valide et déclenche une seconde requête lourde.
+    const loaded = await switcher.waitFor({ state: 'visible', timeout: 45_000 })
+      .then(() => true).catch(() => false);
+    if (loaded) return;
+    await this.gotoTolerant('/chantiers');
+    await expect(switcher, 'Chargement du contexte des chantiers après rechargement du registre')
+      .toBeVisible({ timeout: 45_000 });
+  }
+
   private async gotoTolerant(path: string): Promise<void> {
     try {
-      await this.page.goto(path, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+      await gotoBuildNivo(this.page, path);
     } catch (err) {
       const msg = (err as Error)?.message ?? '';
       const interruptedByLogin = /interrupted by another navigation/i.test(msg) && /\/connexion/.test(msg);
@@ -136,11 +204,13 @@ export class AppShellPage extends BasePage {
   }
 
   private async reauthenticateAsDirection(): Promise<void> {
+    await this.page.context().clearCookies();
     const email = process.env.DIRECTION_EMAIL ?? 'harenakely@test.test';
     const password = process.env.DIRECTION_PASSWORD ?? 'Harena@123!!';
     const login = new LoginPage(this.page);
     await login.login(email, password);
-    await expect(this.page).not.toHaveURL(/\/connexion/, { timeout: 45_000 }).catch(() => {});
+    await login.verifyLoginSuccessWithRetry(email, password);
+    await this.page.context().storageState({ path: path.resolve(__dirname, '../auth/direction.json') });
   }
 
   /**
@@ -158,7 +228,10 @@ export class AppShellPage extends BasePage {
     // résoudrait immédiatement (faux négatif : "pas de squelette" au lieu de "pas encore
     // rendu"), laissant passer une page encore vide.
     await this.page.waitForTimeout(600);
-    const skeleton = this.page.locator('[class*="animate-pulse"]').first();
+    // Les cartes d'alerte et les échéances dépassées utilisent aussi animate-pulse
+    // en permanence. Seuls les blocs sans texte du contenu sont des squelettes.
+    const skeleton = this.page.locator('main [class*="animate-pulse"]')
+      .filter({ hasText: /^\s*$/ }).first();
     await skeleton.waitFor({ state: 'hidden', timeout: timeoutMs }).catch(() => {});
     const spinner = this.page.getByText(/^chargement/i).first();
     await spinner.waitFor({ state: 'hidden', timeout: timeoutMs }).catch(() => {});
@@ -191,9 +264,9 @@ export class AppShellPage extends BasePage {
    * de ce compte sur un chantier fraîchement créé et vide, cassant en cascade les
    * scénarios qui dépendent de données existantes (achats, documents, réserves...).
    */
-  async ensureDemoChantierSelected(): Promise<void> {
+  async ensureDemoChantierSelected(required = true): Promise<void> {
     let switcher = this.getChantierSwitcher();
-    if (!(await switcher.isVisible({ timeout: 3_000 }).catch(() => false))) {
+    if (!(await switcher.waitFor({ state: 'visible', timeout: 15_000 }).then(() => true).catch(() => false))) {
       // Le sélecteur n'apparaît pas du tout sur cette page - observé de façon reproductible
       // (compte Direction, ~30 chantiers de test accumulés au fil des runs PROJ-01/régression,
       // jamais nettoyés) quand le "chantier actif" du compte pointe sur un chantier autre que
@@ -203,22 +276,37 @@ export class AppShellPage extends BasePage {
       // d'abord (où le sélecteur est, lui, toujours présent), on peut sélectionner Résidence
       // Itaosy puis revenir sur la page d'origine, qui affiche alors le bon contexte.
       const originalUrl = this.page.url();
-      await this.page.goto('/chantiers', { waitUntil: 'domcontentloaded', timeout: 45_000 }).catch(() => {});
+      await this.gotoTolerant('/chantiers');
       await this.dismissOnboardingTour();
       await this.waitForSkeletonToClear();
       switcher = this.getChantierSwitcher();
-      if (!(await switcher.isVisible({ timeout: 3_000 }).catch(() => false))) return;
-      await this.selectResidenceItaosy(switcher);
-      await this.page.goto(originalUrl, { waitUntil: 'domcontentloaded', timeout: 45_000 }).catch(() => {});
+      await expect(switcher, 'Liste des chantiers chargée').toBeVisible({ timeout: 45_000 });
+      await this.selectResidenceItaosy(switcher, required);
+      await this.navigateWithinApp(new URL(originalUrl).pathname);
       await this.dismissOnboardingTour();
       await this.waitForSkeletonToClear();
+      // Le retour recharge encore les projets : ne pas laisser les tests lire
+      // les droits transitoires « Aucun projet rattaché » avant ce chargement.
+      switcher = this.getChantierSwitcher();
+      await switcher.waitFor({ state: 'visible', timeout: 30_000 });
+      await this.selectResidenceItaosy(switcher, required);
       return;
     }
-    await this.selectResidenceItaosy(switcher);
+    await this.selectResidenceItaosy(switcher, required);
   }
 
-  private async selectResidenceItaosy(switcher: Locator): Promise<void> {
+  private async selectResidenceItaosy(switcher: Locator, required: boolean): Promise<void> {
     const current = await switcher.inputValue().catch(() => '');
+    const demo = switcher.locator('option').filter({ hasText: /résidence itaosy/i });
+    if (required) {
+      await expect(demo, 'Le chantier de démonstration Résidence Itaosy doit être proposé')
+        .toHaveCount(1, { timeout: 30_000 });
+    } else if (!(await demo.count())) {
+      // Certains profils, dont le Salarié, sont rattachés à un autre chantier.
+      // Conserver leur périmètre réel pour les contrôles de droits.
+      await expect(switcher, 'Un chantier rattaché au profil doit être sélectionné').not.toHaveValue('');
+      return;
+    }
     const options = await switcher.locator('option').all();
     for (const opt of options) {
       const text = (await opt.textContent()) ?? '';
@@ -226,6 +314,7 @@ export class AppShellPage extends BasePage {
         const value = await opt.getAttribute('value');
         if (value && value !== current) {
           await switcher.selectOption(value);
+          await expect(switcher).toHaveValue(value);
           await this.page.waitForLoadState('domcontentloaded').catch(() => {});
           await this.dismissOnboardingTour();
           await this.waitForSkeletonToClear();
@@ -251,6 +340,8 @@ export class AppShellPage extends BasePage {
   }
 
   async openNotifications(): Promise<void> {
+    await expect(this.getNotificationsButton(), 'Cloche des notifications chargée')
+      .toBeVisible({ timeout: 45_000 });
     await this.getNotificationsButton().click();
     await this.page.waitForTimeout(500);
   }

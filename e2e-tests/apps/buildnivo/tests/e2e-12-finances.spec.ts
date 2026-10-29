@@ -13,15 +13,10 @@
  * autres scénarios).
  */
 
-import { test, expect, Page, Locator } from '@playwright/test';
+import { Page, Locator } from '@playwright/test';
+import { test, expect } from '../test';
 import { ModulePage } from '../pages/ModulePage';
 import { AppShellPage } from '../pages/AppShellPage';
-
-async function firstTestChantierName(page: Page): Promise<string> {
-  const heading = page.getByRole('heading', { level: 3, name: /^E2E Chantier \d/ }).first();
-  await expect(heading).toBeVisible({ timeout: 15_000 });
-  return (await heading.textContent())!.trim();
-}
 
 async function openEditForm(page: Page, chantier: string): Promise<{ modal: Locator; budget: Locator }> {
   const card = page.locator('div')
@@ -48,23 +43,29 @@ test.describe('BuildNivo - 13. Finances & lots financiers', () => {
     await mod.verifyEmptyStateOrData();
   });
 
-  test('FIN-01 - Budget alloué au chantier : saisi dans la fiche chantier, reflété dans Finances', async ({ page }) => {
+  test('FIN-01 - Budget alloué au chantier : saisi dans la fiche chantier, reflété dans Finances', async ({ page, testChantier }) => {
+    test.setTimeout(180_000);
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
-    const chantier = await firstTestChantierName(page);
+    const chantier = testChantier.name;
 
     let { modal, budget } = await openEditForm(page, chantier);
     const target = Number(await budget.inputValue()) === 2_000_000 ? 3_000_000 : 2_000_000;
     await budget.fill(String(target));
-    // Après le PUT, l'app recharge la liste (GET /api/projects) de façon asynchrone : rouvrir
-    // le formulaire avant la fin de ce rechargement affiche encore l'ancienne valeur.
-    const saved = page.waitForResponse(r => r.request().method() === 'PUT' && /\/api\/projects\/[^/?]+$/.test(r.url()));
-    const refetched = page.waitForResponse(r => r.request().method() === 'GET' && /\/api\/projects(\?.*)?$/.test(r.url()));
-    await modal.getByRole('button', { name: 'Enregistrer' }).click();
-    const response = await saved;
+    // Après le PUT, deux listes se rechargent : la page courante et le contexte global.
+    // Le formulaire lit ce dernier. Attendre seulement la réponse paginée permet de
+    // rouvrir le formulaire avec l'ancien budget pendant que le contexte global charge.
+    const [response, globalContext] = await Promise.all([
+      page.waitForResponse(r => r.request().method() === 'PUT' && /\/api\/projects\/[^/?]+$/.test(r.url()), { timeout: 45_000 }),
+      page.waitForResponse(r => {
+        const url = new URL(r.url());
+        return r.request().method() === 'GET' && url.pathname === '/api/projects' && !url.search;
+      }, { timeout: 45_000 }),
+      modal.getByRole('button', { name: 'Enregistrer' }).click(),
+    ]);
     expect(response.ok()).toBeTruthy();
     expect(JSON.parse(response.request().postData() ?? '{}').budget_total).toBe(target);
-    await refetched;
+    expect(globalContext.ok(), 'Rechargement du contexte global après sauvegarde du budget').toBeTruthy();
     await expect(modal).toBeHidden({ timeout: 15_000 });
 
     ({ modal, budget } = await openEditForm(page, chantier));
@@ -85,10 +86,10 @@ test.describe('BuildNivo - 13. Finances & lots financiers', () => {
     }
   });
 
-  test('FIN-03 - Saisie d\'un budget négatif → validation refusée', async ({ page }) => {
+  test('FIN-03 - Saisie d\'un budget négatif → validation refusée', async ({ page, testChantier }) => {
     const shell = new AppShellPage(page);
     await shell.gotoModule('/chantiers');
-    const chantier = await firstTestChantierName(page);
+    const chantier = testChantier.name;
 
     let { modal, budget } = await openEditForm(page, chantier);
     const original = await budget.inputValue();
@@ -96,10 +97,14 @@ test.describe('BuildNivo - 13. Finances & lots financiers', () => {
     await modal.getByRole('button', { name: 'Enregistrer' }).click();
 
     try {
-      const fieldInvalid = await budget.evaluate((el: HTMLInputElement) => !el.checkValidity()).catch(() => false);
-      const errorHint = await modal.getByText(/doit être positif|invalide|négatif|supérieur ou égal/i).first()
-        .isVisible({ timeout: 3_000 }).catch(() => false);
-      expect(fieldInvalid || errorHint).toBeTruthy();
+      // La validation peut provenir de l'API : attendre son rendu au lieu de lire
+      // l'état du formulaire immédiatement après le clic.
+      await expect.poll(async () => {
+        const fieldInvalid = await budget.evaluate((el: HTMLInputElement) => !el.checkValidity()).catch(() => false);
+        const errorHint = await modal.getByText(/doit être positif|invalide|négatif|supérieur ou égal|au moins|at least|greater than/i)
+          .first().isVisible().catch(() => false);
+        return fieldInvalid || errorHint;
+      }, { message: 'Le budget négatif doit être refusé', timeout: 15_000 }).toBe(true);
       // Le formulaire ne doit pas avoir été soumis.
       await expect(modal).toBeVisible();
       await modal.getByRole('button', { name: 'Annuler' }).click();

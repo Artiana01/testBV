@@ -11,8 +11,8 @@
  *   jamais le chantier de démo partagé.
  * Partie B - droits par rôle, en lecture seule sur le chantier de démo.
  *
- * NE LANCE PAS "Lancer l'analyse" : c'est un vrai appel à l'IA distante. À ce jour il est de toute
- * façon inaccessible - l'indexation des documents échoue côté serveur (voir REPRISE-04).
+ * NE LANCE PAS "Lancer l'analyse" : c'est un vrai appel à l'IA distante. Le contrôle s'arrête
+ * à l'indexation réussie du document et à l'activation du bouton.
  */
 
 import { test, expect, Browser, BrowserContext, Page } from '@playwright/test';
@@ -20,6 +20,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { openModuleAs } from '../pages/RoleSession';
 import { ChantiersPage } from '../pages/ChantiersPage';
+import { TestProjectCleaner } from '../test-data';
 
 const FIXTURES_DIR = path.resolve(__dirname, '../../../.tmp-reprise-fixtures');
 const DOC_NAME = `compte-rendu-e2e-${Date.now()}.txt`;
@@ -75,10 +76,13 @@ test.describe('BuildNivo - 22. Reprise de chantier', () => {
     let context: BrowserContext;
     let page: Page;
     let projectId: string | undefined;
+    let projectCleaner: TestProjectCleaner;
 
     test.beforeAll(async ({ browser }: { browser: Browser }) => {
       test.setTimeout(240_000);
-      ({ context, page } = await openModuleAs(browser, 'direction', '/chantiers'));
+      const session = await openModuleAs(browser, 'direction', '/chantiers');
+      ({ context, page } = session);
+      projectCleaner = new TestProjectCleaner(context);
 
       // Le serveur de recette a des coupures passagères (503 sur la création) : 3 tentatives.
       const chantiers = new ChantiersPage(page);
@@ -88,11 +92,20 @@ test.describe('BuildNivo - 22. Reprise de chantier', () => {
         await chantiers.fillNom(name);
         await chantiers.fillVille('Antananarivo');
         const created = page.waitForResponse(r => r.url().includes('/api/projects') && r.request().method() === 'POST');
+        const refreshedContext = page.waitForResponse(r => {
+          const url = new URL(r.url());
+          return r.request().method() === 'GET' && url.pathname === '/api/projects' && !url.search;
+        }, { timeout: 60_000 }).catch(() => null);
         await chantiers.submitCreate();
         const response = await created;
         if (response.ok()) {
           const json = await response.json().catch(() => ({}));
           projectId = json?.data?.id ?? json?.data?.data?.id;
+          expect(projectId, 'Identifiant du chantier créé pour la reprise').toBeTruthy();
+          const refreshed = await refreshedContext;
+          expect(refreshed, 'Rechargement du contexte du nouveau chantier').not.toBeNull();
+          expect(refreshed!.ok(), 'Contexte du nouveau chantier disponible').toBeTruthy();
+          await refreshed!.finished();
           break;
         }
         expect(response.status() >= 500 && attempt < 3, `Création du chantier de test refusée (HTTP ${response.status()})`).toBeTruthy();
@@ -102,20 +115,26 @@ test.describe('BuildNivo - 22. Reprise de chantier', () => {
 
       // Le guide de reprise s'ouvre après la création (voir e2e-21) : on le ferme.
       await page.getByRole('dialog').getByRole('button', { name: 'Plus tard' }).click({ timeout: 20_000 }).catch(() => {});
-      await page.goto('/reprise', { waitUntil: 'domcontentloaded' });
+      const [currentResponse] = await Promise.all([
+        page.waitForResponse(r =>
+          new URL(r.url()).pathname === `/api/projects/${projectId}/reprise/runs/current`
+          && r.request().method() === 'GET', { timeout: 60_000 }),
+        session.shell.navigateWithinApp('/reprise'),
+      ]);
+      expect([200, 204, 404], 'État initial de la reprise reçu avant les contrôles de la page')
+        .toContain(currentResponse.status());
+      await currentResponse.finished();
       await expectRepriseHeading(page);
     });
 
     test.afterAll(async () => {
       // Nettoyage : suppression du seul chantier créé par ce fichier (jamais d'autre).
-      if (page && projectId) {
-        await page.evaluate(async id => {
-          const xsrf = decodeURIComponent((document.cookie.match(/XSRF-TOKEN=([^;]+)/) ?? [])[1] ?? '');
-          await fetch(`/api/projects/${id}`, { method: 'DELETE', credentials: 'include', headers: { Accept: 'application/json', 'X-XSRF-TOKEN': xsrf } });
-        }, projectId).catch(() => {});
+      try {
+        if (projectCleaner && page) await projectCleaner.cleanup(page);
+      } finally {
+        await context?.close();
+        fs.rmSync(FIXTURES_DIR, { recursive: true, force: true });
       }
-      await context?.close();
-      fs.rmSync(FIXTURES_DIR, { recursive: true, force: true });
     });
 
     test('REPRISE-01 - Avant démarrage : invitation à reprendre le chantier, rôle Responsable Reprise à désigner', async () => {
@@ -138,7 +157,7 @@ test.describe('BuildNivo - 22. Reprise de chantier', () => {
     });
 
     test('REPRISE-02 - Démarrer la reprise ouvre l\'étape 1/4 "Documents" (analyse impossible sans document)', async () => {
-      const created = page.waitForResponse(r => /\/reprise\/runs$/.test(r.url()) && r.request().method() === 'POST');
+      const created = page.waitForResponse(r => /\/reprise\/runs$/.test(r.url()) && r.request().method() === 'POST', { timeout: 45_000 });
       await startButton(page).click();
       expect((await created).status(), 'La reprise doit être créée (POST /reprise/runs).').toBe(201);
 
@@ -212,16 +231,9 @@ test.describe('BuildNivo - 22. Reprise de chantier', () => {
         return (await launchAnalysis(page).isEnabled()) ? 'ready' : 'pending';
       }, { timeout: 90_000, intervals: [2_000] }).not.toBe('pending');
 
-      // ANOMALIE CONFIRMÉE sur dev.buildnivo.com (2026-10-08, tous les documents testés - .txt, .exe
-      // et les 15 PDF du chantier de démo) - PAS un problème de test : l'indexation échoue toujours avec
-      // "The document reference or integrity check is invalid." ; "Lancer l'analyse" reste donc
-      // désactivé et les étapes 2 à 4 (Analyse, Validation, Mise en service) sont inaccessibles. Le
-      // test se remet à tourner tout seul dès qu'un document s'indexe correctement.
-      test.fixme(await failed.isVisible(),
-        'REPRISE-05 - l\'indexation des documents échoue côté serveur ("The document reference or integrity ' +
-        'check is invalid.", constaté le 2026-10-08 sur tous les fichiers) : "Lancer l\'analyse" reste ' +
-        'désactivé, les étapes 2 à 4 sont inaccessibles. Anomalie applicative réelle, pas un défaut de ce test.'
-      );
+      // L'indexation fonctionne à nouveau : une régression doit faire échouer
+      // le contrôle plutôt que le transformer en test ignoré.
+      await expect(failed, 'Indexation du document sans erreur serveur').toBeHidden();
 
       await expect(launchAnalysis(page)).toBeEnabled();
       await expect(page.getByText(/1 sur 1 document\(s\) prêt\(s\)/)).toBeVisible();
@@ -283,7 +295,7 @@ test.describe('BuildNivo - 22. Reprise de chantier', () => {
 
       // 2) Confirmer crée une nouvelle reprise (étape 1/4) et archive la précédente.
       await restartButton(page).click();
-      const created = page.waitForResponse(r => /\/reprise\/runs$/.test(r.url()) && r.request().method() === 'POST');
+      const created = page.waitForResponse(r => /\/reprise\/runs$/.test(r.url()) && r.request().method() === 'POST', { timeout: 45_000 });
       await dialog.getByRole('button', { name: 'Remplacer la reprise' }).click();
       expect((await created).status(), 'La nouvelle reprise doit être créée.').toBe(201);
       await expect(dialog).toBeHidden();

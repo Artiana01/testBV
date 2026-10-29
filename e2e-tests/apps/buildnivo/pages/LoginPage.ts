@@ -10,6 +10,7 @@
 
 import { Page, expect } from '@playwright/test';
 import { BasePage } from '../../../shared/pages/BasePage';
+import { gotoBuildNivo } from './navigation';
 
 export class LoginPage extends BasePage {
 
@@ -29,7 +30,7 @@ export class LoginPage extends BasePage {
     // 'networkidle' est fragile sur cette app (websocket de messagerie/notifications toujours
     // ouvert, voir AppShellPage.gotoModule) : /connexion pouvait expirer à 45s sans aucun vrai
     // problème. On attend 'domcontentloaded', puis soit le formulaire, soit la redirection.
-    await this.page.goto('/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await gotoBuildNivo(this.page, '/connexion');
     const field = this.page.locator(this.loginInput);
     await Promise.race([
       field.waitFor({ state: 'visible', timeout: 30_000 }).catch(() => {}),
@@ -52,11 +53,11 @@ export class LoginPage extends BasePage {
   }
 
   async navigateToSignup(): Promise<void> {
-    await this.page.goto('/inscription', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await gotoBuildNivo(this.page, '/inscription');
   }
 
   async navigateToForgotPassword(): Promise<void> {
-    await this.page.goto('/connexion', { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    await gotoBuildNivo(this.page, '/connexion');
     const forgot = this.page.getByRole('button', { name: /mot de passe oublié/i });
     await forgot.waitFor({ state: 'visible', timeout: 30_000 });
     await this.waitForHydration();
@@ -90,7 +91,9 @@ export class LoginPage extends BasePage {
   }
 
   async submitLoginForm(): Promise<void> {
-    await this.page.locator(this.submitBtn).click();
+    // Le clic attend aussi une éventuelle navigation : lui laisser le même délai
+    // que la vérification de connexion, au lieu du délai d'action de 15 secondes.
+    await this.page.locator(this.submitBtn).click({ timeout: 45_000 });
     await this.page.waitForLoadState('domcontentloaded');
   }
 
@@ -170,7 +173,13 @@ export class LoginPage extends BasePage {
     // ignore cette option et renvoie l'état immédiat (piège classique de l'API). Il
     // faut .waitFor({ state: 'visible' }) pour un vrai polling jusqu'au timeout.
     const known = unconfirmedEmail.first().or(wrongCredentials.first());
-    const foundKnown = await known.waitFor({ state: 'visible', timeout: 30_000 }).then(() => true).catch(() => false);
+    const foundKnown = await Promise.race([
+      known.waitFor({ state: 'visible', timeout: 30_000 }).then(() => true).catch(() => false),
+      // Une connexion réussie peut rediriger après l'entrée dans cette méthode.
+      // Dans ce cas, il n'y a plus de blocage de compte à attendre.
+      this.page.waitForURL(url => !url.pathname.includes('/connexion'), { timeout: 30_000 })
+        .then(() => false).catch(() => false),
+    ]);
     if (!foundKnown) return undefined;
 
     if (await unconfirmedEmail.first().isVisible().catch(() => false)) {

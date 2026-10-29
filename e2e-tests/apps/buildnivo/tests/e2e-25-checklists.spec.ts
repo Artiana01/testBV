@@ -54,7 +54,7 @@ test.describe('BuildNivo - 25. Checklists métier', () => {
     await dialog.getByRole('button', { name: 'Ajouter une question' }).click();
     await expect(dialog.locator('input[type="text"]')).toHaveCount(before + 1);
 
-    await dialog.getByRole('button', { name: 'Close' }).click();
+    await dialog.getByLabel('Fermer', { exact: true }).click();
     await expect(dialog).toBeHidden();
     await context.close();
   });
@@ -65,7 +65,9 @@ test.describe('BuildNivo - 25. Checklists métier', () => {
     await expect(page.getByRole('button', { name: 'Gérer les modèles' })).toHaveCount(0);
 
     const detail = page.getByRole('button', { name: 'Détail' }).first();
-    test.skip(!(await detail.isVisible({ timeout: 10_000 }).catch(() => false)), 'CHK-03 - aucune checklist remplie à consulter.');
+    const hasDetail = await detail.waitFor({ state: 'visible', timeout: 10_000 })
+      .then(() => true).catch(() => false);
+    test.skip(!hasDetail, 'CHK-03 - aucune checklist remplie à consulter.');
     await detail.click();
 
     const dialog = page.getByRole('dialog').filter({ hasText: 'Questions' });
@@ -73,7 +75,7 @@ test.describe('BuildNivo - 25. Checklists métier', () => {
     for (const label of ['Corps de métier', 'Date', 'Rempli par', 'Statut', 'Questions']) {
       await expect(dialog.getByText(label, { exact: true }).first(), `Libellé "${label}"`).toBeVisible();
     }
-    await dialog.getByRole('button', { name: 'Fermer' }).click();
+    await dialog.getByRole('button', { name: 'Fermer', exact: true }).filter({ hasText: /^Fermer$/ }).click();
     await expect(dialog).toBeHidden();
     await context.close();
   });

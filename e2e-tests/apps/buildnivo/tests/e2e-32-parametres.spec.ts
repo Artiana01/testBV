@@ -35,23 +35,14 @@ test.describe('BuildNivo - 32. Paramètres', () => {
   });
 
   test('PARAM-02 - "Revoir la présentation des modules" relance le tour guidé', async ({ browser }) => {
-    const { context, page } = await openModuleAs(browser, 'direction', '/parametres');
+    const { context, page, shell } = await openModuleAs(browser, 'direction', '/parametres');
     await expect(page.getByRole('heading', { name: 'Mode découverte' })).toBeVisible({ timeout: 20_000 });
-    // Le shell (AppShellPage) ferme automatiquement le tour dès que "Passer" apparaît : il disparaît donc
-    // en quelques millisecondes. On l'observe via un MutationObserver posé avant le clic (dialogue avec "Suivant").
-    await page.evaluate(() => {
-      const w = window as unknown as { __tourSeen?: boolean };
-      w.__tourSeen = false;
-      new MutationObserver(() => {
-        const open = Array.from(document.querySelectorAll('[role="dialog"]')).some(d => /Suivant/.test(d.textContent ?? ''));
-        if (open) w.__tourSeen = true;
-      }).observe(document.body, { childList: true, subtree: true });
-    });
+    await shell.keepOnboardingTourOpen();
     await page.getByRole('button', { name: 'Revoir la présentation des modules' }).click();
-    await expect.poll(
-      () => page.evaluate(() => (window as unknown as { __tourSeen?: boolean }).__tourSeen === true),
-      { message: 'Le tour guidé doit se lancer après "Revoir la présentation des modules".', timeout: 15_000 },
-    ).toBe(true);
+    const tour = page.getByRole('dialog').filter({ has: page.getByRole('button', { name: 'Suivant', exact: true }) });
+    await expect(tour, 'Le tour guidé doit se lancer après la demande').toBeVisible({ timeout: 15_000 });
+    await tour.getByRole('button', { name: 'Passer', exact: true }).click();
+    await expect(tour).toBeHidden();
     await context.close();
   });
 });

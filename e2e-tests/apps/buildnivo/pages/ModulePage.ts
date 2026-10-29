@@ -29,6 +29,10 @@ export class ModulePage extends AppShellPage {
     // réserves...) - au cas où un test précédent (création de chantier) aurait fait
     // basculer le compte sur un chantier vide fraîchement créé.
     await this.ensureDemoChantierSelected();
+    // Après le détour éventuel par /chantiers, l'en-tête recharge les projets.
+    // Le titre peut déjà être visible alors que les droits du chantier ne sont pas prêts.
+    await expect(this.getChantierSwitcher(), 'Contexte du chantier chargé avant les contrôles du module')
+      .toBeVisible({ timeout: 30_000 });
   }
 
   async verifyLoaded(titleOrRegex: string | RegExp): Promise<void> {
@@ -43,7 +47,7 @@ export class ModulePage extends AppShellPage {
    */
   async findActionButton(pattern: RegExp): Promise<Locator | null> {
     const byText = this.page.getByRole('button', { name: pattern }).first();
-    if (await byText.isVisible({ timeout: 3_000 }).catch(() => false)) return byText;
+    if (await byText.waitFor({ state: 'visible', timeout: 3_000 }).then(() => true).catch(() => false)) return byText;
     return null;
   }
 

@@ -26,7 +26,8 @@ test.describe('BuildNivo - 27. Copilote IA', () => {
   test('COP-01 - Page Copilote : promesse (jamais sans validation), périmètre du rôle, questions suggérées', async () => {
     await revisit(page, '/copilote');
     await expect(page.getByRole('heading', { name: 'Copilote IA', level: 1 })).toBeVisible({ timeout: 20_000 });
-    await expect(page.getByText(/jamais sans votre validation/i)).toBeVisible();
+    await expect(page.getByText(/relisez les anomalies, tâches et entrées de journal proposées avant de les créer/i))
+      .toBeVisible();
     await expect(page.getByText(/ne répond qu'à partir des données auxquelles votre rôle donne accès/i).first()).toBeVisible();
     await expect(page.getByText(/répond en citant les documents du chantier/i)).toBeVisible();
 
@@ -66,11 +67,15 @@ test.describe('BuildNivo - 27. Copilote IA', () => {
     const dictation = page.getByPlaceholder(/dictez ou écrivez ici les informations du chantier/i);
     await expect(dictation).toBeVisible();
     await expect(page.getByRole('button', { name: 'Dicter' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Proposer des actions' })).toBeVisible();
+    const propose = page.getByRole('button', { name: 'Proposer des actions' });
+    await expect(propose).toBeVisible();
+    await expect(propose).toBeDisabled();
 
     // La zone accepte du texte (sans rien envoyer à l'IA).
     await dictation.fill('Observation E2E - ne pas envoyer');
     await expect(dictation).toHaveValue('Observation E2E - ne pas envoyer');
+    await expect(propose).toBeEnabled();
     await dictation.fill('');
+    await expect(propose).toBeDisabled();
   });
 });

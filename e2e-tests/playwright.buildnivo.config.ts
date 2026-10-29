@@ -6,7 +6,7 @@
  * sections fonctionnelles couvertes par apps/buildnivo/tests/e2e-*.spec.ts (une par module de la sidebar).
  *
  * Différences vs la config globale :
- *  - globalSetup : connexion des 13 comptes de démonstration (un par rôle
+ *  - globalSetup : connexion des comptes de recette configurés (un par rôle
  *    métier), sessions sauvegardées dans apps/buildnivo/auth/
  *  - testDir : uniquement les tests buildnivo
  *  - baseURL : https://dev.buildnivo.com
@@ -28,6 +28,15 @@ import { getRoles } from './apps/buildnivo/roles';
 // app (ex: tests bvtech lancés plus tôt dans le même terminal), dotenv ne l'écrase pas
 // par défaut : sans override, BuildNivo hériterait silencieusement de la mauvaise URL.
 dotenv.config({ path: path.resolve(__dirname, 'apps/buildnivo/.env'), override: true });
+
+// Les profils Chromium et les fichiers d'upload restent sur le disque du dépôt.
+// Le disque système Windows peut manquer d'espace pendant une recette complète.
+const BUILDNIVO_TEMP_DIR = path.resolve(__dirname, '.tmp-buildnivo');
+fs.mkdirSync(BUILDNIVO_TEMP_DIR, { recursive: true });
+process.env.TEMP = BUILDNIVO_TEMP_DIR;
+process.env.TMP = BUILDNIVO_TEMP_DIR;
+process.env.TMPDIR = BUILDNIVO_TEMP_DIR;
+process.env.PWTEST_CACHE_DIR = path.join(BUILDNIVO_TEMP_DIR, 'transform-cache');
 
 const AUTH_DIR = path.resolve(__dirname, 'apps/buildnivo/auth');
 

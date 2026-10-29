@@ -7,8 +7,15 @@
 import { defineConfig, devices } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import * as fs from 'fs';
 
 dotenv.config({ path: path.resolve(__dirname, 'apps/buildnivo/.env'), override: true });
+const tempDir = path.resolve(__dirname, '.tmp-buildnivo');
+fs.mkdirSync(tempDir, { recursive: true });
+process.env.TEMP = tempDir;
+process.env.TMP = tempDir;
+process.env.TMPDIR = tempDir;
+process.env.PWTEST_CACHE_DIR = path.join(tempDir, 'transform-cache');
 
 export default defineConfig({
   testDir: './apps/buildnivo/maintenance',

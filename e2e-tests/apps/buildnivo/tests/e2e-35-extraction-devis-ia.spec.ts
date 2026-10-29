@@ -69,7 +69,10 @@ test.describe('BuildNivo - 35. Extraction de devis par IA', () => {
     await expect(reopened.getByLabel('Désignation', { exact: true })).toHaveCount(1);
   });
 
-  test('DEVIA-05 - API simulée : progression, échec, sources et confirmation explicite du doublon corrigé', async () => {
+  test('DEVIA-05 - API simulée : progression, échec, sources et confirmation explicite du doublon corrigé', async ({ browser }) => {
+    // Une nouvelle page possède un cache React Query vide. Entrer par le registre
+    // conserve aussi le contexte projet, perdu lors d'un reload direct du chiffrage.
+    const { page, context: reviewContext } = await openAvantProjet(browser);
     const proposal = {
       id: 'e2e-quote-review', status: 'proposed', subject_type: 'quote', document_id: null,
       supplier_name: 'Entreprise E2E', reference: 'DEV-E2E-IA', quote_date: '2026-10-27',
@@ -102,9 +105,8 @@ test.describe('BuildNivo - 35. Extraction de devis par IA', () => {
       }
     });
     try {
-      // Recharger vide aussi le cache React Query : une navigation cliente peut
-      // conserver les devis réels et ne jamais appeler l'API interceptée.
-      await page.reload({ waitUntil: 'domcontentloaded' });
+      // Installer l'interception avant le premier chargement du chiffrage.
+      await openProjectTab(page, 'Chiffrage', 'chiffrage');
       const panel = page.getByTestId('quote-extractions');
       await expect(panel.getByRole('status')).toHaveText('Extraction IA en cours…', { timeout: 90_000 });
       await expect(panel.getByRole('alert')).toHaveText('Erreur IA simulée E2E');
@@ -136,6 +138,7 @@ test.describe('BuildNivo - 35. Extraction de devis par IA', () => {
     } finally {
       await closeProjectDialog(page);
       await page.unroute(endpoint);
+      await reviewContext.close();
     }
   });
 });

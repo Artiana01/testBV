@@ -76,8 +76,16 @@ test.describe('BuildNivo - 31. Équipes & sociétés', () => {
     for (const label of ['Adresse Email du salarié *', 'Prénom (optionnel)', 'Nom (optionnel)', 'Numéro de téléphone (optionnel)', 'Fonction / Rôle sur le chantier *', "Corps d'état / Métier principal *"]) {
       await expect(dialog.getByText(label, { exact: true }), `Champ "${label}"`).toBeVisible();
     }
+    const fonctionSelect = dialog.getByRole('combobox').filter({
+      has: page.locator('option', { hasText: /^Ouvrier/ }),
+    });
+    await expect(fonctionSelect, 'Sélection de la fonction sur le chantier').toBeVisible();
     for (const fonction of ['Ouvrier', 'Chef chantier', 'Conducteur', 'Responsable Reprise']) {
-      await expect(dialog.getByRole('button', { name: new RegExp(`^${fonction}`) }), `Fonction "${fonction}"`).toBeVisible();
+      const option = fonctionSelect.locator('option').filter({ hasText: new RegExp(`^${fonction}`) });
+      await expect(option, `Fonction "${fonction}"`).toHaveCount(1);
+      const value = await option.getAttribute('value');
+      await fonctionSelect.selectOption(value!);
+      await expect(fonctionSelect).toHaveValue(value!);
     }
     await expect(dialog.getByRole('button', { name: 'Inviter le salarié' })).toBeVisible();
 

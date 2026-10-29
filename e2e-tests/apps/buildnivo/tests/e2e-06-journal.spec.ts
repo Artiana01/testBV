@@ -32,6 +32,8 @@ test.describe('BuildNivo - 07. Journal de chantier', () => {
     await page.getByRole('button', { name: 'Nouvelle tâche' }).click();
     const dialog = page.getByRole('dialog', { name: 'Nouvelle tâche' });
     await dialog.getByPlaceholder(/reprendre l.enduit/i).fill(titre);
+    await dialog.locator('select').filter({ has: page.locator('option', { hasText: 'Non assigné' }) })
+      .selectOption({ label: 'Raivosoa Andria' });
     await dialog.locator('input[type="date"]').fill(isoDateInDays(7));
     await dialog.getByRole('button', { name: 'Créer la tâche' }).click();
     await expect(dialog).toBeHidden({ timeout: 15_000 });
@@ -40,7 +42,7 @@ test.describe('BuildNivo - 07. Journal de chantier', () => {
     await page.locator('article').filter({ hasText: titre })
       .getByRole('combobox', { name: 'Changer le statut' }).selectOption('Terminée').catch(() => {});
 
-    await page.goto('/journal', { waitUntil: 'domcontentloaded' });
+    await shell.navigateWithinApp('/journal');
     await shell.dismissOnboardingTour();
     await shell.waitForSkeletonToClear();
 
@@ -49,7 +51,8 @@ test.describe('BuildNivo - 07. Journal de chantier', () => {
     await expect.poll(async () => {
       const text = await page.locator('article').first().innerText().catch(() => '');
       if (!text.includes(entry)) {
-        await page.reload({ waitUntil: 'domcontentloaded' });
+        await shell.navigateWithinApp('/taches');
+        await shell.navigateWithinApp('/journal');
         await shell.waitForSkeletonToClear();
       }
       return text;

@@ -80,7 +80,9 @@ test.describe('BuildNivo - 24. Signalements d\'anomalie', () => {
     test('ANO-04 - Détail d\'un signalement : type, gravité, auteur, destinataire, statut, description, pièce jointe', async () => {
       await revisit(page, '/anomalies');
       const detail = page.getByRole('button', { name: 'Détail' }).first();
-      test.skip(!(await detail.isVisible({ timeout: 10_000 }).catch(() => false)), 'ANO-04 - aucun signalement à consulter sur ce chantier.');
+      const hasDetail = await detail.waitFor({ state: 'visible', timeout: 10_000 })
+        .then(() => true).catch(() => false);
+      test.skip(!hasDetail, 'ANO-04 - aucun signalement à consulter sur ce chantier.');
       await detail.click();
 
       const dialog = page.getByRole('dialog').filter({ hasText: 'Détail du signalement' });
@@ -88,7 +90,7 @@ test.describe('BuildNivo - 24. Signalements d\'anomalie', () => {
       for (const label of ['Type', 'Gravité', 'Auteur', 'Destinataire', 'Statut', 'Date', 'Description', 'Pièce jointe']) {
         await expect(dialog.getByText(label, { exact: true }).first(), `Libellé "${label}"`).toBeVisible();
       }
-      await dialog.getByRole('button', { name: 'Fermer' }).click();
+      await dialog.getByRole('button', { name: 'Fermer', exact: true }).filter({ hasText: /^Fermer$/ }).click();
       await expect(dialog).toBeHidden();
     });
   });

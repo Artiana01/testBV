@@ -23,6 +23,7 @@ debug-screenshots/
 *.zip
 archived-reports/
 .last-run.json
+.tmp-buildnivo/
 
 # OS and IDE files
 .DS_Store

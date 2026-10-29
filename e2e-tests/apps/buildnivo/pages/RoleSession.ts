@@ -9,12 +9,13 @@
  * suivants.
  */
 
-import { Browser, BrowserContext, Page } from '@playwright/test';
+import { Browser, BrowserContext, Page, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import { getRole } from '../roles';
 import { LoginPage } from './LoginPage';
 import { AppShellPage } from './AppShellPage';
+import { gotoBuildNivo } from './navigation';
 
 const AUTH_DIR = path.resolve(__dirname, '../auth');
 
@@ -24,29 +25,56 @@ export interface RoleModule {
   shell: AppShellPage;
 }
 
-export async function openModuleAs(browser: Browser, roleKey: string, modulePath: string): Promise<RoleModule> {
+export async function openModuleAs(
+  browser: Browser, roleKey: string, modulePath: string,
+  options: { projectScoped?: boolean } = {},
+): Promise<RoleModule> {
   const role = getRole(roleKey);
   const sessionFile = path.join(AUTH_DIR, role.session);
   const context = await browser.newContext(fs.existsSync(sessionFile) ? { storageState: sessionFile } : {});
   const page = await context.newPage();
   const shell = new AppShellPage(page);
 
-  await page.goto(modulePath, { waitUntil: 'domcontentloaded', timeout: 45_000 }).catch(() => {});
-  // La redirection vers /connexion d'une session expirée arrive côté client, après
-  // l'appel /api/auth/me - pas encore visible juste après domcontentloaded.
-  await page.waitForURL(/\/connexion/, { timeout: 8_000 }).catch(() => {});
-  if (page.url().includes('/connexion')) {
+  await gotoBuildNivo(page, '/chantiers');
+  // Sous charge, la redirection d'une session expirée peut dépasser huit secondes.
+  // Vérifier la session depuis le navigateur plutôt que déduire sa validité de l'URL.
+  // Le client HTTP Playwright n'envoie pas les en-têtes d'origine requis par Sanctum.
+  const readSessionStatus = () => page.evaluate(async () => (
+    await fetch('/api/auth/me', {
+      credentials: 'same-origin', headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(15_000),
+    })
+  ).status).catch(() => 0);
+  let sessionStatus = 0;
+  await expect.poll(async () => {
+    sessionStatus = await readSessionStatus();
+    return sessionStatus >= 500 ? 0 : sessionStatus;
+  }, { message: `État de la session ${roleKey}`, timeout: 45_000 })
+    .toBeGreaterThan(0);
+  expect([200, 401], `Réponse de /api/auth/me pour ${roleKey} : HTTP ${sessionStatus}`)
+    .toContain(sessionStatus);
+  if (sessionStatus === 401 || page.url().includes('/connexion')) {
+    // Un cookie bn_auth périmé peut encore faire rediriger /connexion côté client.
+    // Retirer ces cookies avant de demander une vraie connexion du rôle attendu.
+    await context.clearCookies();
     const login = new LoginPage(page);
     await login.login(role.login, role.password);
     await login.verifyLoginSuccessWithRetry(role.login, role.password);
+    await expect.poll(readSessionStatus, { message: `Session authentifiée du rôle ${roleKey}`, timeout: 45_000 })
+      .toBe(200);
     await context.storageState({ path: sessionFile });
-    await page.goto(modulePath, { waitUntil: 'domcontentloaded', timeout: 45_000 });
+    if (new URL(page.url()).pathname !== '/chantiers') {
+      await gotoBuildNivo(page, '/chantiers');
+    }
   }
 
   await shell.dismissOnboardingTour();
   await shell.waitForSkeletonToClear();
-  await shell.ensureDemoChantierSelected();
-  await shell.watchForOnboardingTour();
+  if (options.projectScoped !== false) {
+    await shell.waitForChantierContext();
+    await shell.ensureDemoChantierSelected(false);
+  }
+  await shell.navigateWithinApp(modulePath);
   return { context, page, shell };
 }
 
@@ -56,11 +84,13 @@ export async function openModuleAs(browser: Browser, roleKey: string, modulePath
  * repartant d'une page propre - aucune modale ouverte par un test précédent ne survit au rechargement.
  */
 export async function revisit(page: Page, modulePath: string): Promise<void> {
-  await page.goto(modulePath, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   const shell = new AppShellPage(page);
+  // Un aller-retour dans l'interface remonte une page propre sans perdre le chantier.
+  await shell.navigateWithinApp('/chantiers');
+  await shell.ensureDemoChantierSelected(false);
+  await shell.navigateWithinApp(modulePath);
   await shell.dismissOnboardingTour();
   await shell.waitForSkeletonToClear();
-  await shell.watchForOnboardingTour(3_000);
 }
 
 /** Date locale (AAAA-MM-JJ) à J+n - les champs date de l'app refusent le passé (min = aujourd'hui). */

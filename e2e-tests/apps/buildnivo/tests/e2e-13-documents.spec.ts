@@ -11,6 +11,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ModulePage } from '../pages/ModulePage';
+import { PDF } from '../fixtures';
 
 test.describe('BuildNivo - 14. Documents (GED)', () => {
 
@@ -21,7 +22,7 @@ test.describe('BuildNivo - 14. Documents (GED)', () => {
     await expect(page.getByText('Déposer un document').first()).toBeVisible({ timeout: 10_000 });
 
     for (const categorie of ['Plans', 'CCTP', 'Contrats', 'Administratif']) {
-      await expect(page.getByText(categorie, { exact: true }).first()).toBeVisible();
+      await expect(mod.getVisibleText(categorie, true).first()).toBeVisible();
     }
   });
 
@@ -39,8 +40,7 @@ test.describe('BuildNivo - 14. Documents (GED)', () => {
 
     const uniqueTag = `${Date.now()}`;
     const docPath = path.join(os.tmpdir(), `buildnivo-e2e-doc-${uniqueTag}.pdf`);
-    // En-tête PDF minimal valide
-    fs.writeFileSync(docPath, Buffer.from('%PDF-1.4\n%%EOF'));
+    fs.writeFileSync(docPath, PDF);
 
     await fileInput.setInputFiles(docPath).catch(() => {});
     await page.waitForTimeout(1500);

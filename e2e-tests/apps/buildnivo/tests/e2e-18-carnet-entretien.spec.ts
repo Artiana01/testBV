@@ -29,6 +29,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ModulePage } from '../pages/ModulePage';
 import { openModuleAs } from '../pages/RoleSession';
+import { JPEG as MINIMAL_JPEG, PDF as MINIMAL_PDF } from '../fixtures';
 
 
 // Fichiers de test écrits sous e2e-tests/ (disque D:) plutôt que os.tmpdir() (disque C:, chroniquement
@@ -44,11 +45,6 @@ function makeFile(name: string, content: Buffer): string {
 function uniqueName(ext: string): string {
   return `carnet-e2e-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 }
-const MINIMAL_JPEG = Buffer.from([
-  0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01,
-  0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0xff, 0xd9,
-]);
-const MINIMAL_PDF = Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\n%%EOF');
 
 /**
  * Attend que le contenu réel de la modale "Carnet d'entretien" soit monté -
@@ -58,9 +54,12 @@ const MINIMAL_PDF = Buffer.from('%PDF-1.4\n1 0 obj<</Type/Catalog>>endobj\n%%EOF
  */
 async function waitForCarnetLoaded(page: Page, modal: Locator): Promise<void> {
   await page.waitForTimeout(400);
-  await modal.locator('[class*="animate-pulse"]').first().waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => {});
-  await modal.getByText(/^chargement/i).first().waitFor({ state: 'hidden', timeout: 15_000 }).catch(() => {});
-  await modal.locator('table').first().waitFor({ state: 'visible', timeout: 15_000 }).catch(() => {});
+  await modal.locator('[class*="animate-pulse"]').filter({ hasText: /^\s*$/ }).first()
+    .waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {});
+  await modal.getByText(/^chargement/i).first().waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {});
+  const history = modal.locator('table').first()
+    .or(modal.getByText(/aucune intervention|aucun entretien/i).first());
+  await expect(history.first(), 'Historique du carnet ou état vide chargé').toBeVisible({ timeout: 30_000 });
 }
 
 /**
@@ -117,6 +116,9 @@ async function openCarnetForGrue4(page: Page): Promise<Locator> {
 }
 
 test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
+  // Un parcours de pièce jointe charge l'engin, écrit l'intervention puis recharge
+  // son historique : ces appels successifs dépassent parfois deux minutes sur dev.
+  test.describe.configure({ timeout: 180_000 });
 
   test.afterAll(() => {
     fs.rmSync(FIXTURES_DIR, { recursive: true, force: true });
@@ -160,7 +162,7 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     await expect(page.getByText(/2 fichier\(s\) sélectionné/i)).toBeVisible({ timeout: 5_000 });
 
     await page.getByRole('button', { name: /consigner l.intervention/i }).click();
-    await page.waitForTimeout(1_500);
+    await expect(modal).toBeHidden({ timeout: 30_000 });
 
     // La modale se ferme entièrement après succès (confirmé) - on rouvre le carnet pour
     // constater le résultat, au lieu de réutiliser `modal` (détachée du DOM à ce stade).
@@ -236,6 +238,7 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
   });
 
   test('Édition - ajout puis suppression d\'une pièce jointe (Direction)', async ({ page }) => {
+    test.setTimeout(180_000);
     const mod = new ModulePage(page, '/engins');
     await mod.goto();
 
@@ -254,8 +257,10 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     await page.locator('input[type="number"]').first().fill('905');
     await page.locator('input[type="file"]').first().setInputFiles(makeFile(uniqueName('jpg'), MINIMAL_JPEG));
     await page.waitForTimeout(500);
+    const created = page.waitForResponse(r => r.request().method() === 'POST' && /\/api\/engins\/[^/?]+\/entretiens$/.test(new URL(r.url()).pathname));
     await page.getByRole('button', { name: /consigner l.intervention/i }).click();
-    await page.waitForTimeout(1_500);
+    expect((await created).ok(), 'Création de l’intervention dédiée').toBeTruthy();
+    await expect(modal).toBeHidden({ timeout: 15_000 });
 
     modal = await openCarnetForGrue4(page);
     const targetRow = modal.locator('table').first().locator('tbody tr').filter({ hasText: label });
@@ -276,8 +281,10 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     await page.locator('input[type="file"]').first().setInputFiles(jpegPath);
     await expect(page.getByText(/1 fichier\(s\) sélectionné/i)).toBeVisible({ timeout: 5_000 });
 
+    const added = page.waitForResponse(r => r.request().method() === 'POST' && /\/api\/entretiens\/[^/?]+\/attachments$/.test(new URL(r.url()).pathname));
     await page.getByRole('button', { name: /enregistrer les modifications/i }).click();
-    await page.waitForTimeout(1_500);
+    expect((await added).ok(), 'Ajout de la seconde pièce jointe').toBeTruthy();
+    await expect(modal).toBeHidden({ timeout: 15_000 });
 
     // Modale fermée après succès (confirmé) - rouvrir pour vérifier que l'ajout a bien été
     // persisté (pas juste affiché localement avant un rechargement qui l'effacerait).
@@ -288,16 +295,18 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     const removeButtonsAfterAdd = page.locator('input[type="file"]').first().locator('xpath=..').getByTitle('Supprimer');
     await expect(removeButtonsAfterAdd).toHaveCount(2, { timeout: 10_000 });
 
-    // Suppression : le bouton "Supprimer" dédié à la puce la plus récemment ajoutée. Confirmé
-    // par un test live dédié : ce clic ne retire PAS la puce immédiatement de l'écran (la
-    // suppression est visiblement différée, comme le reste du formulaire - seul "Enregistrer
-    // les modifications" applique le changement) ; on ne vérifie donc le résultat qu'après
-    // sauvegarde + réouverture, pas juste après le clic.
+    // La suppression envoie immédiatement un DELETE. Attendre sa réponse avant la
+    // sauvegarde évite de recharger une liste contenant encore les deux pièces jointes.
+    const deleted = page.waitForResponse(r => r.request().method() === 'DELETE' && /\/api\/entretiens\/[^/?]+\/attachments\/[^/?]+$/.test(new URL(r.url()).pathname));
     await removeButtonsAfterAdd.last().click();
-    await page.waitForTimeout(500);
+    const deletion = await deleted;
+    expect(deletion.ok(), 'Suppression de la seconde pièce jointe').toBeTruthy();
+    await deletion.finished();
 
+    const saved = page.waitForResponse(r => r.request().method() === 'PATCH' && /\/api\/entretiens\/[^/?]+$/.test(new URL(r.url()).pathname));
     await page.getByRole('button', { name: /enregistrer les modifications/i }).click();
-    await page.waitForTimeout(1_500);
+    expect((await saved).ok(), 'Sauvegarde après suppression').toBeTruthy();
+    await expect(modal).toBeHidden({ timeout: 15_000 });
 
     // Vérification finale : la suppression est bien persistée après réouverture.
     modal = await openCarnetForGrue4(page);
@@ -376,7 +385,7 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     await page.locator('input[type="file"]').first().setInputFiles(jpegPath);
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: /consigner l.intervention/i }).click();
-    await page.waitForTimeout(1_500);
+    await expect(modal).toBeHidden({ timeout: 30_000 });
 
     modal = await openCarnetForGrue4(page);
     const newRow = modal.locator('table').first().locator('tbody tr').filter({ hasText: label });
@@ -387,6 +396,8 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     const preview = page.locator('[role="dialog"]').filter({ hasText: /\.jpg/i }).last();
     const image = preview.locator('img').first();
     await expect(image).toBeVisible({ timeout: 10_000 });
+    await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0),
+      { message: 'La pièce jointe JPEG doit être décodée dans l’aperçu' }).toBe(true);
     // Le conteneur de l'image porte le zoom/la rotation réels via un style CSS inline
     // ("transform: scale(1) rotate(0deg)") - on vérifie que les boutons changent CETTE valeur,
     // pas juste que l'image reste visible (elle le resterait de toute façon, zoom ou pas).
@@ -434,7 +445,7 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     await page.locator('input[type="file"]').first().setInputFiles(pdfPath);
     await page.waitForTimeout(500);
     await page.getByRole('button', { name: /consigner l.intervention/i }).click();
-    await page.waitForTimeout(1_500);
+    await expect(modal).toBeHidden({ timeout: 30_000 });
 
     modal = await openCarnetForGrue4(page);
     const newRow = modal.locator('table').first().locator('tbody tr').filter({ hasText: label });
@@ -516,7 +527,7 @@ test.describe('BuildNivo - 18. Carnet d\'entretien engins', () => {
     await expect(page.getByText(/1 fichier\(s\) sélectionné/i)).toBeVisible({ timeout: 5_000 });
 
     await page.getByRole('button', { name: /consigner l.intervention/i }).click();
-    await page.waitForTimeout(1_500);
+    await expect(modal).toBeHidden({ timeout: 30_000 });
 
     modal = await openCarnetForEngine(page, { tracksHours: false });
     const newRow = modal.locator('table').first().locator('tbody tr').filter({ hasText: label });
