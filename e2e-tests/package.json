@@ -130,6 +130,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "nodemailer": "^10.4.0",
     "pg": "^8.22.0"
   }
 }
