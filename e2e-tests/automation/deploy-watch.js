@@ -22,7 +22,9 @@ async function openStore({ dryRun, signal, pool = require('../database/db').pool
       await pool.end();
       return null;
     }
-    if (!dryRun) await client.query(DDL);
+    // CREATE TABLE IF NOT EXISTS ne modifie aucune donnee applicative : sans
+    // elle, read() echoue sur une base neuve des le premier --dry-run.
+    await client.query(DDL);
     return {
       async read(app) {
         const res = await client.query('SELECT image_name, last_digest FROM deploy_watch WHERE app_key = $1', [app.key]);
@@ -56,7 +58,17 @@ async function openStore({ dryRun, signal, pool = require('../database/db').pool
 }
 
 async function getDigest(app, { auth, fetchImpl = fetch, timeoutMs = 10000 } = {}) {
-  const headers = { Accept: 'application/vnd.docker.distribution.manifest.v2+json' };
+  // Les images buildx sont poussees en manifest-list/OCI index ; sans ces
+  // types dans Accept, le registre repond quand meme 200 mais omet l'en-tete
+  // Docker-Content-Digest.
+  const headers = {
+    Accept: [
+      'application/vnd.oci.image.index.v1+json',
+      'application/vnd.docker.distribution.manifest.list.v2+json',
+      'application/vnd.docker.distribution.manifest.v2+json',
+      'application/vnd.oci.image.manifest.v1+json',
+    ].join(', '),
+  };
   if (auth) headers.Authorization = auth;
   const response = await fetchImpl(`https://registry.bluevaloris.com/v2/${app.image}/manifests/latest`, {
     headers,
