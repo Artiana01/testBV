@@ -1,6 +1,6 @@
 -- ============================================================
 -- schema.sql - Historisation des tests E2E Playwright
--- Référence documentaire - appliqué programmatiquement par db.js
+-- Référence documentaire - historique appliqué par db.js, deploy_watch par automation/deploy-watch.js
 -- ============================================================
 
 -- ── Campagnes d'exécution ────────────────────────────────────
@@ -56,3 +56,12 @@ CREATE INDEX IF NOT EXISTS idx_runs_status       ON campaign_runs(status);
 CREATE INDEX IF NOT EXISTS idx_results_run_id    ON test_results(run_id);
 CREATE INDEX IF NOT EXISTS idx_results_status    ON test_results(status);
 CREATE INDEX IF NOT EXISTS idx_logs_run_id       ON run_logs(run_id);
+
+CREATE TABLE IF NOT EXISTS deploy_watch (
+  app_key     TEXT NOT NULL,
+  role        TEXT NOT NULL,
+  image_name  TEXT NOT NULL,
+  last_digest TEXT,
+  checked_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (app_key, role)
+);
