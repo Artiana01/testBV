@@ -23,14 +23,17 @@ async function runCycle({ apps, store, digest, runApp, cleanup, assertIdle, mail
       if (signal?.aborted) throw new Error('Verrou perdu');
       const result = await runApp(row.app);
       row.result = result;
-      row.state = result.state;
+      row.state = `${result.state}${row.incomplete ? ' ; vérification partielle, digests conservés' : ''}`;
       log(`${row.app.key} : ${row.state}.`);
       if (result.failed) await mailer.alert(row.app, result);
       if (row.app.key === 'buildnivo' && result.started && result.stopped) {
         row.cleanup = (await cleanup()) ? 'réussi' : 'échoué';
         log(`buildnivo : nettoyage ${row.cleanup}.`);
       }
-      if (result.completed && row.cleanup !== 'échoué' && !signal?.aborted) await store.acknowledge(row.app, row.digest);
+      if (result.completed && row.cleanup !== 'échoué' && !signal?.aborted) {
+        if (row.incomplete) log(`${row.app.key} : vérification partielle ; tous les digests restent à reprendre.`);
+        else await store.acknowledge(row.app, row.images);
+      }
       if (result.abortQueue || row.cleanup === 'échoué') interrupted = true;
     } catch {
       row.state = 'différée : file interrompue ; digest conservé';

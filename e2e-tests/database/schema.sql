@@ -58,8 +58,10 @@ CREATE INDEX IF NOT EXISTS idx_results_status    ON test_results(status);
 CREATE INDEX IF NOT EXISTS idx_logs_run_id       ON run_logs(run_id);
 
 CREATE TABLE IF NOT EXISTS deploy_watch (
-  app_key     TEXT PRIMARY KEY,
+  app_key     TEXT NOT NULL,
+  role        TEXT NOT NULL,
   image_name  TEXT NOT NULL,
   last_digest TEXT,
-  checked_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  checked_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (app_key, role)
 );

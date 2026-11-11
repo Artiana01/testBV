@@ -29,14 +29,14 @@ async function main(args = process.argv.slice(2)) {
   const controller = new AbortController();
   const mailer = createMailer({ dryRun, log });
   let store;
-  let digest = app => getDigest(app, { auth: process.env.REGISTRY_AUTH });
+  let digest = image => getDigest(image, { auth: process.env.REGISTRY_AUTH });
   if (mock) {
     log('[dry-run] SIMULATION HORS LIGNE : PostgreSQL et registre simulés, aucun appel réseau ni écriture.');
     const fixed = `sha256:${'a'.repeat(64)}`;
     digest = async () => fixed;
     store = {
-      read: async app => app.key === 'bvtech' ? { image_name: app.image, last_digest: fixed }
-        : app.key === 'buildnivo' ? { image_name: app.image, last_digest: `sha256:${'b'.repeat(64)}` } : null,
+      read: async (app, image) => app.key === 'bvtech' ? { image_name: image.image, last_digest: fixed }
+        : app.key === 'buildnivo' ? { image_name: image.image, last_digest: image.role === 'api' ? `sha256:${'b'.repeat(64)}` : fixed } : null,
       checked: async () => {},
       close: async () => {},
     };

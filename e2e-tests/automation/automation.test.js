@@ -19,42 +19,119 @@ function memoryStore(previous = {}) {
   const acknowledgements = [];
   return {
     acknowledgements, checked: async () => {},
-    read: async app => previous[app.key] || null,
-    acknowledge: async (app, digest) => acknowledgements.push([app.key, digest]),
+    read: async (app, image) => previous[app.key]?.[image.role] || null,
+    acknowledge: async (app, images) => {
+      acknowledgements.push([app.key, images]);
+      previous[app.key] = Object.fromEntries(images.map(image => [image.role, { image_name: image.image, last_digest: image.digest }]));
+    },
   };
 }
+
+function snapshot(app, digest = digestA) {
+  return Object.fromEntries(app.images.map(image => [image.role, { image_name: image.image, last_digest: digest }]));
+}
+
+test('configuration : neuf projets, images nommées et rôles uniques sans champ image singulier', () => {
+  assert.equal(APPS.length, 9);
+  for (const app of APPS) {
+    assert.equal(Object.hasOwn(app, 'image'), false);
+    assert.ok(app.images.length > 0);
+    assert.equal(new Set(app.images.map(image => image.role)).size, app.images.length);
+    assert.ok(app.images.every(image => image.role && image.image));
+  }
+});
 
 test('registre : route, Accept, Authorization, digest et rejet des réponses invalides', async () => {
   let cancelled = false;
   const fake = async (url, options) => {
     assert.equal(url, 'https://registry.bluevaloris.com/v2/app-buildnivo-dev/manifests/latest');
-    assert.equal(options.headers.Accept, 'application/vnd.docker.distribution.manifest.v2+json');
+    for (const mediaType of [
+      'application/vnd.oci.image.index.v1+json', 'application/vnd.docker.distribution.manifest.list.v2+json',
+      'application/vnd.docker.distribution.manifest.v2+json', 'application/vnd.oci.image.manifest.v1+json',
+    ]) assert.ok(options.headers.Accept.split(', ').includes(mediaType));
     assert.equal(options.headers.Authorization, 'Bearer valeur-simulée');
     assert.equal(options.redirect, 'error');
     return { ok: true, headers: new Headers({ 'Docker-Content-Digest': digestA }), body: { cancel: async () => { cancelled = true; } } };
   };
-  assert.equal(await getDigest(APPS[0], { auth: 'Bearer valeur-simulée', fetchImpl: fake }), digestA);
+  assert.equal(await getDigest(APPS[0].images[0], { auth: 'Bearer valeur-simulée', fetchImpl: fake }), digestA);
   assert.ok(cancelled);
   for (const response of [
-    new Response('', { status: 401 }), new Response('', { headers: { 'Docker-Content-Digest': 'invalide' } }),
-  ]) await assert.rejects(getDigest(APPS[0], { fetchImpl: async () => response }));
+    new Response('', { status: 401 }), new Response('', { status: 404 }),
+    new Response(''), new Response('', { headers: { 'Docker-Content-Digest': 'invalide' } }),
+  ]) await assert.rejects(getDigest(APPS[0].images[0], { fetchImpl: async () => response }));
+  await assert.rejects(getDigest(APPS[0].images[1], { timeoutMs: 1, fetchImpl: async (url, { signal }) => {
+    assert.ok(url.includes('/api-buildnivo-dev/'));
+    await delay(100, undefined, { signal });
+  } }));
 });
 
 test('détection : digest changé, identique, premier passage, erreur isolée et DB absente', async () => {
   const store = memoryStore({
-    buildnivo: { image_name: APPS[0].image, last_digest: digestB },
-    bvtech: { image_name: APPS[1].image, last_digest: digestA },
+    buildnivo: snapshot(APPS[0], digestB),
+    bvtech: snapshot(APPS[1]),
   });
   const rows = await detect(APPS.slice(0, 4), {
-    store, log: quiet, digest: async app => { if (app.key === 'bvinvest') throw new Error(); return digestA; },
+    store, log: quiet, digest: async image => { if (APPS[3].images.some(item => item.image === image.image)) throw new Error(); return digestA; },
   });
-  assert.deepEqual(rows.map(row => row.changed), [true, false, true, undefined]);
+  assert.deepEqual(rows.map(row => row.changed), [true, false, true, false]);
+  assert.equal(rows[3].incomplete, true);
   assert.deepEqual(store.acknowledgements, []);
   const offline = await detect(APPS.slice(0, 3), { store: null, digest: async () => digestA, log: quiet });
   assert.ok(offline.every(row => !row.changed && row.state.includes('indéterminé')));
 });
 
-test('verrou PostgreSQL : acquisition immédiate, tour ignoré, libération et dry-run sans DDL', async () => {
+test('détection : changement isolé front ou API, image absente ou renommée, et projet à une image', async () => {
+  const app = APPS[0];
+  for (const role of ['front', 'api']) {
+    for (const reason of ['digest', 'absente', 'renommée']) {
+      const previous = snapshot(app);
+      if (reason === 'digest') previous[role].last_digest = digestB;
+      if (reason === 'absente') delete previous[role];
+      if (reason === 'renommée') previous[role].image_name = 'ancienne-image';
+      const [row] = await detect([app], { store: memoryStore({ [app.key]: previous }), digest: async () => digestA, log: quiet });
+      assert.equal(row.changed, true, `${role} : ${reason}`);
+      assert.equal(row.images.length, 2);
+      assert.equal(row.incomplete, false);
+    }
+  }
+  const single = { ...app, images: [app.images[0]] };
+  const [unchanged] = await detect([single], { store: memoryStore({ [app.key]: snapshot(single) }), digest: async () => digestA, log: quiet });
+  assert.equal(unchanged.changed, false);
+  assert.equal(unchanged.images.length, 1);
+});
+
+test('détection partielle : erreur isolée par image, changement connu maintenu, aucun acquittement incomplet', async () => {
+  for (const failedRole of ['front', 'api']) {
+    for (const changed of [false, true]) {
+      const calls = [];
+      const logs = [];
+      const runs = [];
+      const app = APPS[0];
+      const store = memoryStore({ [app.key]: snapshot(app) });
+      const rows = await runCycle({
+        apps: APPS.slice(0, 2), store, log: message => logs.push(message),
+        digest: async image => {
+          calls.push(image.image);
+          if (image.image === app.images.find(item => item.role === failedRole).image) throw new Error('erreur simulée confidentielle');
+          return changed ? digestB : digestA;
+        },
+        assertIdle: async () => {}, runApp: async app => { runs.push(app.key); return { completed: true, state: 'terminé' }; },
+        mailer: { summary: async () => {} },
+      });
+      assert.deepEqual(calls, APPS.slice(0, 2).flatMap(app => app.images.map(image => image.image)));
+      assert.equal(rows[0].changed, changed);
+      assert.equal(rows[0].incomplete, true);
+      assert.ok(rows[0].state.includes(changed ? 'vérification partielle' : 'indéterminé'));
+      assert.equal(rows[1].changed, true);
+      assert.deepEqual(runs, changed ? ['buildnivo', 'bvtech'] : ['bvtech']);
+      assert.deepEqual(store.acknowledgements.map(([key]) => key), ['bvtech']);
+      assert.ok(logs.some(line => line.includes(`buildnivo/${failedRole}`) && line.includes('vérification impossible')));
+      assert.ok(logs.every(line => !line.includes('confidentielle')));
+    }
+  }
+});
+
+test('verrou PostgreSQL : acquisition immédiate, migration transactionnelle, libération et dry-run sans écriture de digest', async () => {
   for (const locked of [false, true]) {
     const queries = [];
     let released = false;
@@ -69,16 +146,84 @@ test('verrou PostgreSQL : acquisition immédiate, tour ignoré, libération et d
     const store = await openStore({ dryRun: true, signal: new AbortController(), pool });
     if (locked) {
       assert.ok(store);
-      await store.checked(APPS[0]);
-      await store.acknowledge(APPS[0], digestA);
+      await store.checked(APPS[0], APPS[0].images[0]);
+      await store.acknowledge(APPS[0], APPS[0].images.map(image => ({ ...image, digest: digestA })));
       await store.close();
-      assert.equal(queries.length, 2);
-      assert.match(queries[1][0], /pg_advisory_unlock/);
+      assert.equal(queries[1][0], 'BEGIN');
+      assert.match(queries[2][0], /PRIMARY KEY \(app_key, role\)/);
+      assert.match(queries[3][0], /ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'front'/);
+      assert.equal(queries[4][0], 'COMMIT');
+      assert.match(queries[5][0], /pg_advisory_unlock/);
     } else assert.equal(store, null);
     assert.match(queries[0][0], /pg_try_advisory_lock/);
     assert.ok(released && ended);
-    assert.ok(queries.every(([sql]) => !/CREATE|INSERT|UPDATE/.test(sql)));
+    assert.ok(queries.every(([sql]) => !/INSERT|UPDATE|DELETE|TRUNCATE/.test(sql)));
   }
+});
+
+test('PostgreSQL : lectures par rôle, changement de nom et acquittement atomique de toutes les images', async () => {
+  const queries = [];
+  const client = new EventEmitter();
+  client.query = async (sql, params) => { queries.push([sql, params]); return { rows: [{ locked: true }] }; };
+  client.release = () => {};
+  const store = await openStore({ pool: { connect: async () => client, end: async () => {} }, signal: new AbortController() });
+  const app = APPS[0];
+  for (const image of app.images) {
+    await store.read(app, image);
+    const [readSql, readParams] = queries.at(-1);
+    assert.match(readSql, /app_key = \$1 AND role = \$2/);
+    assert.deepEqual(readParams, [app.key, image.role]);
+    await store.checked(app, image);
+    const [checkedSql, checkedParams] = queries.at(-1);
+    assert.match(checkedSql, /ON CONFLICT \(app_key, role\)/);
+    assert.match(checkedSql, /THEN deploy_watch.last_digest ELSE NULL END/);
+    assert.deepEqual(checkedParams, [app.key, image.role, image.image]);
+  }
+  const images = app.images.map((image, index) => ({ ...image, digest: index ? digestB : digestA }));
+  const before = queries.length;
+  await store.acknowledge(app, images);
+  assert.equal(queries.length, before + 1);
+  const [sql, params] = queries.at(-1);
+  assert.match(sql, /jsonb_to_recordset/);
+  assert.match(sql, /ON CONFLICT \(app_key, role\)/);
+  assert.deepEqual(params, [app.key, JSON.stringify(images)]);
+  await store.close();
+});
+
+test('PostgreSQL : migration échouée annulée et connexion libérée', async () => {
+  const queries = [];
+  let released = false;
+  let ended = false;
+  const client = new EventEmitter();
+  client.query = async sql => {
+    queries.push(sql);
+    if (sql.includes('ADD COLUMN')) throw new Error('erreur simulée confidentielle');
+    return { rows: [{ locked: true }] };
+  };
+  client.release = () => { released = true; };
+  await assert.rejects(openStore({ pool: { connect: async () => client, end: async () => { ended = true; } }, signal: new AbortController() }),
+    { message: 'PostgreSQL indisponible ou schéma deploy_watch absent ; cycle sans exécution.' });
+  assert.equal(queries.at(-1), 'ROLLBACK');
+  assert.ok(!queries.includes('COMMIT'));
+  assert.ok(released && ended);
+});
+
+test('cycle : API seule modifiée, deux digests acquittés après le run, puis projet ignoré', async () => {
+  const app = APPS[0];
+  const previous = snapshot(app);
+  previous.api.last_digest = digestB;
+  const store = memoryStore({ [app.key]: previous });
+  let runs = 0;
+  const settings = {
+    apps: [app], store, digest: async () => digestA, log: quiet,
+    assertIdle: async () => {}, runApp: async () => { runs++; return { completed: true, state: 'terminé' }; },
+    mailer: { summary: async () => {} },
+  };
+  await runCycle(settings);
+  assert.deepEqual(store.acknowledgements, [[app.key, app.images.map(image => ({ ...image, digest: digestA }))]]);
+  const [next] = await runCycle(settings);
+  assert.equal(next.changed, false);
+  assert.equal(runs, 1);
 });
 
 test('file sérielle : alerte immédiate, nettoyage seulement BuildNivo, puis récapitulatif', async () => {

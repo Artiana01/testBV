@@ -10,7 +10,7 @@ Registre commun : `registry.bluevaloris.com`. Les chemins ci-dessous sont relati
 `/media/Volume_57GB/ops/_cicd/`. Une branche indiquée signifie une lecture par
 `git show branche:Jenkinsfile`, sans checkout ni modification du dépôt CI/CD.
 
-| appKey | Port interne | Image surveillée (`:latest`) | Source Jenkinsfile |
+| appKey | Port interne | Image front (`:latest`) | Source Jenkinsfile front |
 | --- | --- | --- | --- |
 | buildnivo | 4009 | app-buildnivo-dev | `app-buildnivo-cicd/Jenkinsfile`, `IMAGE_NAME`, ligne 27 |
 | bvtech | 4001 | bluevaloris-tech | `bluevaloris-tech-cicd/Jenkinsfile`, `IMAGE_NAME`, ligne 10, branche `develop` |
@@ -22,12 +22,25 @@ Registre commun : `registry.bluevaloris.com`. Les chemins ci-dessous sont relati
 | creerailleurs | 4007 | creerailleurs-front-dev | `creerailleurs-cicd`, branche `develop`, `Jenkinsfile`, `IMAGE_NAME`, ligne 6 |
 | launchpad | 4008 | bluevaloris-tech-staging | `bluevaloris-tech-cicd`, branche `staging`, `Jenkinsfile`, `IMAGE_NAME`, ligne 7 |
 
+| appKey | Image API surveillée (`:latest`) | Source Jenkinsfile API |
+| --- | --- | --- |
+| buildnivo | api-buildnivo-dev | `api-buildnivo-cicd`, branche `develop`, `IMAGE_NAME`, ligne 22 |
+| bvtech | bv-tech-api | `bv-tech-api-cicd`, branche `develop`, `IMAGE_NAME`, ligne 6 |
+| bvbusiness | bvb-back-staging | `bvb-backend-cicd`, branche `staging`, `BACKEND_IMAGE`, ligne 15 |
+| bvinvest | bluevaloris-invest-backend | `bluevaloris-invest-cicd`, branche `dev`, `BACKEND_IMAGE`, ligne 12 |
+| emiragate | emiragate-api | `emiragate-api-cicd`, branche `develop`, `APP_IMAGE`, ligne 11 |
+| bvportage | bluevaloris-portage-api-v1 | `bluevaloris-portage-api-v1-cicd`, branche `dev`, `IMAGE_NAME`, ligne 11 |
+| bvportageFreelance | bluevaloris-portage-api-v1 | même API dev que bvportage, suivi indépendant par suite |
+| creerailleurs | creerailleurs-api-devprod | `creer-ailleurs-api-cicd`, branche `develop`, `IMAGE_NAME`, ligne 11 |
+| launchpad | bv-tech-api-staging | `bv-tech-api-cicd`, branche `staging`, `IMAGE_NAME`, ligne 6 |
+
 Les configurations Playwright confirment les domaines cibles. Le suffixe `staging` de l'image
 Portage est conservé : le Jenkinsfile de la branche `dev` le définit aussi, avec le credential
-`envPortageFrontDev`. Launchpad cible `staging.bluevaloristech.com` ; l'image
-`launch-pad-api-prod` trouvée dans un autre dépôt concerne une API de production et n'est pas
-utilisée pour surveiller ce frontend. Les images API sont hors de cette correspondance frontend.
-Un changement uniquement backend ne déclenche donc pas le cycle.
+`envPortageFrontDev`. Les deux suites ciblent `dev.bluevalorisportage.com` et surveillent donc
+l'API `dev`, sans suffixe `staging`. Launchpad cible `staging.bluevaloristech.com`, avec
+l'API Tech staging ; l'image `launch-pad-api-prod` d'un autre dépôt concerne la production.
+Les neuf projets ont une image API distincte identifiée. Invest construit ses deux images
+dans le même pipeline, contrairement aux autres projets qui ont un dépôt CI/CD backend séparé.
 
 Le digest détecte une publication du tag dans le registre ; il ne confirme pas que le serveur
 a déjà terminé son redéploiement. Aucun accès Jenkins n'est utilisé pendant un cycle.
@@ -77,16 +90,17 @@ node e2e-tests/automation/run-cycle.js --dry-run --mock --apps buildnivo,bvtech,
 node e2e-tests/automation/run-cycle.js --dry-run --apps buildnivo,bvtech,bvbusiness
 ```
 
-La première commande est entièrement hors ligne : ancienne empreinte simulée pour BuildNivo,
+La première commande est entièrement hors ligne : seule l'API BuildNivo a changé,
 empreinte inchangée pour BV Tech, premier passage pour BV Business. Elle affiche la file,
 le nettoyage prévu et les notifications prévues. `--mock` est refusé sans `--dry-run`.
 
 La seconde lit réellement le registre et PostgreSQL, prend le verrou si la DB est disponible,
-mais n'écrit aucune donnée, ne crée aucune table, n'appelle pas les API des app-servers,
-ne lance ni suite ni nettoyage et n'envoie aucun mail. Un schéma encore absent est signalé
-comme vérification indéterminée. Aucune empreinte n'est consommée par une simulation.
-Sans DB ou avec un registre inaccessible, le cycle signale chaque app concernée et continue
-les vérifications, sans inventer de digest et sans lancer les apps indéterminées.
+initialise ou migre le schéma de suivi sous verrou, y compris en dry-run réel, sans modifier
+les digests connus. Elle n'appelle pas les API des app-servers, ne lance ni suite ni nettoyage
+et n'envoie aucun mail. Aucune empreinte n'est consommée par une simulation.
+Sans DB, aucune suite n'est lancée. Une erreur registre est isolée par image : les autres
+images du projet et les autres projets restent vérifiés. Si une autre image a changé,
+le projet reste à tester ; sinon son état est indéterminé et il n'est pas lancé.
 
 Après validation locale, démarrer les neuf serveurs existants dans un autre terminal :
 
@@ -103,27 +117,39 @@ existants ne fournissent pas de réservation atomique commune à l'UI et à l'au
 
 ## Persistance, séquentialité et erreurs
 
-`apps.js` décrit les images et ports. `deploy-watch.js` réutilise **le pool singleton
+`apps.js` décrit les ports et un tableau `images` de couples `{ role, image }` par projet,
+avec un rôle unique par image. Un projet peut n'avoir qu'une entrée `front`.
+`deploy-watch.js` réutilise **le pool singleton
 de `database/db.js`**, sans créer de nouvelle connexion applicative ou de second pool.
 Le cycle réserve un client de ce pool pour garder le verrou PostgreSQL consultatif
 de session pendant toute la file et le récapitulatif. `pg_try_advisory_lock` est non bloquant :
 un second cycle logue explicitement le tour ignoré, sans mail ni lancement. Les processus
 doivent partager la même base PostgreSQL. Une perte du client annule les lancements suivants.
 
-La nouvelle table est décrite dans `database/schema.sql` et créée de façon idempotente par
-`deploy-watch.js` au premier cycle réel, après acquisition du verrou. Aucun outil de migration
-distinct n'existait pour cette base. Le rôle PostgreSQL doit pouvoir créer cette table,
-ou un administrateur doit appliquer son `CREATE TABLE` avant la première exécution.
+La table est décrite dans `database/schema.sql` et créée de façon idempotente par
+`deploy-watch.js` après acquisition du verrou. La migration est faite **en place**, dans une
+transaction : ajout de `role` avec la valeur `front` pour les anciennes lignes, remplacement
+de l'ancienne clé primaire `app_key` par `(app_key, role)`, puis retrait du défaut de `role`.
+Les neuf digests front, noms d'images et dates existants sont conservés. Une deuxième
+ouverture accepte le schéma déjà migré. Une erreur annule toute la transaction.
+Le rôle PostgreSQL doit pouvoir créer et modifier cette table. La migration s'applique aussi
+en dry-run réel, comme la création de table existante ; `--dry-run --mock` reste sans DB.
+Les nouvelles lignes API seront créées lors de leur première vérification hors dry-run.
 
 | Colonne | Sens |
 | --- | --- |
-| `app_key text primary key` | Une ligne par suite ; les deux suites Portage restent indépendantes |
+| `app_key text not null` | Suite concernée ; les deux suites Portage restent indépendantes |
+| `role text not null` | `front` ou `api` ; clé primaire composite `(app_key, role)` |
 | `image_name text not null` | Image exacte, sans registre ni tag |
 | `last_digest text` | Dernier digest dont le run est terminé ; NULL tant qu'aucun run n'est acquitté |
 | `checked_at timestamptz not null` | Date de la dernière lecture réussie du registre et de la comparaison en DB |
 
-Premier passage ou changement d'image : suite à tester. Le digest est acquitté après un
-run terminé, même échoué, pour éviter une répétition à chaque cron sur la même version.
+Premier passage, changement de nom ou de digest d'au moins une image : suite à tester.
+Tous les digests lus avant le lancement sont acquittés ensemble dans une seule requête après
+un run terminé, même échoué, pour éviter une répétition à chaque cron sur la même version.
+Un déploiement survenu pendant le run reste donc détectable au cycle suivant.
+Si une image n'a pas pu être vérifiée, aucun digest du projet n'est acquitté : le récapitulatif
+et les logs signalent l'état incomplet pour permettre une reprise avec toutes les images.
 Une suite non lancée, interrompue, inconnue ou un nettoyage échoué laisse le digest à reprendre.
 Un changement de nom d'image remet `last_digest` à NULL. Une erreur registre laisse la ligne intacte.
 
@@ -173,7 +199,11 @@ Si le système de fichiers refuse d'exécuter le shim `tsc`, appeler le même co
 avec `node e2e-tests/node_modules/typescript/bin/tsc --noEmit -p CHEMIN_TSCONFIG`
 depuis la racine du dépôt. Les nouveaux scripts sont JavaScript CommonJS, sans nouveau projet TS.
 
-Validation de cette mission : les 10 tests Node et le dry-run sur trois apps passent.
+Validation de cette mission : les 16 tests Node et le dry-run sur les neuf apps passent.
+Les cas multi-image couvrent le changement API seul, le changement front seul, le premier
+digest API, le renommage d'image, les erreurs isolées par rôle, l'acquittement complet et
+l'absence d'acquittement partiel. Le client PostgreSQL est simulé : la migration sur la base
+réelle et la validation dans le conteneur restent à effectuer avant le push.
 La vérification TS de Portage Freelance échoue sur une configuration existante
 (`TS5070`, résolution `classic` avec `resolveJsonModule`). Celle d'`e2e-platform` échoue
 sur les dépendances/types absents dans ce checkout (`@playwright/test`, types Node,
